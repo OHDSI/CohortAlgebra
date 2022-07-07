@@ -1,0 +1,32 @@
+---
+title: "How to Use CohortAlgebra R Package"
+author: "Gowtham A. Rao"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: 
+    toc: yes     
+  html_document:
+    number_sections: yes
+    toc: yes  
+vignette: >
+  %\VignetteIndexEntry{Creating a study package}
+  %\VignetteEncoding{UTF-8}    
+  %\VignetteEngine{knitr::rmarkdown}
+---
+
+```{r, echo = FALSE, message = FALSE}
+library(SqlRender)
+knitr::opts_chunk$set(
+  cache = FALSE,
+  comment = "#>",
+  error = FALSE,
+  tidy = FALSE)
+```
+
+
+# Installation
+- This  is an installable R-package that may be installed as follows: 
+```{r tidy=FALSE,eval=FALSE}
+  remotes::install_github("OHDSI/CohortAlgebra")
+```
+
