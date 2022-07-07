@@ -17,13 +17,19 @@
 #' Get cohort ids in table
 #'
 #' @description
-#' Get cohort ids in table
+#' Get cohort ids in table. This function is not exported.
 #'
 #' @template Connection
 #'
 #' @template OldToNewCohortId
 #'
 #' @template TempEmulationSchema
+#' 
+#' @param sourceCohortDatabaseSchema The database schema of the source cohort table.
+#' 
+#' @param sourceCohortTable         The name of the source cohort table.
+#' 
+#' @param targetCohortTable         A temp table to copy the cohorts from the source table.
 #'
 #' @return
 #' NULL

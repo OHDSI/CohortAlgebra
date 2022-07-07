@@ -15,6 +15,7 @@ Imports:
   	rlang,
   	testthat
 Suggests:
+  Eunomia,
 	testthat
 License: Apache License
 RoxygenNote: 7.2.0

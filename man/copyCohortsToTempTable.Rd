@@ -32,10 +32,16 @@ The newCohortId are the cohortIds of the corresponding output after transformati
 If the oldCohortId = newCohortId then the data corresponding to oldCohortId
 will be replaced by the data from the newCohortId.}
 
+\item{sourceCohortDatabaseSchema}{The database schema of the source cohort table.}
+
+\item{sourceCohortTable}{The name of the source cohort table.}
+
+\item{targetCohortTable}{A temp table to copy the cohorts from the source table.}
+
 \item{tempEmulationSchema}{Some database platforms like Oracle and Impala do not truly support
 temp tables. To emulate temp tables, provide a schema with write
 privileges where temp tables can be created.}
 }
 \description{
-Get cohort ids in table
+Get cohort ids in table. This function is not exported.
 }
