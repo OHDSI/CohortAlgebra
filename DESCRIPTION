@@ -19,13 +19,11 @@ Imports:
     ParallelLogger,
   	rlang
 Suggests:
-  Eunomia,
   remotes,
   knitr,
 	testthat,
 	withr
 Remotes:
-  ohdsi/Eunomia,
   ohdsi/ParallelLogger
 License: Apache License
 RoxygenNote: 7.2.0

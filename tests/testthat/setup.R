@@ -30,8 +30,8 @@ dir.create(folder, recursive = TRUE)
 skipCdmTests <- FALSE
 
 if (dbms == "sqlite") {
-  connectionDetails <- Eunomia::getEunomiaConnectionDetails()
-  cohortDatabaseSchema <- "main"
+  # connectionDetails <- Eunomia::getEunomiaConnectionDetails()
+  # cohortDatabaseSchema <- "main"
 } else {
   if (dbms == "postgresql") {
     dbUser <- Sys.getenv("CDM5_POSTGRESQL_USER")
