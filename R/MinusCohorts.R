@@ -40,15 +40,15 @@
 #' NULL
 #'
 #' @export
-substractCohorts <- function(connectionDetails = NULL,
-                             connection = NULL,
-                             cohortDatabaseSchema = NULL,
-                             cohortTable = "cohort",
-                             firstCohortId,
-                             secondCohortId,
-                             newCohortId,
-                             purgeConflicts = FALSE,
-                             tempEmulationSchema = getOption("sqlRenderTempEmulationSchema")) {
+minusCohorts <- function(connectionDetails = NULL,
+                         connection = NULL,
+                         cohortDatabaseSchema = NULL,
+                         cohortTable = "cohort",
+                         firstCohortId,
+                         secondCohortId,
+                         newCohortId,
+                         purgeConflicts = FALSE,
+                         tempEmulationSchema = getOption("sqlRenderTempEmulationSchema")) {
   errorMessages <- checkmate::makeAssertCollection()
   checkmate::assertIntegerish(
     x = firstCohortId,
@@ -89,18 +89,18 @@ substractCohorts <- function(connectionDetails = NULL,
     add = errorMessages
   )
   checkmate::reportAssertions(collection = errorMessages)
-
+  
   if (firstCohortId == secondCohortId) {
     warning(
       "During minus operation, both first and second cohorts have the same cohort id. The result will be a NULL cohort."
     )
   }
-
+  
   if (is.null(connection)) {
     connection <- DatabaseConnector::connect(connectionDetails)
     on.exit(DatabaseConnector::disconnect(connection))
   }
-
+  
   cohortIdsInCohortTable <-
     getCohortIdsInCohortTable(
       connection = connection,
@@ -108,13 +108,11 @@ substractCohorts <- function(connectionDetails = NULL,
       cohortTable = cohortTable,
       tempEmulationSchema = tempEmulationSchema
     )
-
+  
   conflicitingCohortIdsInTargetCohortTable <-
-    intersect(
-      x = newCohortId %>% unique(),
-      y = cohortIdsInCohortTable %>% unique()
-    )
-
+    intersect(x = newCohortId %>% unique(),
+              y = cohortIdsInCohortTable %>% unique())
+  
   performPurgeConflicts <- FALSE
   if (length(conflicitingCohortIdsInTargetCohortTable) > 0) {
     if (purgeConflicts) {
@@ -128,11 +126,11 @@ substractCohorts <- function(connectionDetails = NULL,
       )
     }
   }
-
+  
   tempTableName <- generateRandomString()
   tempTable1 <- paste0("#", tempTableName, "1")
   tempTable2 <- paste0("#", tempTableName, "2")
-
+  
   copyCohortsToTempTable(
     connection = connection,
     oldToNewCohortId = dplyr::tibble(oldCohortId = c(firstCohortId, secondCohortId)) %>%
@@ -142,71 +140,83 @@ substractCohorts <- function(connectionDetails = NULL,
     sourceCohortTable = cohortTable,
     targetCohortTable = tempTable1
   )
-
+  
   intersectCohorts(
     connection = connection,
-    cohortDatabaseSchema = cohortDatabaseSchema,
     cohortTable = tempTable1,
     cohortIds = c(firstCohortId, secondCohortId),
     newCohortId = -999,
     purgeConflicts = FALSE,
     tempEmulationSchema = getOption("sqlRenderTempEmulationSchema")
   )
-
+  
   minusSql <- "DROP TABLE IF EXISTS @temp_table_2;
 
                   WITH cohort_dates
-                    AS (
-                    	SELECT DISTINCT subject_id,
-                    		cohort_date
-                    	FROM (
-                    		SELECT subject_id,
-                    			cohort_start_date cohort_date
-                    		FROM @temp_table_1
-                    		WHERE cohort_definition_id IN (@first_cohort_id, -999)
+                  AS (
+                  	SELECT DISTINCT subject_id,
+                  		cohort_date
+                  	FROM (
+                  		SELECT subject_id,
+                  			cohort_start_date cohort_date
+                  		FROM @temp_table_1
+                  		WHERE cohort_definition_id IN (@first_cohort_id, -999)
 
-                    		UNION
+                  		UNION
 
-                    		SELECT subject_id,
-                    			cohort_end_date cohort_date
-                    		FROM @temp_table_1
-                    		WHERE cohort_definition_id IN (@first_cohort_id, -999)
-                    		) all_dates
-                    	),
-                    time_periods
-                    AS (
-                    	SELECT subject_id,
-                    		cohort_date,
-                    		LEAD(cohort_date, 1) OVER (
-                    			PARTITION BY subject_id ORDER BY cohort_date ASC
-                    			) next_cohort_date
-                    	FROM cohort_dates
-                    	GROUP BY subject_id,
-                    		cohort_date
-                    	)
-                    SELECT @new_cohort_id cohort_definition_id,
-                      subject_id,
-                    	cohort_date cohort_start_date,
-                    	next_cohort_date cohort_end_date
-                    INSERT INTO @temp_table_2
-                    FROM time_periods
-                    GROUP BY subject_id,
-                    	cohort_date,
-                    	next_cohort_date
-                    HAVING COUNT(*) = 1;"
-
+                  		SELECT subject_id,
+                  			cohort_end_date cohort_date
+                  		FROM @temp_table_1
+                  		WHERE cohort_definition_id IN (@first_cohort_id, -999)
+                  		) all_dates
+                  	),
+                  candidate_periods
+                  AS (
+                  	SELECT - 1 cohort_definition_id,
+                  		subject_id,
+                  		cohort_date candidate_start_date,
+                  		LEAD(cohort_date, 1) OVER (
+                  			PARTITION BY subject_id ORDER BY cohort_date ASC
+                  			) candidate_end_date
+                  	FROM cohort_dates
+                  	GROUP BY subject_id,
+                  		cohort_date
+                  	),
+                  candidate_cohort_date
+                  AS (
+                  	SELECT cohort.*,
+                  		candidate_start_date,
+                  		candidate_end_date
+                  	FROM @temp_table_1 cohort
+                  	INNER JOIN candidate_periods candidate ON cohort.subject_id = candidate.subject_id
+                  		AND candidate_start_date >= cohort_start_date
+                  		AND candidate_end_date <= cohort_end_date
+                  	WHERE cohort.cohort_definition_id IN (@first_cohort_id, -999)
+                  	)
+                  SELECT @new_cohort_id cohort_definition_id,
+                  	subject_id,
+                  	candidate_start_date cohort_start_date,
+                  	candidate_end_date cohort_end_date
+                  INTO @temp_table_2
+                  FROM candidate_cohort_date
+                  GROUP BY subject_id,
+                  	candidate_start_date,
+                  	candidate_end_date
+                  HAVING COUNT(*) = 1;"
+  
   DatabaseConnector::renderTranslateExecuteSql(
     connection = connection,
     sql = minusSql,
     profile = FALSE,
     progressBar = FALSE,
     reportOverallTime = FALSE,
+    first_cohort_id = firstCohortId,
     new_cohort_id = newCohortId,
     temp_table_1 = tempTable1,
     temp_table_2 = tempTable2,
     tempEmulationSchema = tempEmulationSchema
   )
-
+  
   if (performPurgeConflicts) {
     ParallelLogger::logInfo(
       paste0(
@@ -235,7 +245,7 @@ substractCohorts <- function(connectionDetails = NULL,
     cohort_table = cohortTable,
     temp_table_2 = tempTable2
   )
-
+  
   DatabaseConnector::renderTranslateExecuteSql(
     connection = connection,
     sql = " DROP TABLE IF EXISTS @temp_table_1;

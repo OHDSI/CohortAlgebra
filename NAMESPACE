@@ -2,7 +2,7 @@
 
 export(eraFyCohorts)
 export(intersectCohorts)
-export(substractCohorts)
+export(minusCohorts)
 import(DatabaseConnector)
 import(dplyr)
 importFrom(rlang,.data)
