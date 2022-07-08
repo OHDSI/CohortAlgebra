@@ -7,7 +7,7 @@
 substractCohorts(
   connectionDetails = NULL,
   connection = NULL,
-  cohortDatabaseSchema,
+  cohortDatabaseSchema = NULL,
   cohortTable = "cohort",
   firstCohortId,
   secondCohortId,

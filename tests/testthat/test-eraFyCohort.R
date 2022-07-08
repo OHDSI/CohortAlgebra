@@ -1,4 +1,4 @@
-testthat::test_that("Testing cohort era fy - non temporary table", {
+testthat::test_that("Testing cohort era fy", {
   # generate unique name for a cohort table
   sysTime <- as.numeric(Sys.time()) * 100000
   tableName <- paste0("cr", sysTime)
@@ -136,7 +136,6 @@ testthat::test_that("Testing cohort era fy - non temporary table", {
   
   CohortAlgebra::eraFyCohorts(
     connection = connection,
-    cohortDatabaseSchema = NULL,
     cohortTable = tempTableName,
     oldToNewCohortId = dplyr::tibble(oldCohortId = 1, newCohortId = 10),
     eraconstructorpad = 30,
@@ -174,9 +173,9 @@ testthat::test_that("Testing cohort era fy - non temporary table", {
   testthat::expect_error(
     CohortAlgebra::eraFyCohorts(
       connectionDetails = connectionDetails,
-      cohortTable = tableName,
+      cohortTable = tempTableName,
       oldToNewCohortId = dplyr::tibble(oldCohortId = 1, newCohortId = 10),
-      eraconstructorpad = 0,
+      eraconstructorpad = 30,
       purgeConflicts = FALSE
     )
   )

@@ -7,7 +7,7 @@
 intersectCohorts(
   connectionDetails = NULL,
   connection = NULL,
-  cohortDatabaseSchema,
+  cohortDatabaseSchema = NULL,
   cohortTable = "cohort",
   cohortIds,
   newCohortId,

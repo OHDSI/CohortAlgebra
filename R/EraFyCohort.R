@@ -42,7 +42,7 @@
 #' @export
 eraFyCohorts <- function(connectionDetails = NULL,
                          connection = NULL,
-                         cohortDatabaseSchema,
+                         cohortDatabaseSchema = NULL,
                          cohortTable = "cohort",
                          oldToNewCohortId,
                          eraconstructorpad = 0,

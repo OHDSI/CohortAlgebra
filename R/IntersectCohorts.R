@@ -42,7 +42,7 @@
 #' @export
 intersectCohorts <- function(connectionDetails = NULL,
                              connection = NULL,
-                             cohortDatabaseSchema,
+                             cohortDatabaseSchema = NULL,
                              cohortTable = "cohort",
                              cohortIds,
                              newCohortId,
@@ -116,7 +116,7 @@ intersectCohorts <- function(connectionDetails = NULL,
       )
     }
   }
-
+  
   tempTableName <- generateRandomString()
   tempTable1 <- paste0("#", tempTableName, "1")
   tempTable2 <- paste0("#", tempTableName, "2")
@@ -136,42 +136,53 @@ intersectCohorts <- function(connectionDetails = NULL,
   intersectSql <- "DROP TABLE IF EXISTS @temp_table_2;
 
                   WITH cohort_dates
-                    AS (
-                    	SELECT DISTINCT subject_id,
-                    		cohort_date
-                    	FROM (
-                    		SELECT subject_id,
-                    			cohort_start_date cohort_date
-                    		FROM @temp_table_1
-
-                    		UNION
-
-                    		SELECT subject_id,
-                    			cohort_end_date cohort_date
-                    		FROM @temp_table_1
-                    		) all_dates
-                    	),
-                    time_periods
-                    AS (
-                    	SELECT subject_id,
-                    		cohort_date,
-                    		LEAD(cohort_date, 1) OVER (
-                    			PARTITION BY subject_id ORDER BY cohort_date ASC
-                    			) next_cohort_date
-                    	FROM cohort_dates
-                    	GROUP BY subject_id,
-                    		cohort_date
-                    	)
-                    SELECT @new_cohort_id cohort_definition_id,
-                      subject_id,
-                    	cohort_date cohort_start_date,
-                    	next_cohort_date cohort_end_date
-                    INSERT INTO @temp_table_2
-                    FROM time_periods
-                    GROUP BY subject_id,
-                    	cohort_date,
-                    	next_cohort_date
-                    HAVING COUNT(*) = @number_of_cohorts;"
+                  AS (
+                  	SELECT DISTINCT subject_id,
+                  		cohort_date
+                  	FROM (
+                  		SELECT subject_id,
+                  			cohort_start_date cohort_date
+                  		FROM @temp_table_1
+                  		
+                  		UNION
+                  		
+                  		SELECT subject_id,
+                  			cohort_end_date cohort_date
+                  		FROM @temp_table_1
+                  		) all_dates
+                  	),
+                  candidate_periods
+                  AS (
+                  	SELECT - 1 cohort_definition_id,
+                  		subject_id,
+                  		cohort_date candidate_start_date,
+                  		LEAD(cohort_date, 1) OVER (
+                  			PARTITION BY subject_id ORDER BY cohort_date ASC
+                  			) candidate_end_date
+                  	FROM cohort_dates
+                  	GROUP BY subject_id,
+                  		cohort_date
+                  	),
+                  candidate_cohort_date
+                  AS (
+                  	SELECT cohort.*,
+                  		candidate_start_date,
+                  		candidate_end_date
+                  	FROM @temp_table_1 cohort
+                  	INNER JOIN candidate_periods candidate ON cohort.subject_id = candidate.subject_id
+                  		AND candidate_start_date >= cohort_start_date
+                  		AND candidate_end_date <= cohort_end_date
+                  	)
+                  SELECT @new_cohort_id cohort_definition_id,
+                  	subject_id,
+                  	candidate_start_date cohort_start_date,
+                  	candidate_end_date cohort_end_date
+                  INTO @temp_table_2
+                  FROM candidate_cohort_date
+                  GROUP BY subject_id,
+                  	candidate_start_date,
+                  	candidate_end_date
+                  HAVING COUNT(*) = @number_of_cohorts;"
 
   DatabaseConnector::renderTranslateExecuteSql(
     connection = connection,
