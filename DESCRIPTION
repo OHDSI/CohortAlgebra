@@ -16,6 +16,7 @@ Depends:
 Imports:
     checkmate,
     dplyr,
+    ParallelLogger,
   	rlang
 Suggests:
   Eunomia,
@@ -23,7 +24,8 @@ Suggests:
   knitr,
 	testthat
 Remotes:
-  ohdsi/Eunomia
+  ohdsi/Eunomia,
+  ohdsi/ParallelLogger
 License: Apache License
 RoxygenNote: 7.2.0
 VignetteBuilder: knitr
