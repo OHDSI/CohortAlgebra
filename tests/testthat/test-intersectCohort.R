@@ -83,7 +83,7 @@ testthat::test_that("Testing cohort intersect", {
     cohortEndDate = c(as.Date("1999-01-31"))
   )
   
-  testthat::expect_true(object = all(dataPostEraFy == cohortExpected))
+  testthat::expect_true(object = all(dataPostIntersect == cohortExpected))
   
   # this should throw error as there is already a cohort with cohort_definition_id = 9
   testthat::expect_error(
