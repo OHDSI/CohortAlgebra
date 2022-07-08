@@ -40,20 +40,18 @@
 #' NULL
 #'
 #' @export
-eraFyCohort <- function(connectionDetails = NULL,
-                        connection = NULL,
-                        cohortDatabaseSchema,
-                        cohortTable = "cohort",
-                        oldToNewCohortId,
-                        eraconstructorpad = 0,
-                        tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
-                        purgeConflicts = FALSE) {
+eraFyCohorts <- function(connectionDetails = NULL,
+                         connection = NULL,
+                         cohortDatabaseSchema,
+                         cohortTable = "cohort",
+                         oldToNewCohortId,
+                         eraconstructorpad = 0,
+                         tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
+                         purgeConflicts = FALSE) {
   errorMessages <- checkmate::makeAssertCollection()
-  checkmate::assertDataFrame(
-    x = oldToNewCohortId,
-    min.rows = 1,
-    add = errorMessages
-  )
+  checkmate::assertDataFrame(x = oldToNewCohortId,
+                             min.rows = 1,
+                             add = errorMessages)
   checkmate::assertNames(
     x = colnames(oldToNewCohortId),
     must.include = c("oldCohortId", "newCohortId"),
@@ -92,12 +90,12 @@ eraFyCohort <- function(connectionDetails = NULL,
     add = errorMessages
   )
   checkmate::reportAssertions(collection = errorMessages)
-
+  
   if (is.null(connection)) {
     connection <- DatabaseConnector::connect(connectionDetails)
     on.exit(DatabaseConnector::disconnect(connection))
   }
-
+  
   cohortIdsInCohortTable <-
     getCohortIdsInCohortTable(
       connection = connection,
@@ -105,13 +103,11 @@ eraFyCohort <- function(connectionDetails = NULL,
       cohortTable = cohortTable,
       tempEmulationSchema = tempEmulationSchema
     )
-
+  
   conflicitingCohortIdsInTargetCohortTable <-
-    intersect(
-      x = oldToNewCohortId$newCohortId %>% unique(),
-      y = cohortIdsInCohortTable %>% unique()
-    )
-
+    intersect(x = oldToNewCohortId$newCohortId %>% unique(),
+              y = cohortIdsInCohortTable %>% unique())
+  
   performPurgeConflicts <- FALSE
   if (length(conflicitingCohortIdsInTargetCohortTable) > 0) {
     if (purgeConflicts) {
@@ -125,11 +121,11 @@ eraFyCohort <- function(connectionDetails = NULL,
       )
     }
   }
-
+  
   tempTableName <- generateRandomString()
   tempTable1 <- paste0("#", tempTableName, "1")
   tempTable2 <- paste0("#", tempTableName, "2")
-
+  
   copyCohortsToTempTable(
     connection = connection,
     oldToNewCohortId = oldToNewCohortId,
@@ -137,7 +133,7 @@ eraFyCohort <- function(connectionDetails = NULL,
     sourceCohortTable = cohortTable,
     targetCohortTable = tempTable1
   )
-
+  
   sqlEraFy <- " DROP TABLE IF EXISTS @temp_table_2;
                 with cteEndDates (cohort_definition_id, subject_id, cohort_end_date) AS -- the magic
                 (
@@ -199,7 +195,7 @@ eraFyCohort <- function(connectionDetails = NULL,
                 group by cohort_definition_id, subject_id, cohort_end_date
                 ;
   "
-
+  
   DatabaseConnector::renderTranslateExecuteSql(
     connection = connection,
     sql = sqlEraFy,
@@ -211,11 +207,11 @@ eraFyCohort <- function(connectionDetails = NULL,
     temp_table_1 = tempTable1,
     temp_table_2 = tempTable2
   )
-
+  
   cohortIdsToDeleteFromSource <- oldToNewCohortId %>%
     dplyr::filter(.data$oldCohortId == .data$newCohortId) %>%
     dplyr::pull(.data$oldCohortId)
-
+  
   if (length(cohortIdsToDeleteFromSource) > 0) {
     ParallelLogger::logInfo(
       paste0(
@@ -231,7 +227,7 @@ eraFyCohort <- function(connectionDetails = NULL,
       cohortIds = cohortIdsToDeleteFromSource
     )
   }
-
+  
   if (performPurgeConflicts) {
     ParallelLogger::logInfo(
       paste0(
@@ -260,7 +256,7 @@ eraFyCohort <- function(connectionDetails = NULL,
     cohort_table = cohortTable,
     temp_table_2 = tempTable2
   )
-
+  
   DatabaseConnector::renderTranslateExecuteSql(
     connection = connection,
     sql = " DROP TABLE IF EXISTS @temp_table_1;

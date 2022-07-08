@@ -44,7 +44,7 @@ testthat::test_that("Testing cohort era fy - non temporary table", {
   DatabaseConnector::disconnect(connection)
   
   # should not throw error
-  CohortAlgebra::eraFyCohorts(
+  CohortAlgebra::eraFyCohort(
     connectionDetails = connectionDetails,
     cohortDatabaseSchema = cohortDatabaseSchema,
     cohortTable = tableName,
@@ -91,7 +91,7 @@ testthat::test_that("Testing cohort era fy - non temporary table", {
   
   # this should throw error as there is already a cohort with cohort_definition_id = 9
   testthat::expect_error(
-    CohortAlgebra::eraFyCohorts(
+    CohortAlgebra::eraFyCohort(
       connectionDetails = connectionDetails,
       cohortDatabaseSchema = cohortDatabaseSchema,
       cohortTable = tableName,
@@ -105,7 +105,7 @@ testthat::test_that("Testing cohort era fy - non temporary table", {
   # it should return a message
   testthat::expect_message(
     object =
-      CohortAlgebra::eraFyCohorts(
+      CohortAlgebra::eraFyCohort(
         connectionDetails = connectionDetails,
         cohortDatabaseSchema = cohortDatabaseSchema,
         cohortTable = tableName,
@@ -134,7 +134,7 @@ testthat::test_that("Testing cohort era fy - non temporary table", {
     temp_table_name = tempTableName
   )
   
-  CohortAlgebra::eraFyCohorts(
+  CohortAlgebra::eraFyCohort(
     connection = connection,
     cohortDatabaseSchema = NULL,
     cohortTable = tempTableName,
@@ -172,7 +172,7 @@ testthat::test_that("Testing cohort era fy - non temporary table", {
   
   # this should throw error as there is already a cohort with cohort_definition_id = 9
   testthat::expect_error(
-    CohortAlgebra::eraFyCohorts(
+    CohortAlgebra::eraFyCohort(
       connectionDetails = connectionDetails,
       cohortTable = tableName,
       oldToNewCohortId = dplyr::tibble(oldCohortId = 1, newCohortId = 10),
