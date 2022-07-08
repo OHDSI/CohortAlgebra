@@ -5,7 +5,6 @@
 \title{Get cohort ids in table}
 \usage{
 getCohortIdsInCohortTable(
-  connectionDetails = NULL,
   connection = NULL,
   cohortDatabaseSchema = NULL,
   cohortTable,
@@ -13,11 +12,6 @@ getCohortIdsInCohortTable(
 )
 }
 \arguments{
-\item{connectionDetails}{An object of type \code{connectionDetails} as created using the
-\code{\link[DatabaseConnector]{createConnectionDetails}} function in the
-DatabaseConnector package. Can be left NULL if \code{connection} is
-provided.}
-
 \item{connection}{An object of type \code{connection} as created using the
 \code{\link[DatabaseConnector]{connect}} function in the
 DatabaseConnector package. Can be left NULL if \code{connectionDetails}
@@ -33,6 +27,11 @@ this should include both the database and schema name, for example
 \item{tempEmulationSchema}{Some database platforms like Oracle and Impala do not truly support
 temp tables. To emulate temp tables, provide a schema with write
 privileges where temp tables can be created.}
+
+\item{connectionDetails}{An object of type \code{connectionDetails} as created using the
+\code{\link[DatabaseConnector]{createConnectionDetails}} function in the
+DatabaseConnector package. Can be left NULL if \code{connection} is
+provided.}
 }
 \description{
 Get cohort ids in table

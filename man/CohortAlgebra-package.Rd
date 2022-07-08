@@ -4,7 +4,7 @@
 \name{CohortAlgebra-package}
 \alias{CohortAlgebra}
 \alias{CohortAlgebra-package}
-\title{CohortAlgebra: Cohort Algebra to create new cohort(s) from existing cohorts.}
+\title{CohortAlgebra: Cohort Algebra to create new cohort(s) from existing cohorts}
 \description{
 An R package that creates new cohort(s) from previously instantiated cohorts.
 }

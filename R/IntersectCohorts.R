@@ -81,8 +81,6 @@ intersectCohorts <- function(connectionDetails = NULL,
   )
   checkmate::reportAssertions(collection = errorMessages)
 
-  start <- Sys.time()
-
   if (is.null(connection)) {
     connection <- DatabaseConnector::connect(connectionDetails)
     on.exit(DatabaseConnector::disconnect(connection))
@@ -175,15 +173,12 @@ intersectCohorts <- function(connectionDetails = NULL,
 
   DatabaseConnector::renderTranslateExecuteSql(
     connection = connection,
-    sql = sqlCopyCohort,
+    sql = intersectSql,
     profile = FALSE,
     progressBar = FALSE,
     reportOverallTime = FALSE,
     number_of_cohorts = numberOfCohorts,
     new_cohort_id = newCohortId,
-    source_database_schema = sourceCohortDatabaseSchema,
-    source_cohort_table = sourceCohortTable,
-    target_cohort_table = targetCohortTable,
     tempEmulationSchema = tempEmulationSchema,
     temp_table_1 = tempTable1,
     temp_table_2 = tempTable2

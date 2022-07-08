@@ -1,6 +1,6 @@
 Package: CohortAlgebra
 Type: Package
-Title: Cohort Algebra to create new cohort(s) from existing cohorts.
+Title: Cohort Algebra to create new cohort(s) from existing cohorts
 Version: 0.0.1
 Date: 2022-07-07
 Authors@R: c(
@@ -16,8 +16,7 @@ Depends:
 Imports:
     checkmate,
     dplyr,
-  	rlang,
-  	testthat
+  	rlang
 Suggests:
   Eunomia,
   remotes,

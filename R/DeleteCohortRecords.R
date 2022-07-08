@@ -58,8 +58,6 @@ deleteCohortRecords <- function(connectionDetails = NULL,
   )
   checkmate::reportAssertions(collection = errorMessages)
 
-  start <- Sys.time()
-
   if (is.null(connection)) {
     connection <- DatabaseConnector::connect(connectionDetails)
     on.exit(DatabaseConnector::disconnect(connection))

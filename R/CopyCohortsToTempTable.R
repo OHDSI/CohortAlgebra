@@ -34,8 +34,7 @@
 #' @return
 #' NULL
 #'
-copyCohortsToTempTable <- function(connectionDetails = NULL,
-                                   connection = NULL,
+copyCohortsToTempTable <- function(connection = NULL,
                                    oldToNewCohortId,
                                    sourceCohortDatabaseSchema = NULL,
                                    sourceCohortTable,

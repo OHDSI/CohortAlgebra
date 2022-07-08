@@ -28,8 +28,7 @@
 #' @return
 #' NULL
 #'
-getCohortIdsInCohortTable <- function(connectionDetails = NULL,
-                                      connection = NULL,
+getCohortIdsInCohortTable <- function(connection = NULL,
                                       cohortDatabaseSchema = NULL,
                                       cohortTable,
                                       tempEmulationSchema = getOption("sqlRenderTempEmulationSchema")) {

@@ -94,8 +94,6 @@ substractCohorts <- function(connectionDetails = NULL,
     )
   }
 
-  start <- Sys.time()
-
   if (is.null(connection)) {
     connection <- DatabaseConnector::connect(connectionDetails)
     on.exit(DatabaseConnector::disconnect(connection))
@@ -147,7 +145,7 @@ substractCohorts <- function(connectionDetails = NULL,
     connection = connection,
     cohortDatabaseSchema = cohortDatabaseSchema,
     cohortTable = tempTable1,
-    cohortIds = cohortIds,
+    cohortIds = c(firstCohortId, secondCohortId),
     newCohortId = -999,
     purgeConflicts = FALSE,
     tempEmulationSchema = getOption("sqlRenderTempEmulationSchema")
