@@ -3,7 +3,7 @@ testthat::test_that("Testing cohort intersect", {
   sysTime <- as.numeric(Sys.time()) * 100000
   tableName <- paste0("cr", sysTime)
   tempTableName <- paste0("#", tableName, "_1")
-  
+
   # make up date for a cohort table
   # this cohort table will have two subjects * three cohorts, with subject 2 not present in cohort id 3
   cohort <- dplyr::tibble(
@@ -24,10 +24,12 @@ testthat::test_that("Testing cohort intersect", {
       as.Date("1999-01-31")
     )
   ) %>%
-    dplyr::arrange(.data$subjectId,
-                   .data$cohortDefinitionId,
-                   .data$cohortStartDate)
-  
+    dplyr::arrange(
+      .data$subjectId,
+      .data$cohortDefinitionId,
+      .data$cohortStartDate
+    )
+
   # upload table
   connection <-
     DatabaseConnector::connect(connectionDetails = connectionDetails)
@@ -44,7 +46,7 @@ testthat::test_that("Testing cohort intersect", {
   )
   # disconnecting - as this is a test for a non temp cohort table
   DatabaseConnector::disconnect(connection)
-  
+
   # should not throw error
   CohortAlgebra::intersectCohorts(
     connectionDetails = connectionDetails,
@@ -54,7 +56,7 @@ testthat::test_that("Testing cohort intersect", {
     newCohortId = 9,
     purgeConflicts = FALSE
   )
-  
+
   # extract the generated output and compare to expected
   connection <-
     DatabaseConnector::connect(connectionDetails = connectionDetails)
@@ -71,10 +73,12 @@ testthat::test_that("Testing cohort intersect", {
       snakeCaseToCamelCase = TRUE
     ) %>%
     dplyr::tibble()
-  
-  testthat::expect_equal(object = nrow(dataPostIntersect),
-                         expected = 1) # era fy logic should collapse to 1 row
-  
+
+  testthat::expect_equal(
+    object = nrow(dataPostIntersect),
+    expected = 1
+  ) # era fy logic should collapse to 1 row
+
   # create the expected output data frame object to compare
   cohortExpected <- dplyr::tibble(
     cohortDefinitionId = c(9),
@@ -82,9 +86,9 @@ testthat::test_that("Testing cohort intersect", {
     cohortStartDate = c(as.Date("1999-01-20")),
     cohortEndDate = c(as.Date("1999-01-31"))
   )
-  
+
   testthat::expect_true(object = all(dataPostIntersect == cohortExpected))
-  
+
   # this should throw error as there is already a cohort with cohort_definition_id = 9
   testthat::expect_error(
     CohortAlgebra::intersectCohorts(
@@ -96,7 +100,7 @@ testthat::test_that("Testing cohort intersect", {
       purgeConflicts = FALSE
     )
   )
-  
+
   # this should NOT throw error as we will purge conflicts.
   # it should return a message
   testthat::expect_message(
@@ -110,7 +114,7 @@ testthat::test_that("Testing cohort intersect", {
         purgeConflicts = TRUE
       )
   )
-  
+
   # check on temporary table
   DatabaseConnector::renderTranslateExecuteSql(
     connection = connection,
@@ -129,7 +133,7 @@ testthat::test_that("Testing cohort intersect", {
     reportOverallTime = FALSE,
     temp_table_name = tempTableName
   )
-  
+
   CohortAlgebra::intersectCohorts(
     connection = connection,
     cohortTable = tempTableName,
@@ -137,7 +141,7 @@ testthat::test_that("Testing cohort intersect", {
     newCohortId = 9,
     purgeConflicts = FALSE
   )
-  
+
   dataPostIntersectTemp <-
     DatabaseConnector::renderTranslateQuerySql(
       connection = connection,
@@ -150,7 +154,7 @@ testthat::test_that("Testing cohort intersect", {
       snakeCaseToCamelCase = TRUE
     ) %>%
     dplyr::tibble()
-  
+
   # this should throw error as there is already a cohort with cohort_definition_id = 9
   testthat::expect_error(
     CohortAlgebra::intersectCohorts(
@@ -161,7 +165,7 @@ testthat::test_that("Testing cohort intersect", {
       purgeConflicts = FALSE
     )
   )
-  
+
   testthat::expect_message(
     CohortAlgebra::intersectCohorts(
       connection = connection,
@@ -171,7 +175,7 @@ testthat::test_that("Testing cohort intersect", {
       purgeConflicts = TRUE
     )
   )
-  
+
   DatabaseConnector::renderTranslateExecuteSql(
     connection = connection,
     sql = paste0(
@@ -186,8 +190,7 @@ testthat::test_that("Testing cohort intersect", {
     reportOverallTime = FALSE,
     temp_table_name = tempTableName
   )
-  
+
   DatabaseConnector::disconnect(connection)
   testthat::expect_true(object = all(dataPostIntersectTemp == cohortExpected))
-  
 })

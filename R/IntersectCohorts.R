@@ -116,7 +116,7 @@ intersectCohorts <- function(connectionDetails = NULL,
       )
     }
   }
-  
+
   tempTableName <- generateRandomString()
   tempTable1 <- paste0("#", tempTableName, "1")
   tempTable2 <- paste0("#", tempTableName, "2")
@@ -143,9 +143,9 @@ intersectCohorts <- function(connectionDetails = NULL,
                   		SELECT subject_id,
                   			cohort_start_date cohort_date
                   		FROM @temp_table_1
-                  		
+
                   		UNION
-                  		
+
                   		SELECT subject_id,
                   			cohort_end_date cohort_date
                   		FROM @temp_table_1
