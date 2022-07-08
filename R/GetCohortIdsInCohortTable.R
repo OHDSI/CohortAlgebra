@@ -19,6 +19,8 @@
 #' @description
 #' Get cohort ids in table
 #'
+#' @template ConnectionDetails
+#'
 #' @template Connection
 #'
 #' @template CohortTable

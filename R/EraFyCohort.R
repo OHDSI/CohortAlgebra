@@ -22,6 +22,8 @@
 #' original rows with the cohort_definition_id(s). edit privileges
 #' to the cohort table is required.
 #'
+#' @template ConnectionDetails
+#'
 #' @template Connection
 #'
 #' @template CohortTable
