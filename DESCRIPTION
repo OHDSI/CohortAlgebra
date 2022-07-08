@@ -20,11 +20,13 @@ Imports:
   	testthat
 Suggests:
   Eunomia,
+  knitr,
 	testthat
 Remotes:
   ohdsi/Eunomia
 License: Apache License
 RoxygenNote: 7.2.0
+VignetteBuilder: knitr
 Roxygen: list(markdown = TRUE)
 Encoding: UTF-8
 Language: en-US

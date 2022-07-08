@@ -24,11 +24,11 @@
 #' @template OldToNewCohortId
 #'
 #' @template TempEmulationSchema
-#' 
+#'
 #' @param sourceCohortDatabaseSchema The database schema of the source cohort table.
-#' 
+#'
 #' @param sourceCohortTable         The name of the source cohort table.
-#' 
+#'
 #' @param targetCohortTable         A temp table to copy the cohorts from the source table.
 #'
 #' @return
@@ -53,7 +53,7 @@ copyCohortsToTempTable <- function(connectionDetails = NULL,
     camelCaseToSnakeCase = TRUE,
     data = oldToNewCohortId
   )
-  
+
   sqlCopyCohort <- "
                   DROP TABLE IF EXISTS @target_cohort_table;
                   SELECT target.new_cohort_id cohort_definition_id,
@@ -65,7 +65,7 @@ copyCohortsToTempTable <- function(connectionDetails = NULL,
                   INNER JOIN #old_to_new_cohort_id target
                   ON source.cohort_definition_id = target.old_cohort_id
                   ;"
-  
+
   DatabaseConnector::renderTranslateExecuteSql(
     connection = connection,
     sql = sqlCopyCohort,

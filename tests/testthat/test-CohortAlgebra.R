@@ -5,10 +5,10 @@ test_that("Testing cohort era fy", {
     cohortStartDate = c(as.Date("1999-01-15"), as.Date("1999-01-20")),
     cohortEndDate = c(as.Date("1999-01-31"), as.Date("1999-02-15"))
   )
-  
+
   sysTime <- as.numeric(Sys.time()) * 100000
   tableName <- paste0("cr", sysTime)
-  
+
   DatabaseConnector::insertTable(
     connection = DatabaseConnector::connect(connectionDetails = connectionDetails),
     databaseSchema = cohortDatabaseSchema,
@@ -20,7 +20,7 @@ test_that("Testing cohort era fy", {
     camelCaseToSnakeCase = TRUE,
     progressBar = FALSE
   )
-  
+
   # should not throw error
   eraFyCohort(
     connectionDetails = connectionDetails,
@@ -30,7 +30,7 @@ test_that("Testing cohort era fy", {
     eraconstructorpad = 0,
     purgeConflicts = TRUE
   )
-  
+
   dataPostEraFy <-
     DatabaseConnector::renderTranslateQuerySql(
       connection = DatabaseConnector::connect(connectionDetails = connectionDetails),
@@ -40,7 +40,9 @@ test_that("Testing cohort era fy", {
       table_name = tableName,
       snakeCaseToCamelCase = TRUE
     )
-  
-  testthat::expect_equal(object = nrow(dataPostEraFy),
-                         expected = 1) # era fy logic should collapse to 1 row
+
+  testthat::expect_equal(
+    object = nrow(dataPostEraFy),
+    expected = 1
+  ) # era fy logic should collapse to 1 row
 })

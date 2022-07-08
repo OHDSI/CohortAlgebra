@@ -12,15 +12,17 @@ if (dir.exists(Sys.getenv("DATABASECONNECTOR_JAR_FOLDER"))) {
   jdbcDriverFolder <- tempfile("jdbcDrivers")
   dir.create(jdbcDriverFolder, showWarnings = FALSE)
   DatabaseConnector::downloadJdbcDrivers("postgresql", pathToDriver = jdbcDriverFolder)
-  
+
   if (!dbms %in% c("postgresql", "sqlite")) {
     DatabaseConnector::downloadJdbcDrivers(dbms, pathToDriver = jdbcDriverFolder)
   }
-  
-  withr::defer({
-    unlink(jdbcDriverFolder, recursive = TRUE, force = TRUE)
-  },
-  testthat::teardown_env())
+
+  withr::defer(
+    {
+      unlink(jdbcDriverFolder, recursive = TRUE, force = TRUE)
+    },
+    testthat::teardown_env()
+  )
 }
 
 folder <- tempfile()
@@ -70,7 +72,7 @@ if (dbms == "sqlite") {
     cohortDatabaseSchema <-
       Sys.getenv("CDM5_SQL_SERVER_OHDSI_SCHEMA")
   }
-  
+
   connectionDetails <- DatabaseConnector::createConnectionDetails(
     dbms = dbms,
     user = dbUser,
@@ -78,12 +80,14 @@ if (dbms == "sqlite") {
     server = dbServer,
     pathToDriver = jdbcDriverFolder
   )
-  
+
   if (cdmDatabaseSchema == "" || dbServer == "") {
     skipCdmTests <- TRUE
   }
-  
-  
-  withr::defer({},
-  testthat::teardown_env())
+
+
+  withr::defer(
+    {},
+    testthat::teardown_env()
+  )
 }

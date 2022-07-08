@@ -87,20 +87,20 @@ substractCohorts <- function(connectionDetails = NULL,
     add = errorMessages
   )
   checkmate::reportAssertions(collection = errorMessages)
-  
+
   if (firstCohortId == secondCohortId) {
     warning(
       "During minus operation, both first and second cohorts have the same cohort id. The result will be a NULL cohort."
     )
   }
-  
+
   start <- Sys.time()
-  
+
   if (is.null(connection)) {
     connection <- DatabaseConnector::connect(connectionDetails)
     on.exit(DatabaseConnector::disconnect(connection))
   }
-  
+
   cohortIdsInCohortTable <-
     getCohortIdsInCohortTable(
       connection = connection,
@@ -108,11 +108,13 @@ substractCohorts <- function(connectionDetails = NULL,
       cohortTable = cohortTable,
       tempEmulationSchema = tempEmulationSchema
     )
-  
+
   conflicitingCohortIdsInTargetCohortTable <-
-    intersect(x = newCohortId %>% unique,
-              y = cohortIdsInCohortTable %>% unique())
-  
+    intersect(
+      x = newCohortId %>% unique(),
+      y = cohortIdsInCohortTable %>% unique()
+    )
+
   performPurgeConflicts <- FALSE
   if (length(conflicitingCohortIdsInTargetCohortTable) > 0) {
     if (purgeConflicts) {
@@ -126,11 +128,11 @@ substractCohorts <- function(connectionDetails = NULL,
       )
     }
   }
-  
+
   tempTableName <- generateRandomString()
   tempTable1 <- paste0("#", tempTableName, "1")
   tempTable2 <- paste0("#", tempTableName, "2")
-  
+
   copyCohortsToTempTable(
     connection = connection,
     oldToNewCohortId = dplyr::tibble(oldCohortId = c(firstCohortId, secondCohortId)) %>%
@@ -140,7 +142,7 @@ substractCohorts <- function(connectionDetails = NULL,
     sourceCohortTable = cohortTable,
     targetCohortTable = tempTable1
   )
-  
+
   intersectCohorts(
     connection = connection,
     cohortDatabaseSchema = cohortDatabaseSchema,
@@ -150,7 +152,7 @@ substractCohorts <- function(connectionDetails = NULL,
     purgeConflicts = FALSE,
     tempEmulationSchema = getOption("sqlRenderTempEmulationSchema")
   )
-  
+
   minusSql <- "DROP TABLE IF EXISTS @temp_table_2;
 
                   WITH cohort_dates
@@ -192,7 +194,7 @@ substractCohorts <- function(connectionDetails = NULL,
                     	cohort_date,
                     	next_cohort_date
                     HAVING COUNT(*) = 1;"
-  
+
   DatabaseConnector::renderTranslateExecuteSql(
     connection = connection,
     sql = minusSql,
@@ -204,7 +206,7 @@ substractCohorts <- function(connectionDetails = NULL,
     temp_table_2 = tempTable2,
     tempEmulationSchema = tempEmulationSchema
   )
-  
+
   if (performPurgeConflicts) {
     ParallelLogger::logInfo(
       paste0(
@@ -233,7 +235,7 @@ substractCohorts <- function(connectionDetails = NULL,
     cohort_table = cohortTable,
     temp_table_2 = tempTable2
   )
-  
+
   DatabaseConnector::renderTranslateExecuteSql(
     connection = connection,
     sql = " DROP TABLE IF EXISTS @temp_table_1;
