@@ -1,3 +1,4 @@
 library(testthat)
-options(dbms = "redshift")
-test_check("CohortAlgebra")
+# commenting out because the permissions to create table is available for the account
+# options(dbms = "redshift")
+# test_check("CohortAlgebra")
