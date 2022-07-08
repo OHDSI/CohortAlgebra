@@ -31,6 +31,10 @@ this should include both the database and schema name, for example
 
 \item{cohortTable}{The name of the cohort table.}
 
+\item{tempEmulationSchema}{Some database platforms like Oracle and Impala do not truly support
+temp tables. To emulate temp tables, provide a schema with write
+privileges where temp tables can be created.}
+
 \item{cohortIds}{A vector of one or more Cohort Ids.}
 }
 \description{
