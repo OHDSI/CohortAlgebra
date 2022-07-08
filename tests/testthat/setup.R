@@ -1,6 +1,6 @@
 library(testthat)
 library(CohortAlgebra)
-library(Eunomia)
+# library(Eunomia)
 library(dplyr)
 
 dbms <- getOption("dbms", default = "sqlite")
