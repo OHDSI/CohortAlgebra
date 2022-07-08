@@ -17,4 +17,18 @@ Useful links:
 }
 
 }
+\author{
+\strong{Maintainer}: Gowtham Rao \email{rao@ohdsi.org}
+
+Authors:
+\itemize{
+  \item Adam Black \email{black@ohdsi.org}
+}
+
+Other contributors:
+\itemize{
+  \item Observational Health Data Science and Informatics [copyright holder]
+}
+
+}
 \keyword{internal}
