@@ -82,12 +82,12 @@ intersectCohorts <- function(connectionDetails = NULL,
     add = errorMessages
   )
   checkmate::reportAssertions(collection = errorMessages)
-
+  
   if (is.null(connection)) {
     connection <- DatabaseConnector::connect(connectionDetails)
     on.exit(DatabaseConnector::disconnect(connection))
   }
-
+  
   cohortIdsInCohortTable <-
     getCohortIdsInCohortTable(
       connection = connection,
@@ -95,14 +95,12 @@ intersectCohorts <- function(connectionDetails = NULL,
       cohortTable = cohortTable,
       tempEmulationSchema = tempEmulationSchema
     )
-
+  
   conflicitingCohortIdsInTargetCohortTable <-
-    intersect(
-      x = newCohortId %>% unique(),
-      y = cohortIdsInCohortTable %>% unique()
-    )
-
-
+    intersect(x = newCohortId %>% unique(),
+              y = cohortIdsInCohortTable %>% unique())
+  
+  
   performPurgeConflicts <- FALSE
   if (length(conflicitingCohortIdsInTargetCohortTable) > 0) {
     if (purgeConflicts) {
@@ -116,11 +114,11 @@ intersectCohorts <- function(connectionDetails = NULL,
       )
     }
   }
-
+  
   tempTableName <- generateRandomString()
   tempTable1 <- paste0("#", tempTableName, "1")
   tempTable2 <- paste0("#", tempTableName, "2")
-
+  
   copyCohortsToTempTable(
     connection = connection,
     oldToNewCohortId = dplyr::tibble(oldCohortId = cohortIds) %>%
@@ -130,21 +128,24 @@ intersectCohorts <- function(connectionDetails = NULL,
     sourceCohortTable = cohortTable,
     targetCohortTable = tempTable1
   )
-
+  
   numberOfCohorts <- length(cohortIds %>% unique())
-
+  
   intersectSql <- "DROP TABLE IF EXISTS @temp_table_2;
 
                   WITH cohort_dates
                   AS (
-                  	SELECT DISTINCT subject_id,
-                  		cohort_date
+                  	SELECT subject_id,
+                  		cohort_date,
+                  		-- LEAD will ignore values that are same (e.g. if cohort_start_date = cohort_end_date)
+                  		ROW_NUMBER() OVER(PARTITION BY subject_id
+                  		                  ORDER BY cohort_date ASC) cohort_date_seq
                   	FROM (
                   		SELECT subject_id,
                   			cohort_start_date cohort_date
                   		FROM @temp_table_1
 
-                  		UNION
+                  		UNION ALL -- we need all dates, even if duplicates
 
                   		SELECT subject_id,
                   			cohort_end_date cohort_date
@@ -153,15 +154,17 @@ intersectCohorts <- function(connectionDetails = NULL,
                   	),
                   candidate_periods
                   AS (
-                  	SELECT 
+                  	SELECT
                   		subject_id,
                   		cohort_date candidate_start_date,
+                  		cohort_date_seq,
                   		LEAD(cohort_date, 1) OVER (
-                  			PARTITION BY subject_id ORDER BY cohort_date ASC
+                  			PARTITION BY subject_id ORDER BY cohort_date, cohort_date_seq ASC
                   			) candidate_end_date
                   	FROM cohort_dates
                   	GROUP BY subject_id,
-                  		cohort_date
+                  		cohort_date,
+                  		cohort_date_seq
                   	),
                   candidate_cohort_date
                   AS (
@@ -183,7 +186,7 @@ intersectCohorts <- function(connectionDetails = NULL,
                   	candidate_start_date,
                   	candidate_end_date
                   HAVING COUNT(*) = @number_of_cohorts;"
-
+  
   DatabaseConnector::renderTranslateExecuteSql(
     connection = connection,
     sql = intersectSql,
@@ -196,7 +199,7 @@ intersectCohorts <- function(connectionDetails = NULL,
     temp_table_1 = tempTable1,
     temp_table_2 = tempTable2
   )
-
+  
   if (performPurgeConflicts) {
     ParallelLogger::logInfo(
       paste0(
@@ -225,7 +228,7 @@ intersectCohorts <- function(connectionDetails = NULL,
     cohort_table = cohortTable,
     temp_table_2 = tempTable2
   )
-
+  
   DatabaseConnector::renderTranslateExecuteSql(
     connection = connection,
     sql = " DROP TABLE IF EXISTS @temp_table_1;
