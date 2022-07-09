@@ -130,7 +130,7 @@ intersectCohorts <- function(connectionDetails = NULL,
     sourceCohortTable = cohortTable,
     targetCohortTable = tempTable1
   )
-  
+
   eraFyCohorts(
     connection = connection,
     oldToNewCohortId = dplyr::tibble(oldCohortId = cohortIds) %>%
@@ -210,7 +210,7 @@ intersectCohorts <- function(connectionDetails = NULL,
     temp_table_1 = tempTable1,
     temp_table_2 = tempTable2
   )
-  
+
   suppressMessages(
     eraFyCohorts(
       connection = connection,
