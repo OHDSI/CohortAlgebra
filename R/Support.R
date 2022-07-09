@@ -14,10 +14,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' @keywords internal
-"_PACKAGE"
-
-#' @import DatabaseConnector
-#' @import dplyr
-#' @importFrom rlang .data
-NULL
+generateRandomString <- function() {
+  randomStringTableName <-
+    tolower(paste0(
+      "tmp_",
+      paste0(sample(
+        x = c(LETTERS, 0:9),
+        size = 12,
+        replace = TRUE
+      ), collapse = "")
+    ))
+  return(randomStringTableName)
+}

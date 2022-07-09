@@ -24,6 +24,7 @@ unlink("extras/CohortAlgebra.pdf")
 shell("R CMD Rd2pdf ./ --output=extras/CohortAlgebra.pdf")
 
 # Create Vignettes---------------------------------------------------------
+dir.create(file.path("inst","doc"), showWarnings = FALSE)
 rmarkdown::render("vignettes/HowToUseCohortAlgebraRPackage.Rmd",
                   output_file = "../inst/doc/HowToUseCohortAlgebraRPackage.pdf",
                   rmarkdown::pdf_document(latex_engine = "pdflatex",
