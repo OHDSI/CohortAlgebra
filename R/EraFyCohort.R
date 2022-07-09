@@ -217,7 +217,7 @@ eraFyCohorts <- function(connectionDetails = NULL,
     dplyr::pull(.data$oldCohortId)
 
   if (length(cohortIdsToDeleteFromSource) > 0) {
-    ParallelLogger::logInfo(
+    ParallelLogger::logTrace(
       paste0(
         "The following cohortIds will be deleted from your cohort table and \n",
         " replaced with ear fy'd version of those cohorts using the same original cohort id: ",
@@ -233,7 +233,7 @@ eraFyCohorts <- function(connectionDetails = NULL,
   }
 
   if (performPurgeConflicts) {
-    ParallelLogger::logInfo(
+    ParallelLogger::logTrace(
       paste0(
         "The following conflicting cohortIds will be deleted from your cohort table \n",
         " as part resolving conflicts: ",

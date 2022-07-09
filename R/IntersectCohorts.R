@@ -131,7 +131,6 @@ intersectCohorts <- function(connectionDetails = NULL,
     targetCohortTable = tempTable1
   )
   
-  # Add era fy logic to intersect. It will be used in minus - because minus depends on intersect
   eraFyCohorts(
     connection = connection,
     oldToNewCohortId = dplyr::tibble(oldCohortId = cohortIds) %>%
@@ -211,9 +210,20 @@ intersectCohorts <- function(connectionDetails = NULL,
     temp_table_1 = tempTable1,
     temp_table_2 = tempTable2
   )
+  
+  suppressMessages(
+    eraFyCohorts(
+      connection = connection,
+      oldToNewCohortId = dplyr::tibble(oldCohortId = newCohortId) %>%
+        dplyr::mutate(newCohortId = .data$oldCohortId) %>%
+        dplyr::distinct(),
+      cohortTable = tempTable2,
+      purgeConflicts = TRUE
+    )
+  )
 
   if (performPurgeConflicts) {
-    ParallelLogger::logInfo(
+    ParallelLogger::logTrace(
       paste0(
         "The following conflicting cohortIds will be deleted from your cohort table \n",
         " as part resolving conflicts: ",
