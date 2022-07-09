@@ -153,7 +153,7 @@ intersectCohorts <- function(connectionDetails = NULL,
                   	),
                   candidate_periods
                   AS (
-                  	SELECT - 1 cohort_definition_id,
+                  	SELECT 
                   		subject_id,
                   		cohort_date candidate_start_date,
                   		LEAD(cohort_date, 1) OVER (
