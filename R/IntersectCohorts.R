@@ -176,7 +176,7 @@ intersectCohorts <- function(connectionDetails = NULL,
                   SELECT @new_cohort_id cohort_definition_id,
                   	subject_id,
                   	candidate_start_date cohort_start_date,
-                  	DATEADD(day, -1, candidate_end_date) cohort_end_date
+                  	candidate_end_date cohort_end_date
                   INTO @temp_table_2
                   FROM candidate_cohort_date
                   GROUP BY subject_id,
