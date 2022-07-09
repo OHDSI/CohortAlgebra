@@ -152,7 +152,7 @@ minusCohorts <- function(connectionDetails = NULL,
     purgeConflicts = FALSE,
     tempEmulationSchema = getOption("sqlRenderTempEmulationSchema")
   )
-  
+
   minusSql <- "DROP TABLE IF EXISTS @temp_table_2;
 
                   WITH cohort_dates
@@ -222,7 +222,7 @@ minusCohorts <- function(connectionDetails = NULL,
     temp_table_2 = tempTable2,
     tempEmulationSchema = tempEmulationSchema
   )
-  
+
   # date corrections
   dateCorrectionSql <- "
           DROP TABLE IF EXISTS @temp_table_3;
@@ -236,12 +236,12 @@ minusCohorts <- function(connectionDetails = NULL,
           	)
           SELECT @new_cohort_id cohort_definition_id,
           	mc.subject_id,
-          	CASE 
+          	CASE
           		WHEN cs.cohort_end_date IS NULL
           			THEN mc.candidate_start_date
           		ELSE DATEADD(DAY, 1, mc.candidate_start_date)
           		END AS cohort_start_date,
-          	CASE 
+          	CASE
           		WHEN ce.cohort_end_date IS NULL
           			THEN mc.candidate_end_date
           		ELSE DATEADD(DAY, - 1, mc.candidate_end_date)
@@ -252,7 +252,7 @@ minusCohorts <- function(connectionDetails = NULL,
           	AND mc.candidate_start_date = cs.cohort_end_date
           LEFT JOIN intersect_cohort ce ON mc.subject_id = ce.subject_id
           	AND mc.candidate_end_date = ce.cohort_start_date;"
-  
+
   DatabaseConnector::renderTranslateExecuteSql(
     connection = connection,
     sql = dateCorrectionSql,

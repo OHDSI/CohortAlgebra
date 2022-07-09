@@ -3,7 +3,7 @@ testthat::test_that("Testing cohort intersect", {
   sysTime <- as.numeric(Sys.time()) * 100000
   tableName <- paste0("cr", sysTime)
   tempTableName <- paste0("#", tableName, "_1")
-  
+
   # make up date for a cohort table
   # this cohort table will have two subjects * three cohorts. minus operations are only
   # performed on cohort 1 and 2. 3 is just an additional cohort that should have no impact.
@@ -29,10 +29,12 @@ testthat::test_that("Testing cohort intersect", {
       as.Date("1999-01-25")
     )
   ) %>%
-    dplyr::arrange(.data$subjectId,
-                   .data$cohortDefinitionId,
-                   .data$cohortStartDate)
-  
+    dplyr::arrange(
+      .data$subjectId,
+      .data$cohortDefinitionId,
+      .data$cohortStartDate
+    )
+
   # upload table
   connection <-
     DatabaseConnector::connect(connectionDetails = connectionDetails)
@@ -49,7 +51,7 @@ testthat::test_that("Testing cohort intersect", {
   )
   # disconnecting - as this is a test for a non temp cohort table
   DatabaseConnector::disconnect(connection)
-  
+
   # should not throw error
   CohortAlgebra::minusCohorts(
     connectionDetails = connectionDetails,
@@ -60,7 +62,7 @@ testthat::test_that("Testing cohort intersect", {
     newCohortId = 9,
     purgeConflicts = FALSE
   )
-  
+
   # extract the generated output and compare to expected
   connection <-
     DatabaseConnector::connect(connectionDetails = connectionDetails)
@@ -77,10 +79,12 @@ testthat::test_that("Testing cohort intersect", {
       snakeCaseToCamelCase = TRUE
     ) %>%
     dplyr::tibble()
-  
-  testthat::expect_equal(object = nrow(dataPostMinus),
-                         expected = 2) # should collapse to 2 rows
-  
+
+  testthat::expect_equal(
+    object = nrow(dataPostMinus),
+    expected = 2
+  ) # should collapse to 2 rows
+
   # create the expected output data frame object to compare
   cohortExpected <- dplyr::tibble(
     cohortDefinitionId = c(9, 9),
@@ -88,9 +92,9 @@ testthat::test_that("Testing cohort intersect", {
     cohortStartDate = c(as.Date("1999-01-02"), as.Date("1999-01-01")),
     cohortEndDate = c(as.Date("1999-01-19"), as.Date("1999-01-19"))
   )
-  
+
   testthat::expect_true(object = all(dataPostMinus == cohortExpected))
-  
+
   # this should throw error as there is already a cohort with cohort_definition_id = 9
   testthat::expect_error(
     CohortAlgebra::minusCohorts(
@@ -103,7 +107,7 @@ testthat::test_that("Testing cohort intersect", {
       purgeConflicts = FALSE
     )
   )
-  
+
   # this should give a message
   testthat::expect_message(
     CohortAlgebra::minusCohorts(
@@ -116,8 +120,8 @@ testthat::test_that("Testing cohort intersect", {
       purgeConflicts = TRUE
     )
   )
-  
-  
+
+
   # should throw warning - check for NULL result
   testthat::expect_warning(
     CohortAlgebra::minusCohorts(
@@ -130,7 +134,7 @@ testthat::test_that("Testing cohort intersect", {
       purgeConflicts = FALSE
     )
   )
-  
+
   connection <-
     DatabaseConnector::connect(connectionDetails = connectionDetails)
   shouldNotHaveData <- DatabaseConnector::renderTranslateQuerySql(
@@ -143,8 +147,8 @@ testthat::test_that("Testing cohort intersect", {
     cohort_table = tableName
   )
   testthat::expect_equal(object = shouldNotHaveData$count, expected = 0)
-  
-  
+
+
   # check on temporary table
   DatabaseConnector::renderTranslateExecuteSql(
     connection = connection,
@@ -163,7 +167,7 @@ testthat::test_that("Testing cohort intersect", {
     reportOverallTime = FALSE,
     temp_table_name = tempTableName
   )
-  
+
   CohortAlgebra::minusCohorts(
     connection = connection,
     cohortTable = tempTableName,
@@ -172,8 +176,8 @@ testthat::test_that("Testing cohort intersect", {
     newCohortId = 9,
     purgeConflicts = FALSE
   )
-  
-  
+
+
   dataPostMinusTemp <-
     DatabaseConnector::renderTranslateQuerySql(
       connection = connection,
@@ -186,7 +190,7 @@ testthat::test_that("Testing cohort intersect", {
       snakeCaseToCamelCase = TRUE
     ) %>%
     dplyr::tibble()
-  
+
   # this should throw error as there is already a cohort with cohort_definition_id = 9
   testthat::expect_error(
     CohortAlgebra::minusCohorts(
@@ -198,7 +202,7 @@ testthat::test_that("Testing cohort intersect", {
       purgeConflicts = FALSE
     )
   )
-  
+
   testthat::expect_message(
     CohortAlgebra::minusCohorts(
       connection = connection,
@@ -209,7 +213,7 @@ testthat::test_that("Testing cohort intersect", {
       purgeConflicts = TRUE
     )
   )
-  
+
   DatabaseConnector::renderTranslateExecuteSql(
     connection = connection,
     sql = paste0(
@@ -224,7 +228,7 @@ testthat::test_that("Testing cohort intersect", {
     reportOverallTime = FALSE,
     temp_table_name = tempTableName
   )
-  
+
   DatabaseConnector::disconnect(connection)
   testthat::expect_true(object = all(dataPostMinusTemp == cohortExpected))
 })
