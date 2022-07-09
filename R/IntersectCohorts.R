@@ -130,6 +130,16 @@ intersectCohorts <- function(connectionDetails = NULL,
     sourceCohortTable = cohortTable,
     targetCohortTable = tempTable1
   )
+  
+  # Add era fy logic to intersect. It will be used in minus - because minus depends on intersect
+  eraFyCohorts(
+    connection = connection,
+    oldToNewCohortId = dplyr::tibble(oldCohortId = cohortIds) %>%
+      dplyr::mutate(newCohortId = .data$oldCohortId) %>%
+      dplyr::distinct(),
+    cohortTable = tempTable1,
+    purgeConflicts = TRUE
+  )
 
   numberOfCohorts <- length(cohortIds %>% unique())
 
