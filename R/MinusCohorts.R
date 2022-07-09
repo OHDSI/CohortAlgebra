@@ -132,6 +132,7 @@ minusCohorts <- function(connectionDetails = NULL,
   tempTableName <- generateRandomString()
   tempTable1 <- paste0("#", tempTableName, "1")
   tempTable2 <- paste0("#", tempTableName, "2")
+  tempTable3 <- paste0("#", tempTableName, "3")
 
   copyCohortsToTempTable(
     connection = connection,
@@ -151,20 +152,23 @@ minusCohorts <- function(connectionDetails = NULL,
     purgeConflicts = FALSE,
     tempEmulationSchema = getOption("sqlRenderTempEmulationSchema")
   )
-
+  
   minusSql <- "DROP TABLE IF EXISTS @temp_table_2;
 
                   WITH cohort_dates
                   AS (
-                  	SELECT DISTINCT subject_id,
-                  		cohort_date
+                  	SELECT subject_id,
+                  		cohort_date,
+                  		-- LEAD will ignore values that are same (e.g. if cohort_start_date = cohort_end_date)
+                  		ROW_NUMBER() OVER(PARTITION BY subject_id
+                  		                  ORDER BY cohort_date ASC) cohort_date_seq
                   	FROM (
                   		SELECT subject_id,
                   			cohort_start_date cohort_date
                   		FROM @temp_table_1
                   		WHERE cohort_definition_id IN (@first_cohort_id, -999)
 
-                  		UNION
+                  		UNION ALL -- we need all dates, even if duplicates
 
                   		SELECT subject_id,
                   			cohort_end_date cohort_date
@@ -174,15 +178,17 @@ minusCohorts <- function(connectionDetails = NULL,
                   	),
                   candidate_periods
                   AS (
-                  	SELECT - 1 cohort_definition_id,
+                  	SELECT
                   		subject_id,
                   		cohort_date candidate_start_date,
+                  		cohort_date_seq,
                   		LEAD(cohort_date, 1) OVER (
-                  			PARTITION BY subject_id ORDER BY cohort_date ASC
+                  			PARTITION BY subject_id ORDER BY cohort_date, cohort_date_seq ASC
                   			) candidate_end_date
                   	FROM cohort_dates
                   	GROUP BY subject_id,
-                  		cohort_date
+                  		cohort_date,
+                  		cohort_date_seq
                   	),
                   candidate_cohort_date
                   AS (
@@ -193,12 +199,11 @@ minusCohorts <- function(connectionDetails = NULL,
                   	INNER JOIN candidate_periods candidate ON cohort.subject_id = candidate.subject_id
                   		AND candidate_start_date >= cohort_start_date
                   		AND candidate_end_date <= cohort_end_date
-                  	WHERE cohort.cohort_definition_id IN (@first_cohort_id, -999)
                   	)
-                  SELECT @new_cohort_id cohort_definition_id,
+                  SELECT
                   	subject_id,
-                  	candidate_start_date cohort_start_date,
-                  	candidate_end_date cohort_end_date
+                  	candidate_start_date,
+                  	candidate_end_date
                   INTO @temp_table_2
                   FROM candidate_cohort_date
                   GROUP BY subject_id,
@@ -213,9 +218,51 @@ minusCohorts <- function(connectionDetails = NULL,
     progressBar = FALSE,
     reportOverallTime = FALSE,
     first_cohort_id = firstCohortId,
-    new_cohort_id = newCohortId,
     temp_table_1 = tempTable1,
     temp_table_2 = tempTable2,
+    tempEmulationSchema = tempEmulationSchema
+  )
+  
+  # date corrections
+  dateCorrectionSql <- "
+          DROP TABLE IF EXISTS @temp_table_3;
+          WITH intersect_cohort
+          AS (
+          	SELECT subject_id,
+          		cohort_start_date,
+          		cohort_end_date
+          	FROM @temp_table_1
+          	WHERE cohort_definition_id IN (- 999)
+          	)
+          SELECT @new_cohort_id cohort_definition_id,
+          	mc.subject_id,
+          	CASE 
+          		WHEN cs.cohort_end_date IS NULL
+          			THEN mc.candidate_start_date
+          		ELSE DATEADD(DAY, 1, mc.candidate_start_date)
+          		END AS cohort_start_date,
+          	CASE 
+          		WHEN ce.cohort_end_date IS NULL
+          			THEN mc.candidate_end_date
+          		ELSE DATEADD(DAY, - 1, mc.candidate_end_date)
+          		END AS cohort_end_date
+          INTO @temp_table_3
+          FROM @temp_table_2 mc
+          LEFT JOIN intersect_cohort cs ON mc.subject_id = cs.subject_id
+          	AND mc.candidate_start_date = cs.cohort_end_date
+          LEFT JOIN intersect_cohort ce ON mc.subject_id = ce.subject_id
+          	AND mc.candidate_end_date = ce.cohort_start_date;"
+  
+  DatabaseConnector::renderTranslateExecuteSql(
+    connection = connection,
+    sql = dateCorrectionSql,
+    profile = FALSE,
+    progressBar = FALSE,
+    reportOverallTime = FALSE,
+    temp_table_1 = tempTable1,
+    temp_table_2 = tempTable2,
+    temp_table_3 = tempTable3,
+    new_cohort_id = newCohortId,
     tempEmulationSchema = tempEmulationSchema
   )
 
@@ -238,24 +285,26 @@ minusCohorts <- function(connectionDetails = NULL,
     connection = connection,
     sql = " INSERT INTO {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table}
             SELECT cohort_definition_id, subject_id, cohort_start_date, cohort_end_date
-            FROM @temp_table_2;",
+            FROM @temp_table_3;",
     profile = FALSE,
     progressBar = FALSE,
     reportOverallTime = FALSE,
     cohort_database_schema = cohortDatabaseSchema,
     tempEmulationSchema = tempEmulationSchema,
     cohort_table = cohortTable,
-    temp_table_2 = tempTable2
+    temp_table_3 = tempTable3
   )
 
   DatabaseConnector::renderTranslateExecuteSql(
     connection = connection,
     sql = " DROP TABLE IF EXISTS @temp_table_1;
-            DROP TABLE IF EXISTS @temp_table_2;",
+            DROP TABLE IF EXISTS @temp_table_2;
+            DROP TABLE IF EXISTS @temp_table_3;",
     profile = FALSE,
     progressBar = FALSE,
     reportOverallTime = FALSE,
     temp_table_1 = tempTable1,
-    temp_table_2 = tempTable2
+    temp_table_2 = tempTable2,
+    temp_table_3 = tempTable3
   )
 }
