@@ -267,7 +267,7 @@ minusCohorts <- function(connectionDetails = NULL,
   )
 
   if (performPurgeConflicts) {
-    ParallelLogger::logInfo(
+    ParallelLogger::logTrace(
       paste0(
         "The following conflicting cohortIds will be deleted from your cohort table \n",
         " as part resolving conflicts: ",
