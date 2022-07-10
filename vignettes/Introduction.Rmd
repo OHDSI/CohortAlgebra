@@ -74,9 +74,9 @@ $$
 
 Can we compare Cohort 3 and Cohort 4? It is possible that on some datasets we may have $Cohort3 \ge Cohort4$ while on others we might have $Cohort4 \ge Cohort3$. The most likely case is that neither cohort will be a subset of the other making them incomparable. This illustrates an important point about order relation on subsets. It is a *partial ordering*. Not all subsets are comparable.
 
-Partially ordered sets can be visualized using a Hasse Diagram.
+Partially ordered sets can be visualized using a diagram where arrows are used to denote the order relations. 
 
-```{r hasse1, echo=FALSE, message=FALSE}
+```{r, echo=FALSE, message=FALSE}
 data <- matrix(data = FALSE, ncol = 6, nrow = 6)
 data[1, 2:6] <- TRUE
 data[2, 3:6] <- TRUE
@@ -102,7 +102,7 @@ If a set of cohorts contains the union and intersection of any two cohorts it co
 
 The two cohorts in our example that are not related by ordering are Cohort 3 and Cohort 4 so let's define two new cohorts, $Cohort5 = Cohort3 \cup C4$ and $Cohort6 = Cohort3 \cap Cohort4$ to the diagram.
 
-```{r hasse1, echo=FALSE, message=FALSE}
+```{r, echo=FALSE, message=FALSE}
 data <- matrix(data = FALSE, ncol = 8, nrow = 8)
 data[1, 2:8] <- TRUE
 data[2, 3:8] <- TRUE
@@ -121,9 +121,93 @@ labels <- c("Observation period",
 hasseDiagram::hasse(data, labels = labels)
 ```
 
-"Completeness" ?
 
-Mapping from cohort definitions to generated cohorts.
+
+Can we describe what patient-days are being captured by the two new cohorts? What are the definitions of these cohorts built using the union and intersection operations?
+
+If think of cohort definitions as a logical expression composed of inclusion criteria we might be able to make use of algebraic properties of logical AND and OR.
+
+
+
+$$
+Cohort3 \bigcap Cohort4 = \\
+(2dx \space AND \space 1procedure \space  AND \space 1drug)  \space AND  \space (2dx \space AND \space 1procedure \space  AND \space \le 1Monoclonalgammopathy) = \\
+(2dx \space AND \space 1procedure \space)  \space AND  \space (1drug \space AND \space \le 1Monoclonalgammopathy) = \\
+2dx \space AND \space 1procedure  \space AND  \space 1drug \space AND \space \le 1Monoclonalgammopathy 
+$$
+
+$$
+Cohort3 \bigcup Cohort4 = \\
+(2dx \space AND \space 1procedure \space  AND \space 1drug)  \space OR  \space (2dx \space AND \space 1procedure \space  AND \space \le 1Monoclonalgammopathy) = \\
+2dx \space AND \space 1procedure  \space AND  \space (1drug \space OR \space \le 1Monoclonalgammopathy) 
+$$
+
+
+Cohort 1: 2 diagnosis codes
+Cohort 2: 2 diagnosis codes and 1 procedure
+Cohort 3 $\cup$ 4: 2 diagnosis codes and 1 procedure and (1 drug or at most 1 dx for Monoclonal gammopathy) 
+Cohort 3: 2 diagnosis codes and 1 procedure and 1 drug
+Cohort 4: 2 diagnosis codes and 1 procedure and at most 1 dx for Monoclonal gammopathy
+Cohort 3 $\cap$ 4: 2 diagnosis codes and 1 procedure and 1 drug and at most 1 dx for Monoclonal gammopathy
+
+
+What we really have is two different ordered sets giving rise two two different cohort lattices. We have an ordering on *cohort definitions* and we also have an ordering on *generated cohorts*. We also have a natural mapping from cohort definitions to generated cohorts that preserves this order relation, namely the generation function which we will call $G$. The generate function maps cohort definitions to generated cohorts *on a specific CDM dataset*. Since we are interested in properties of $G$ that are not dependent on which CDM dataset we are using we will treat $G$ as the generate function for an arbitrary CDM dataset.
+
+
+# Cohort Defintion Lattice
+
+In OHDSI we have several different ways to create cohorts: circe-be cohorts created with Atlas or Capr, custom SQL, probabilistic cohorts created with Aphrodite. For the purposes of CohortAlgebra we are interested in cohort definitions that have well defined ordering as well as union and intersection operations.  
+
+What are the union and intersection operations for circe-be? It might be better to abstact the operations of union and intersection. Namely we have two operations that are each known by several different names:
+
+Operation 1: $\cup$, union, join, $\lor$, logical OR
+
+Operation 2: $\cap$, intersection, meet, $\land$, logical AND
+
+
+The terms *join*, $\lor$, and *meet*, $\land$, are often used when discussing lattices to we will use these for cohort definitions.
+
+
+TODO: Define the join (logical OR) and meet (logical AND) operations for Cice-be cohort definitions
+
+
+
+# Properties of the generation function $G$
+
+Now that we have a cohort definition lattice and a generated cohort lattice we can explore the properties of the function connecting them, $G$.
+
+The first property to check is that $G$ preserves order, or *monotonicity*. For any two cohort definitions $A$ and $B$, if $A \ge B$ implies that $G(A) \ge G(B)$ then $G$ preserves order and is called an *monotone map*
+
+
+
+TODO: show that G preserves order in the multiple myeloma example.
+
+
+The next property to consider is that $G$ preserves the two operations we have defined.
+
+ $G$ preserves the lattice structure and is called a *lattice homomorphism* if for any two cohort definitions $A$ and $B$ we have 
+
+$$
+G(A \lor B) = G(A) \cup G(B) \\
+G(A \land B) = G(A) \cap G(B) \\
+$$
+Equality here means set equality: both sets contain the same patient-days. Keep in mind that these are true for any CDM dataset but of course $G_{cdm1}(A \cup B)$ is not necessarily equal to $G_{cdm2}(A \cup B)$. 
+
+
+TODO: Show that G perserves the lattice structure in the multiple myeloma example.
+
+# Computational tools
+
+CohortAlgebra provides the computational tools to explore these properties, combine cohorts and cohort definitions, and built cohort lattices.
+
+Functions provided by the package:
+
+- union
+- intersection
+- setdiff
+- ...
+
+
 
 
 
