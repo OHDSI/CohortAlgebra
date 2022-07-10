@@ -4,7 +4,7 @@
 \name{CohortAlgebra-package}
 \alias{CohortAlgebra}
 \alias{CohortAlgebra-package}
-\title{CohortAlgebra: Cohort Algebra to create new cohort(s) from existing cohorts.}
+\title{CohortAlgebra: Cohort Algebra to create new cohort(s) from existing cohorts}
 \description{
 An R package that creates new cohort(s) from previously instantiated cohorts.
 }
@@ -14,6 +14,20 @@ Useful links:
   \item \url{https://ohdsi.github.io/CohortAlgebra/}
   \item \url{https://github.com/OHDSI/CohortAlgebra}
   \item Report bugs at \url{https://github.com/OHDSI/CohortAlgebra/issues}
+}
+
+}
+\author{
+\strong{Maintainer}: Gowtham Rao \email{rao@ohdsi.org}
+
+Authors:
+\itemize{
+  \item Adam Black \email{black@ohdsi.org}
+}
+
+Other contributors:
+\itemize{
+  \item Observational Health Data Science and Informatics [copyright holder]
 }
 
 }

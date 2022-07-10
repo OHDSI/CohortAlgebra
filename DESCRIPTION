@@ -1,9 +1,13 @@
 Package: CohortAlgebra
 Type: Package
-Title: Cohort Algebra to create new cohort(s) from existing cohorts.
+Title: Cohort Algebra to create new cohort(s) from existing cohorts
 Version: 0.0.1
 Date: 2022-07-07
-Author: Gowtham Rao [aut, cre]
+Authors@R: c(
+    person("Gowtham", "Rao", email = "rao@ohdsi.org", role = c("aut", "cre")),
+    person("Adam", "Black", email = "black@ohdsi.org", role = c("aut")),
+    person("Observational Health Data Science and Informatics", role = c("cph"))
+  )
 Maintainer: Gowtham Rao <rao@ohdsi.org>
 Description: An R package that creates new cohort(s) from previously instantiated cohorts.
 Depends:
@@ -11,12 +15,20 @@ Depends:
 	R (>= 4.1.0)
 Imports:
     checkmate,
-  	rlang,
-  	testthat
+    dplyr,
+    ParallelLogger,
+  	rlang
 Suggests:
-	testthat
+  remotes,
+  rmarkdown,
+  knitr,
+	testthat,
+	withr
+Remotes:
+  ohdsi/ParallelLogger
 License: Apache License
 RoxygenNote: 7.2.0
+VignetteBuilder: knitr
 Roxygen: list(markdown = TRUE)
 Encoding: UTF-8
 Language: en-US

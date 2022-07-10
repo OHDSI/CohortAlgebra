@@ -25,15 +25,36 @@
     <loc>/reference/CohortAlgebra-package.html</loc>
   </url>
   <url>
+    <loc>/reference/copyCohortsToTempTable.html</loc>
+  </url>
+  <url>
+    <loc>/reference/deleteCohortRecords.html</loc>
+  </url>
+  <url>
+    <loc>/reference/eraFyCohort.html</loc>
+  </url>
+  <url>
+    <loc>/reference/eraFyCohorts.html</loc>
+  </url>
+  <url>
+    <loc>/reference/getCohortIdsInCohortTable.html</loc>
+  </url>
+  <url>
     <loc>/reference/getPlCohortDefinitionSet.html</loc>
   </url>
   <url>
     <loc>/reference/index.html</loc>
   </url>
   <url>
+    <loc>/reference/intersectCohorts.html</loc>
+  </url>
+  <url>
     <loc>/reference/listPhenotypes.html</loc>
   </url>
   <url>
-    <loc>/reference/PhenotypeLibrary-package.html</loc>
+    <loc>/reference/minusCohorts.html</loc>
+  </url>
+  <url>
+    <loc>/reference/substractCohorts.html</loc>
   </url>
 </urlset>
