@@ -25,6 +25,10 @@ DatabaseConnector package. Can be left NULL if \code{connectionDetails}
 is provided, in which case a new connection will be opened at the start
 of the function, and closed when the function finishes.}
 
+\item{cohortDatabaseSchema}{Schema name where your cohort tables reside. Note that for SQL Server,
+this should include both the database and schema name, for example
+'scratch.dbo'.}
+
 \item{cohortTable}{The name of the cohort table.}
 
 \item{tempEmulationSchema}{Some database platforms like Oracle and Impala do not truly support

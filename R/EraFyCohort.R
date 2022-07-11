@@ -229,21 +229,21 @@ eraFyCohorts <- function(connectionDetails = NULL,
                 {SELECT ce.cohort_definition_id,
                         ce.subject_id,
                         CASE WHEN op.observation_period_start_date < ce.cohort_start_date THEN ce.cohort_start_date
-                            ELSE op.observation_period_start_date END cohort_start_date,
+                            ELSE op.observation_period_start_date END AS cohort_start_date,
                         CASE WHEN op.observation_period_end_date > ce.cohort_end_date then ce.cohort_end_date
-                            ELSE op.observation_period_end_date END cohort_end_date
+                            ELSE op.observation_period_end_date END AS cohort_end_date
                   into @temp_table_2
                   FROM cohort_era ce
                   INNER JOIN @cdm_database_schema.observation_period op
                   ON ce.subject_id = op.person_id
                   WHERE op.observation_period_start_date <= ce.cohort_start_date
                         AND op.observation_period_end_date >= ce.cohort_start_date 
-                        -- only returns overlapping periods;} : 
+                        -- only returns overlapping periods} : 
                 {SELECT * 
                  INTO @temp_table_2
-                 FROM cohort_era;
+                 FROM cohort_era
                 }
-  "
+ ; "
 
   DatabaseConnector::renderTranslateExecuteSql(
     connection = connection,
