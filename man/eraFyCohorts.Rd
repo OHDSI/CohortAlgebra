@@ -11,6 +11,7 @@ eraFyCohorts(
   cohortTable = "cohort",
   oldToNewCohortId,
   eraconstructorpad = 0,
+  cdmDatabaseSchema = NULL,
   tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
   purgeConflicts = FALSE
 )
@@ -27,7 +28,7 @@ DatabaseConnector package. Can be left NULL if \code{connectionDetails}
 is provided, in which case a new connection will be opened at the start
 of the function, and closed when the function finishes.}
 
-\item{cohortDatabaseSchema}{Schema name where your cohort table resides. Note that for SQL Server,
+\item{cohortDatabaseSchema}{Schema name where your cohort tables reside. Note that for SQL Server,
 this should include both the database and schema name, for example
 'scratch.dbo'.}
 
@@ -40,6 +41,11 @@ If the oldCohortId = newCohortId then the data corresponding to oldCohortId
 will be replaced by the data from the newCohortId.}
 
 \item{eraconstructorpad}{Optional value to pad cohort era construction logic. Default = 0. i.e. no padding.}
+
+\item{cdmDatabaseSchema}{Schema name where your patient-level data in OMOP CDM format resides.
+Note that for SQL Server, this should include both the database and
+schema name, for example 'cdm_data.dbo'. cdmDataschema is required
+when eraConstructorPad is > 0. eraConstructorPad is optional.}
 
 \item{tempEmulationSchema}{Some database platforms like Oracle and Impala do not truly support
 temp tables. To emulate temp tables, provide a schema with write
