@@ -4,6 +4,7 @@ testthat::test_that("Testing cohort era fy", {
   tableName <- paste0("cr", sysTime)
   tempTableName <- paste0("#", tableName, "_1")
 
+  undebug(eraFyCohorts)
   # make up date for a cohort table
   # this cohort table will have two subjects * two cohorts, within the same cohort
   cohort <- dplyr::tibble(
@@ -27,8 +28,14 @@ testthat::test_that("Testing cohort era fy", {
   cohort <- dplyr::bind_rows(
     cohort,
     cohort %>% dplyr::mutate(cohortDefinitionId = 2)
+  ) %>% 
+    dplyr::arrange(.data$subjectId, .data$cohortStartDate, .data$cohortEndDate)
+  
+  observationPeriod <- dplyr::tibble(
+    personId = c(1, 1, 2),
+    observation_period_start_date = c(as.Date("1999-01-01"), as.Date("1999-03-06"), as.Date("1998-01-01")),
+    observation_period_end_date = c(as.Date("1999-03-04"), as.Date("1999-04-30"), as.Date("2000-12-31"))
   )
-
 
   # upload table
   connection <-
@@ -38,6 +45,18 @@ testthat::test_that("Testing cohort era fy", {
     databaseSchema = cohortDatabaseSchema,
     tableName = tableName,
     data = cohort,
+    dropTableIfExists = TRUE,
+    createTable = TRUE,
+    tempTable = FALSE,
+    camelCaseToSnakeCase = TRUE,
+    progressBar = FALSE
+  )
+  
+  DatabaseConnector::insertTable(
+    connection = connection,
+    databaseSchema = cohortDatabaseSchema,
+    tableName = "observation_period",
+    data = observationPeriod,
     dropTableIfExists = TRUE,
     createTable = TRUE,
     tempTable = FALSE,
@@ -144,12 +163,22 @@ testthat::test_that("Testing cohort era fy", {
     temp_table_name = tempTableName
   )
 
+  testthat::expect_error(object = #throw error because cdmDatabaseSchema is not provide
   CohortAlgebra::eraFyCohorts(
     connection = connection,
     cohortTable = tempTableName,
     oldToNewCohortId = dplyr::tibble(oldCohortId = 1, newCohortId = 10),
     eraconstructorpad = 30,
     purgeConflicts = FALSE
+  ))
+  debug(eraFyCohorts)
+  CohortAlgebra::eraFyCohorts(
+    connection = connection,
+    cohortTable = tempTableName,
+    oldToNewCohortId = dplyr::tibble(oldCohortId = 1, newCohortId = 10),
+    eraconstructorpad = 30,
+    purgeConflicts = FALSE, 
+    cdmDatabaseSchema = cohortDatabaseSchema
   )
 
   dataPostEraFyWithEraPad <-
@@ -166,24 +195,16 @@ testthat::test_that("Testing cohort era fy", {
     dplyr::tibble()
 
   cohortExpectedEraPad <- dplyr::tibble(
-    cohortDefinitionId = c(10),
-    subjectId = c(1),
-    cohortStartDate = c(as.Date("1999-01-01")),
-    cohortEndDate = c(as.Date("1999-03-31"))
-  )
-  cohortExpectedEraPad <-
-    dplyr::bind_rows(
-      cohortExpectedEraPad,
-      cohortExpectedEraPad %>%
-        dplyr::mutate(subjectId = 2)
-    ) %>%
-    dplyr::arrange(
-      .data$cohortDefinitionId,
-      .data$subjectId,
-      .data$cohortStartDate
-    )
+    cohortDefinitionId = c(10, 10),
+    subjectId = c(1, 2),
+    cohortStartDate = c(as.Date("1999-01-01"), as.Date("1999-01-01")),
+    cohortEndDate = c(as.Date("1999-03-04"), as.Date("1999-03-31"))
+  ) %>%
+    dplyr::arrange(.data$cohortDefinitionId,
+                   .data$subjectId,
+                   .data$cohortStartDate)
 
-  # this should throw error as there is already a cohort with cohort_definition_id = 9
+  # this should throw error as there is already a cohort with cohort_definition_id = 10
   testthat::expect_error(
     CohortAlgebra::eraFyCohorts(
       connectionDetails = connectionDetails,
