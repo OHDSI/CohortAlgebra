@@ -27,7 +27,7 @@
 #' @template Connection
 #'
 #' @template CohortTable
-#' 
+#'
 #' @template CohortDatabaseSchema
 #'
 #' @template CohortIds

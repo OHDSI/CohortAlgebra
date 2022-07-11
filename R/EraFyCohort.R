@@ -37,7 +37,7 @@
 #' @template TempEmulationSchema
 #'
 #' @param eraconstructorpad   Optional value to pad cohort era construction logic. Default = 0. i.e. no padding.
-#' 
+#'
 #' @param cdmDatabaseSchema   Schema name where your patient-level data in OMOP CDM format resides.
 #'                            Note that for SQL Server, this should include both the database and
 #'                            schema name, for example 'cdm_data.dbo'. cdmDataschema is required
@@ -107,7 +107,7 @@ eraFyCohorts <- function(connectionDetails = NULL,
     add = errorMessages
   )
   checkmate::reportAssertions(collection = errorMessages)
-  
+
   if (is.null(cdmDatabaseSchema)) {
     if (eraconstructorpad > 0) {
       stop(
@@ -218,14 +218,14 @@ eraFyCohorts <- function(connectionDetails = NULL,
                 	                      c.subject_id = e.subject_id AND
                 	                      e.cohort_end_date >= c.cohort_start_date
                 	GROUP BY c.cohort_definition_id, c.subject_id, c.cohort_start_date
-                ), 
+                ),
                 cohort_era as
                 (
                 select cohort_definition_id, subject_id, min(cohort_start_date) as cohort_start_date, cohort_end_date
                 from cteEnds
                 group by cohort_definition_id, subject_id, cohort_end_date
                 )
-                {@cdm_database_schema != ''} ? 
+                {@cdm_database_schema != ''} ?
                 {SELECT ce.cohort_definition_id,
                         ce.subject_id,
                         CASE WHEN op.observation_period_start_date < ce.cohort_start_date THEN ce.cohort_start_date
@@ -237,9 +237,9 @@ eraFyCohorts <- function(connectionDetails = NULL,
                   INNER JOIN @cdm_database_schema.observation_period op
                   ON ce.subject_id = op.person_id
                   WHERE op.observation_period_start_date <= ce.cohort_start_date
-                        AND op.observation_period_end_date >= ce.cohort_start_date 
-                        -- only returns overlapping periods} : 
-                {SELECT * 
+                        AND op.observation_period_end_date >= ce.cohort_start_date
+                        -- only returns overlapping periods} :
+                {SELECT *
                  INTO @temp_table_2
                  FROM cohort_era
                 }

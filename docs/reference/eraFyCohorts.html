@@ -20,7 +20,7 @@ to the cohort table is required."><!-- mathjax --><script src="https://cdnjs.clo
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">CohortAlgebra</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.01.0</span>
       </span>
     </div>
 
@@ -79,6 +79,7 @@ to the cohort table is required.</p>
 <span>  cohortTable <span class="op">=</span> <span class="st">"cohort"</span>,</span>
 <span>  <span class="va">oldToNewCohortId</span>,</span>
 <span>  eraconstructorpad <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  cdmDatabaseSchema <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  tempEmulationSchema <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"sqlRenderTempEmulationSchema"</span><span class="op">)</span>,</span>
 <span>  purgeConflicts <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -102,7 +103,7 @@ of the function, and closed when the function finishes.</p></dd>
 
 
 <dt>cohortDatabaseSchema</dt>
-<dd><p>Schema name where your cohort table resides. Note that for SQL Server,
+<dd><p>Schema name where your cohort tables reside. Note that for SQL Server,
 this should include both the database and schema name, for example
 'scratch.dbo'.</p></dd>
 
@@ -121,6 +122,13 @@ will be replaced by the data from the newCohortId.</p></dd>
 
 <dt>eraconstructorpad</dt>
 <dd><p>Optional value to pad cohort era construction logic. Default = 0. i.e. no padding.</p></dd>
+
+
+<dt>cdmDatabaseSchema</dt>
+<dd><p>Schema name where your patient-level data in OMOP CDM format resides.
+Note that for SQL Server, this should include both the database and
+schema name, for example 'cdm_data.dbo'. cdmDataschema is required
+when eraConstructorPad is &gt; 0. eraConstructorPad is optional.</p></dd>
 
 
 <dt>tempEmulationSchema</dt>

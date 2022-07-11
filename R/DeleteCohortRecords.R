@@ -27,7 +27,7 @@
 #' @template CohortTable
 #'
 #' @template CohortIds
-#' 
+#'
 #' @template CohortDatabaseSchema
 #'
 #' @template TempEmulationSchema
