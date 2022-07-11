@@ -8,7 +8,7 @@ CohortAlgebra
 Introduction
 ============
 
-THIS PACKAGE IS UNDER ACTIVE DEVELOPMENT. DO NOT USE. IT IS NOT PART OF HADES.
+THIS PACKAGE IS UNDER ACTIVE DEVELOPMENT. IT IS NOT PART OF HADES.
 
 
 CohortAlgebra is a R package that allows you to create new cohorts from previously instantiated cohorts in a cohort table. New cohorts may be created by performing the union, intersect or minus of one or more cohorts.
