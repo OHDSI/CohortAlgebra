@@ -23,6 +23,8 @@
 #'
 #' @template CohortTable
 #'
+#' @template CohortDatabaseSchema
+#'
 #' @template TempEmulationSchema
 #'
 #' @return

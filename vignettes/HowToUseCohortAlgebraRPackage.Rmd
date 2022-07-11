@@ -23,9 +23,52 @@ knitr::opts_chunk$set(
 ```
 
 
-# Installation
+# Introduction
+
+The idea behind this package is to allow the construction of new cohorts from previously instantiated cohorts in the cohort table. All cohorts in OHDSI have a standard definition: "A cohort is a set of persons who satisfy one or more inclusion criteria for a duration of time."
+
+- One person may belong to multiple cohorts
+- One person may belong to the same cohort for multiple different time periods
+- One person may not belong to the same cohort multiple times during the same period of time
+- A cohort may have zero or more members
+
+This is represented in a cohort table as cohort_definition_id, subject_id, cohort_start_date and cohort_end_date. For more details about the concept of a cohort please review [The Book of OHDSI](https://github.com/OHDSI/TheBookOfOhdsi).
+
+This package allows the creation of new cohorts from previously instantiated cohort table using cohort algebra (similar to temporal set algebra). The output is one or more new cohorts.
+
+## Installation
 - This  is an installable R-package that may be installed as follows: 
 ```{r tidy=FALSE,eval=FALSE}
   remotes::install_github("OHDSI/CohortAlgebra")
 ```
 
+## Cohort UNION
+- Given two or more cohorts, an UNION operator on these cohorts creates a new cohort with continuous days the persons was present in any of the cohorts.
+
+![Cohort Union](CohortUnion.png)
+To perform Cohort Union, we use the eraFyCohort function. One of the key input is the oldToNewCohortId. In this data frame object we specifiy the cohort id's of the cohorts we want to union. The newCohortId is the cohortId of the resultant cohort. The parameter purgeConflicts will delete any cohort records in the cohort table where cohortId is the cohortId of the newCohort (in this example 4.)
+
+
+```{r tidy=FALSE,eval=FALSE}
+
+  oldToNewCohortId <- dplyr::tibble(oldCohortId = c(1, 2, 3), newCohortId = c(4,4,4))
+
+  CohortAlgebra::eraFyCohorts(connectionDetails = connectionDetails,
+                              cohortDatabaseSchema = cohortDatabaseSchema, 
+                              cohortTable = "cohort", 
+                              oldToNewCohortId = oldToNewCohortId, 
+                              eraconstructorpad = 0, 
+                              purgeConflicts = TRUE)
+```
+
+
+### use of eraConstructionPad (special case)
+
+
+## EraFy Cohort
+
+
+## InterSect Cohort
+
+
+## Minus Cohort

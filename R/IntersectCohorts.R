@@ -28,6 +28,8 @@
 #'
 #' @template CohortTable
 #'
+#' @template CohortDatabaseSchema
+#'
 #' @template CohortIds
 #'
 #' @template NewCohortId

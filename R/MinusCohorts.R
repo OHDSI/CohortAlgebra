@@ -26,6 +26,8 @@
 #'
 #' @template CohortTable
 #'
+#' @template CohortDatabaseSchema
+#'
 #' @param firstCohortId The cohort id of the cohort from which to substract.
 #'
 #' @param secondCohortId The cohort id of the cohort that is used to substract.

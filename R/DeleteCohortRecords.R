@@ -28,6 +28,8 @@
 #'
 #' @template CohortIds
 #'
+#' @template CohortDatabaseSchema
+#'
 #' @template TempEmulationSchema
 #'
 #' @return
