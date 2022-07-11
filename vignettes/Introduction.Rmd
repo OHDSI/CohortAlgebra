@@ -174,10 +174,9 @@ TODO: Define the join (logical OR) and meet (logical AND) operations for Cice-be
 
 # Properties of the generation function $G$
 
-Now that we have a cohort definition lattice and a generated cohort lattice we can explore the properties of the function connecting them, $G$.
+Now that we have a cohort definition lattice and a generated cohort lattice we can explore the properties of the function connecting them, $G$. We characterize the relationship between a cohort defintion lattice and specific CDM, e.g. Eunomia, by the structure of the cohort definition lattice that is preserved by the generation function for that CDM $G_{Eunomia}$.
 
 The first property to check is that $G$ preserves order, or *monotonicity*. For any two cohort definitions $A$ and $B$, if $A \ge B$ implies that $G(A) \ge G(B)$ then $G$ preserves order and is called an *monotone map*
-
 
 
 TODO: show that G preserves order in the multiple myeloma example.

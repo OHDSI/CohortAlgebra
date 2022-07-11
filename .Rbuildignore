@@ -11,3 +11,5 @@ readme.md
 ^compare_versions
 ^deploy.sh
 ^docs
+^doc$
+^Meta$
