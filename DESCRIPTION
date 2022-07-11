@@ -23,6 +23,8 @@ Suggests:
   rmarkdown,
   knitr,
 	testthat,
+	hasseDiagram,
+	Rgraphviz,
 	withr
 Remotes:
   ohdsi/ParallelLogger
