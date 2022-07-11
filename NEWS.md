@@ -1,3 +1,10 @@
+CohortAlgebra 0.1.1
+======================
+
+Changes:
+- Fixes wrong tag
+- Remove DO NOT USE.
+
 CohortAlgebra 0.1.0
 ======================
 

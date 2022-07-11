@@ -25,6 +25,8 @@ knitr::opts_chunk$set(
 
 # Introduction
 
+(This package is NOT part of HADES.)
+
 The idea behind this package is to allow the construction of new cohorts from previously instantiated cohorts in the cohort table. All cohorts in OHDSI have a standard definition: "A cohort is a set of persons who satisfy one or more inclusion criteria for a duration of time."
 
 - One person may belong to multiple cohorts
