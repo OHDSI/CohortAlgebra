@@ -1,3 +1,9 @@
+CohortAlgebra 0.1.3
+======================
+
+Bug fix:
+- Add DISTINCT in SQL to support minus of 1 day cohorts
+
 CohortAlgebra 0.1.2
 ======================
 
