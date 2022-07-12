@@ -1,3 +1,10 @@
+CohortAlgebra 0.1.2
+======================
+
+Bug fix:
+- Add DISTINCT in SQL to support intersects of 1 day cohorts
+- update to PowerPoint of vignettes
+
 CohortAlgebra 0.1.1
 ======================
 
