@@ -181,7 +181,7 @@ intersectCohorts <- function(connectionDetails = NULL,
                   	),
                   candidate_cohort_date
                   AS (
-                  	SELECT cohort.*,
+                  	SELECT DISTINCT cohort.*,
                   		candidate_start_date,
                   		candidate_end_date
                   	FROM @temp_table_1 cohort
