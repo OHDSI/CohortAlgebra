@@ -5,3 +5,5 @@
 *.tmp
 .Rprofile
 errorReportSql.txt
+/doc/
+/Meta/

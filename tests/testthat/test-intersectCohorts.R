@@ -194,3 +194,36 @@ testthat::test_that("Testing cohort intersect", {
   DatabaseConnector::disconnect(connection)
   testthat::expect_true(object = all(dataPostIntersectTemp == cohortExpected))
 })
+
+
+test_that("intersection logic works on sqlite", {
+  connectionDetails <- createConnectionDetails(dbms = "sqlite", server = ":memory:")
+  con <- connect(connectionDetails)
+  
+  cohort <- tibble::tribble(
+    ~cohort_definition_id, ~subject_id, ~cohort_start_date, ~cohort_end_date,
+    1,                     1,            "2022-01-01",       "2022-01-01",
+    2,                     1,            "2022-01-01",       "2022-01-02") %>% 
+    mutate(across(matches("date"), as.Date))
+  
+  dbWriteTable(con, "cohort", cohort, overwrite = TRUE)
+  
+  intersectCohorts(connection = con,
+                   cohortDatabaseSchema = "main",
+                   cohortTable = "cohort",
+                   cohortIds = c(1,2,3),
+                   newCohortId = 5)
+  
+  expected <- tibble::tribble(
+    ~cohort_definition_id, ~subject_id, ~cohort_start_date, ~cohort_end_date,
+    1,                     1,            "2022-02-10",       "2022-03-01") %>% 
+    mutate(across(matches("date"), ~as.Date(., origin = "1970-01-01")))
+  
+  actual <- dbGetQuery(con, "select * from main.cohort where cohort_definition_id = 5") %>% 
+    mutate(across(matches("date"), ~as.Date(., origin = "1970-01-01"))) %>% 
+    tibble()
+  
+  expect_equal(expected, actual)
+  
+  disconnect(con)
+})
