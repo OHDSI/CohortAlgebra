@@ -45,32 +45,78 @@ This package allows the creation of new cohorts from previously instantiated coh
 ```
 
 ## Cohort UNION
-- Given two or more cohorts, an UNION operator on these cohorts creates a new cohort with continuous days the persons was present in any of the cohorts.
+
+Given two or more cohorts, an UNION operator on these cohorts creates a new cohort with continuous days the person was present in any of the cohorts.
 
 ![Cohort Union](CohortUnion.png)
-To perform Cohort Union, we use the eraFyCohort function. One of the key input is the oldToNewCohortId. In this data frame object we specifiy the cohort id's of the cohorts we want to union. The newCohortId is the cohortId of the resultant cohort. The parameter purgeConflicts will delete any cohort records in the cohort table where cohortId is the cohortId of the newCohort (in this example 4.)
+The parameter purgeConflicts will delete any cohort records in the cohort table where cohortId is the cohortId of the newCohort (in this example 4.)
 
 
 ```{r tidy=FALSE,eval=FALSE}
+library(DatabaseConnector)
+ library(CohortAlgebra)
+library(dplyr, warn.conflicts = FALSE)
 
-  oldToNewCohortId <- dplyr::tibble(oldCohortId = c(1, 2, 3), newCohortId = c(4,4,4))
+connectionDetails <- createConnectionDetails(dbms = "sqlite", server = ":memory:")
+con <- connect(connectionDetails)
 
-  CohortAlgebra::eraFyCohorts(connectionDetails = connectionDetails,
-                              cohortDatabaseSchema = cohortDatabaseSchema, 
-                              cohortTable = "cohort", 
-                              oldToNewCohortId = oldToNewCohortId, 
-                              eraconstructorpad = 0, 
-                              purgeConflicts = TRUE)
+# create the cohorts to union
+cohort <- tibble::tribble(
+  ~cohort_definition_id, ~subject_id, ~cohort_start_date, ~cohort_end_date,
+  1,                     1,            "2022-01-01",       "2022-03-01",
+  2,                     1,            "2022-02-10",       "2022-05-10",
+  3,                     1,            "2022-08-15",       "2022-12-30") %>% 
+   mutate(across(matches("date"), as.Date))
+
+dbWriteTable(con, "cohort", cohort, overwrite = TRUE)
+
+dbGetQuery(con, "select * from main.cohort") %>% 
+  mutate(across(matches("date"), ~as.Date(., origin = "1970-01-01")))
+
+unionCohorts(connection = con,
+            cohortDatabaseSchema = "main",
+            cohortTable = "cohort",
+            cohortIds = c(1,2,3),
+            newCohortId = 4)
+
+dbGetQuery(con, "select * from main.cohort where cohort_definition_id = 4") %>% 
+  mutate(across(matches("date"), ~as.Date(., origin = "1970-01-01")))
+```
+
+## Cohort Intersection
+
+The intersection of two or more cohorts is a new cohort that contains the person-days included in all of the input cohorts.
+
+```{r}
+
+intersectCohorts(connection = con,
+            cohortDatabaseSchema = "main",
+            cohortTable = "cohort",
+            cohortIds = c(1,2,3),
+            newCohortId = 5)
+
+dbGetQuery(con, "select * from main.cohort where cohort_definition_id = 5") %>% 
+  mutate(across(matches("date"), ~as.Date(., origin = "1970-01-01")))
 ```
 
 
-### use of eraConstructionPad (special case)
+
+## Cohort Minus
+
+The minus operation (also often called set difference or relative complement) of two cohorts A and B is denoted A - B and contains the person-days that are in A but are not in B. Note that the order of the cohorts matters: A - B is not the same as B - A.
+
+This operation can be defined in terms of the complement and interection: A - B is the same as the intersection of A and the complement of B.
+
+```{r}
+
+minusCohorts(connection = con,
+             cohortTable = "cohort",
+             firstCohortId = 1, 
+             secondCohortId = 2, 
+             newCohortId = 6)
+
+dbGetQuery(con, "select * from main.cohort where cohort_definition_id = 6") %>% 
+  mutate(across(matches("date"), ~as.Date(., origin = "1970-01-01")))
+```
 
 
-## EraFy Cohort
-
-
-## InterSect Cohort
-
-
-## Minus Cohort
