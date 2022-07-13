@@ -3,7 +3,7 @@ testthat::test_that("Testing cohort delete", {
   sysTime <- as.numeric(Sys.time()) * 100000
   tableName <- paste0("cr", sysTime)
   tempTableName <- paste0("#", tableName, "_1")
-  
+
   # make up date for a cohort table
   # this cohort table will have two subjects * two cohorts, within the same cohort
   cohort <- dplyr::tibble(
@@ -20,12 +20,16 @@ testthat::test_that("Testing cohort delete", {
       as.Date("1999-03-31")
     )
   )
-  cohort <- dplyr::bind_rows(cohort,
-                             cohort %>% dplyr::mutate(subjectId = 2))
-  cohort <- dplyr::bind_rows(cohort,
-                             cohort %>% dplyr::mutate(cohortDefinitionId = 2))
-  
-  
+  cohort <- dplyr::bind_rows(
+    cohort,
+    cohort %>% dplyr::mutate(subjectId = 2)
+  )
+  cohort <- dplyr::bind_rows(
+    cohort,
+    cohort %>% dplyr::mutate(cohortDefinitionId = 2)
+  )
+
+
   # upload table
   connection <-
     DatabaseConnector::connect(connectionDetails = connectionDetails)
@@ -40,7 +44,7 @@ testthat::test_that("Testing cohort delete", {
     camelCaseToSnakeCase = TRUE,
     progressBar = FALSE
   )
-  
+
   dataInserted <-
     DatabaseConnector::renderTranslateQuerySql(
       connection = connection,
@@ -53,9 +57,11 @@ testthat::test_that("Testing cohort delete", {
       snakeCaseToCamelCase = TRUE
     ) %>%
     dplyr::tibble()
-  testthat::expect_equal(object = dataInserted %>%
-                           nrow(),
-                         expected = 12)
+  testthat::expect_equal(
+    object = dataInserted %>%
+      nrow(),
+    expected = 12
+  )
   CohortAlgebra:::deleteCohortRecords(
     connection = connection,
     cohortDatabaseSchema = cohortDatabaseSchema,
@@ -75,12 +81,14 @@ testthat::test_that("Testing cohort delete", {
       snakeCaseToCamelCase = TRUE
     ) %>%
     dplyr::tibble()
-  testthat::expect_equal(object = dataInsertedDeleteCohortId2 %>%
-                           nrow(),
-                         expected = 0)
+  testthat::expect_equal(
+    object = dataInsertedDeleteCohortId2 %>%
+      nrow(),
+    expected = 0
+  )
   DatabaseConnector::disconnect(connection = connection)
-  
-  
+
+
   # test with new connection
   CohortAlgebra:::deleteCohortRecords(
     connectionDetails = connectionDetails,
@@ -88,7 +96,7 @@ testthat::test_that("Testing cohort delete", {
     cohortTable = tableName,
     cohortIds = 1
   )
-  
+
   dataInsertedDeleteCohortId3 <-
     DatabaseConnector::renderTranslateQuerySql(
       connect = DatabaseConnector::connect(connectionDetails),
@@ -102,7 +110,9 @@ testthat::test_that("Testing cohort delete", {
       snakeCaseToCamelCase = TRUE
     ) %>%
     dplyr::tibble()
-  testthat::expect_equal(object = dataInsertedDeleteCohortId3 %>%
-                           nrow(),
-                         expected = 0)
+  testthat::expect_equal(
+    object = dataInsertedDeleteCohortId3 %>%
+      nrow(),
+    expected = 0
+  )
 })

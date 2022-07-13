@@ -1,3 +1,32 @@
+CohortAlgebra 0.1.3
+======================
+
+Bug fix:
+- Add DISTINCT in SQL to support minus of 1 day cohorts
+
+CohortAlgebra 0.1.2
+======================
+
+Bug fix:
+- Add DISTINCT in SQL to support intersects of 1 day cohorts
+- update to PowerPoint of vignettes
+
+CohortAlgebra 0.1.1
+======================
+
+Changes:
+- Fixes wrong tag
+- Remove DO NOT USE.
+
+CohortAlgebra 0.1.0
+======================
+
+Changes:
+- In eraFyCohort function - if eraConstructionPad > 0 then specifying cdmDatabaseSchema is required. This will allow the eraFy'd cohort period to be checked against the observation_period table, and for the function to ensure that the cohort period corresponds to the persons observation_period. 
+- Improved tests for deleting records in cohort table.
+- Updated vignette "HowToUseCohortAlgebraRPackage"
+
+
 CohortAlgebra 0.0.1
 ======================
 
