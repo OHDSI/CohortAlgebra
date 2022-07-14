@@ -50,7 +50,7 @@ NULL
 
 intersectCohorts(
 connectionDetails = Eunomia::getEunomiaConnectionDetails(),
-cohortDatabaseSchema = "study1234",
+cohortDatabaseSchema = "main",
 cohortTable = "cohort",
 cohortIds = c(1, 2, 3),
 newCohortId = 9,
