@@ -47,12 +47,17 @@ remotes::install_github("OHDSI/CohortAlgebra")
 
 ```{r tidy=FALSE,eval=TRUE, echo=FALSE}
 library(dplyr)
+
+jdbcDriverFolder <- tempfile("jdbcDrivers")
+dir.create(jdbcDriverFolder, showWarnings = FALSE)
+DatabaseConnector::downloadJdbcDrivers("postgresql", pathToDriver = jdbcDriverFolder)
+  
 connectionDetails <- DatabaseConnector::createConnectionDetails(
   dbms = "postgresql",
   user = Sys.getenv("CDM5_POSTGRESQL_USER"),
   password = Sys.getenv("CDM5_POSTGRESQL_PASSWORD"),
-  server = Sys.getenv("CDM5_POSTGRESQL_SERVER")
-  
+  server = Sys.getenv("CDM5_POSTGRESQL_SERVER"), 
+  pathToDriver = jdbcDriverFolder
 )
 cohortDatabaseSchema <- Sys.getenv("CDM5_POSTGRESQL_OHDSI_SCHEMA")
 
@@ -609,3 +614,14 @@ data
 ```
 
 Sequence of cohorts are important for minusCohort
+
+```{r tidy=FALSE,eval=TRUE, echo=FALSE}
+unlink(jdbcDriverFolder)
+DatabaseConnector::renderTranslateExecuteSql(
+  connection = connection,
+  sql = "DROP TABLE IF EXISTS @cohort_table;",
+  cohort_table = cohortTable,
+  progressBar = FALSE, 
+  reportOverallTime = FALSE
+)
+```
