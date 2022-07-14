@@ -55,6 +55,10 @@ privileges where temp tables can be created.}
 already has records with newCohortId, do you want to purge and replace them
 with transformed. By default - it will not be replaced, and an error message is thrown.}
 }
+\value{
+NULL
+s
+}
 \description{
 Given a table with cohort_definition_id, subject_id, cohort_start_date,
 cohort_end_date execute era logic. This will delete and replace the
