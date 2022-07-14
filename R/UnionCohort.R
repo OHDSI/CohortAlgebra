@@ -36,7 +36,20 @@
 #'
 #' @return
 #' NULL
-#'s
+#'
+#' @examples
+#' unionCohorts(
+#'   connection = conneciton,
+#'   cohortDatabaseSchema = "study1234",
+#'   cohortTable = "cohort",
+#'   oldToNewCohortId = dplyr::tibble(
+#'     oldCohortId = c(1, 2, 3),
+#'     newCohortId = c(9, 9, 9)
+#'   ),
+#'   purgeConflicts = TRUE
+#' )
+#'
+#' @export
 unionCohorts <- function(connectionDetails = NULL,
                          connection = NULL,
                          cohortDatabaseSchema = NULL,

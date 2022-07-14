@@ -2,6 +2,7 @@
 
 export(intersectCohorts)
 export(minusCohorts)
+export(unionCohorts)
 import(DatabaseConnector)
 import(dplyr)
 importFrom(rlang,.data)

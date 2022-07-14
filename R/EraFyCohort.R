@@ -45,7 +45,7 @@
 #'
 #' @return
 #' NULL
-#'s
+#' s
 eraFyCohorts <- function(connectionDetails = NULL,
                          connection = NULL,
                          cohortDatabaseSchema = NULL,

@@ -172,7 +172,7 @@ testthat::test_that("Testing cohort era fy", {
         purgeConflicts = FALSE
       )
   )
-  
+
   CohortAlgebra:::eraFyCohorts(
     connection = connection,
     cohortTable = tempTableName,

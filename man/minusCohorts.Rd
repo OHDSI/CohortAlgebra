@@ -52,3 +52,15 @@ privileges where temp tables can be created.}
 Given two cohorts, substract (minus) the dates from the first cohort, the
 dates the subject also had on the second cohort.
 }
+\examples{
+minusCohorts(
+ connection = conneciton,
+ cohortDatabaseSchema = "study1234",
+ cohortTable = "cohort",
+ firstCohortId = 1,
+ secondCohortId = 2,
+ newCohortId = 9,
+ purgeConflicts = TRUE
+)
+
+}

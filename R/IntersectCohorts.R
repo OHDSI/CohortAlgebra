@@ -41,6 +41,14 @@
 #' @return
 #' NULL
 #'
+#' intersectCohorts(
+#'  connection = conneciton,
+#'  cohortDatabaseSchema = "study1234",
+#'  cohortTable = "cohort",
+#'  cohortIds = c(1, 2, 3),
+#'  newCohortId = 9,
+#'  purgeConflicts = TRUE
+#' )
 #' @export
 intersectCohorts <- function(connectionDetails = NULL,
                              connection = NULL,
