@@ -620,7 +620,7 @@ unlink(jdbcDriverFolder)
 DatabaseConnector::renderTranslateExecuteSql(
   connection = connection,
   sql = "DROP TABLE IF EXISTS @cohort_table;",
-  cohort_table = cohortTable,
+  cohort_table = tableName,
   progressBar = FALSE, 
   reportOverallTime = FALSE
 )
