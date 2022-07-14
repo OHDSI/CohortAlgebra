@@ -52,14 +52,14 @@ cohort union operator to create new cohorts.
 }
 \examples{
 unionCohorts(
- connection = conneciton,
- cohortDatabaseSchema = "study1234",
- cohortTable = "cohort",
- oldToNewCohortId = dplyr::tibble(
-   oldCohortId = c(1, 2, 3),
-   newCohortId = c(9, 9, 9)
- ),
- purgeConflicts = TRUE
+  connection = NULL,
+  cohortDatabaseSchema = "study1234",
+  cohortTable = "cohort",
+  oldToNewCohortId = dplyr::tibble(
+    oldCohortId = c(1, 2, 3),
+    newCohortId = c(9, 9, 9)
+  ),
+  purgeConflicts = TRUE
 )
 
 }

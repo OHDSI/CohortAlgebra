@@ -42,7 +42,7 @@
 #' NULL
 #'
 #' intersectCohorts(
-#'  connection = conneciton,
+#'  connection = NULL,
 #'  cohortDatabaseSchema = "study1234",
 #'  cohortTable = "cohort",
 #'  cohortIds = c(1, 2, 3),

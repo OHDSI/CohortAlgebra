@@ -44,7 +44,7 @@
 #'
 #' @examples
 #' minusCohorts(
-#'   connection = conneciton,
+#'   connection = NULL,
 #'   cohortDatabaseSchema = "study1234",
 #'   cohortTable = "cohort",
 #'   firstCohortId = 1,

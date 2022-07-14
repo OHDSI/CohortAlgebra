@@ -39,7 +39,7 @@
 #'
 #' @examples
 #' unionCohorts(
-#'   connection = conneciton,
+#'   connection = NULL,
 #'   cohortDatabaseSchema = "study1234",
 #'   cohortTable = "cohort",
 #'   oldToNewCohortId = dplyr::tibble(
