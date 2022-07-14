@@ -137,8 +137,8 @@ privileges where temp tables can be created.</p></dd>
 
 
 <p>intersectCohorts(
-connection = NULL,
-cohortDatabaseSchema = "study1234",
+connectionDetails = Eunomia::getEunomiaConnectionDetails(),
+cohortDatabaseSchema = "main",
 cohortTable = "cohort",
 cohortIds = c(1, 2, 3),
 newCohortId = 9,

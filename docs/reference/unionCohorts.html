@@ -130,8 +130,8 @@ with transformed. By default - it will not be replaced, and an error message is 
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">unionCohorts</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  connection <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
-<span class="r-in"><span>  cohortDatabaseSchema <span class="op">=</span> <span class="st">"study1234"</span>,</span></span>
+<span class="r-in"><span>  connectionDetails <span class="op">=</span> <span class="fu">Eunomia</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Eunomia/man/getEunomiaConnectionDetails.html" class="external-link">getEunomiaConnectionDetails</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,</span></span>
 <span class="r-in"><span>  cohortTable <span class="op">=</span> <span class="st">"cohort"</span>,</span></span>
 <span class="r-in"><span>  oldToNewCohortId <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>    oldCohortId <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span>,</span></span>
@@ -139,7 +139,7 @@ with transformed. By default - it will not be replaced, and an error message is 
 <span class="r-in"><span>  <span class="op">)</span>,</span></span>
 <span class="r-in"><span>  purgeConflicts <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in if (!dbms %in% supportedDbmss) {    abort(sprintf("DBMS '%s' not supported. Please use one of these values: '%s'",         dbms, paste(supportedDbmss, collapse = "', '")))}:</span> argument is of length zero</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Connecting using SQLite driver</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
