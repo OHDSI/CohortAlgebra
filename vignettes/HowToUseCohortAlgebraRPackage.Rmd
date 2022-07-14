@@ -3,11 +3,11 @@ title: "How to Use CohortAlgebra R Package"
 author: "Gowtham A. Rao"
 date: "`r Sys.Date()`"
 output:
-  pdf_document: 
-    toc: yes     
   html_document:
     number_sections: yes
     toc: yes  
+  pdf_document: 
+    toc: yes     
 vignette: >
   %\VignetteIndexEntry{Creating a study package}
   %\VignetteEncoding{UTF-8}    
@@ -41,36 +41,571 @@ This package allows the creation of new cohorts from previously instantiated coh
 ## Installation
 - This  is an installable R-package that may be installed as follows: 
 ```{r tidy=FALSE,eval=FALSE}
-  remotes::install_github("OHDSI/CohortAlgebra")
+remotes::install_github("OHDSI/CohortAlgebra")
+
+```
+
+```{r tidy=FALSE,eval=TRUE, echo=FALSE}
+library(dplyr)
+connectionDetails <- DatabaseConnector::createConnectionDetails(
+  dbms = "postgresql",
+  user = Sys.getenv("CDM5_POSTGRESQL_USER"),
+  password = Sys.getenv("CDM5_POSTGRESQL_PASSWORD"),
+  server = Sys.getenv("CDM5_POSTGRESQL_SERVER")
+  
+)
+cohortDatabaseSchema <- Sys.getenv("CDM5_POSTGRESQL_OHDSI_SCHEMA")
+
+# generate unique name for a cohort table
+sysTime <- as.numeric(Sys.time()) * 100000
+tableName <- paste0("cr", sysTime)
+tempTableName <- paste0("#", tableName, "_1")
+
 ```
 
 ## Cohort UNION
 - Given two or more cohorts, an UNION operator on these cohorts creates a new cohort with continuous days the persons was present in any of the cohorts.
 
-![Cohort Union](CohortUnion.png)
-To perform Cohort Union, we use the eraFyCohort function. One of the key input is the oldToNewCohortId. In this data frame object we specifiy the cohort id's of the cohorts we want to union. The newCohortId is the cohortId of the resultant cohort. The parameter purgeConflicts will delete any cohort records in the cohort table where cohortId is the cohortId of the newCohort (in this example 4.)
-
-
-```{r tidy=FALSE,eval=FALSE}
-
-  oldToNewCohortId <- dplyr::tibble(oldCohortId = c(1, 2, 3), newCohortId = c(4,4,4))
-
-  CohortAlgebra::eraFyCohorts(connectionDetails = connectionDetails,
-                              cohortDatabaseSchema = cohortDatabaseSchema, 
-                              cohortTable = "cohort", 
-                              oldToNewCohortId = oldToNewCohortId, 
-                              eraconstructorpad = 0, 
-                              purgeConflicts = TRUE)
+```{r tidy=FALSE,eval=TRUE}
+cohort <- dplyr::tibble(
+  cohortDefinitionId = c(1, 2, 2),
+  subjectId = c(1, 1, 1),
+  cohortStartDate = c(
+    as.Date("2022-01-01"),
+    as.Date("2022-02-10"),
+    as.Date("2022-08-15")
+  ),
+  cohortEndDate = c(
+    as.Date("2022-03-01"),
+    as.Date("2022-05-10"),
+    as.Date("2022-12-30")
+  )
+)
+cohort
 ```
 
+```{r tidy=FALSE,eval=TRUE, echo=FALSE}
+# upload table
+connection <-
+  DatabaseConnector::connect(connectionDetails = connectionDetails)
+DatabaseConnector::insertTable(
+  connection = connection,
+  databaseSchema = cohortDatabaseSchema,
+  tableName = tableName,
+  data = cohort,
+  dropTableIfExists = TRUE,
+  createTable = TRUE,
+  tempTable = FALSE,
+  camelCaseToSnakeCase = TRUE,
+  progressBar = FALSE
+)
+```
 
-### use of eraConstructionPad (special case)
+The union of the three cohorts is expected to give us
 
 
-## EraFy Cohort
+```{r tidy=FALSE,eval=TRUE}
+cohortExpected <- dplyr::tibble(
+  cohortDefinitionId = c(3, 3),
+  subjectId = c(1, 1),
+  cohortStartDate = c(as.Date("2022-01-01"), as.Date("2022-08-15")),
+  cohortEndDate = c(as.Date("2022-05-10"), as.Date("2022-12-30"))
+)
+cohortExpected
+```
+
+![Cohort Union](CohortUnion.png)
+To perform Cohort Union, we use the unionCohorts function. This function requires as an input a data.frame called oldToNewCohortId. Here we specify the cohort id's of the cohorts we want to union. The newCohortId is the cohortId of the resultant cohort. The oldCohortId are cohorts that are already in the cohort table. 
+
+
+```{r tidy=FALSE,eval=TRUE}
+oldToNewCohortId <-
+  dplyr::tibble(oldCohortId = c(1, 2, 2),
+                newCohortId = c(3, 3, 3))
+
+CohortAlgebra::unionCohorts(
+  connection = connection,
+  cohortDatabaseSchema = cohortDatabaseSchema,
+  cohortTable = tableName,
+  oldToNewCohortId = oldToNewCohortId
+)
+```
+
+Now we will have a new cohortId '3' which is the union of cohortId's 1 and 2.
+
+```{r tidy=FALSE,eval=TRUE}
+data <-
+  DatabaseConnector::renderTranslateQuerySql(
+    connection = connection,
+    sql = paste0(
+      "SELECT * FROM @cohort_database_schema.@table_name
+        where cohort_definition_id = 3
+        order by cohort_definition_id, subject_id, cohort_start_date;"
+    ),
+    cohort_database_schema = cohortDatabaseSchema,
+    table_name = tableName,
+    snakeCaseToCamelCase = TRUE
+  ) %>%
+  dplyr::tibble()
+
+data
+```
+
+Note: if the target cohort table had a cohort with cohortId = 3, before running the union function - this would cause a conflict. In those cases, the union function would not run. We can purge all records for cohortId = 3 from the target cohort table. The parameter purgeConflicts will delete any cohort records in the cohort table where cohortId is the cohortId of the newCohort.
 
 
 ## InterSect Cohort
+- Given two or more cohorts, an INTERSECT operator on these cohorts creates a new cohort with continuous days the persons was present in ALL of the cohorts.
 
+### Intersect cohort example 1
+
+Input:
+
+```{r tidy=FALSE,eval=TRUE}
+cohort <- dplyr::tibble(
+  cohortDefinitionId = c(1, 2),
+  subjectId = c(1, 1),
+  cohortStartDate = c(
+    as.Date("2022-01-01"),
+    as.Date("2021-12-15")
+  ),
+  cohortEndDate = c(
+    as.Date("2022-01-15"),
+    as.Date("2022-01-30")
+  )
+)
+cohort
+```
+```{r tidy=FALSE,eval=TRUE, echo=FALSE}
+
+DatabaseConnector::insertTable(
+  connection = connection,
+  databaseSchema = cohortDatabaseSchema,
+  tableName = tableName,
+  data = cohort,
+  dropTableIfExists = TRUE,
+  createTable = TRUE,
+  tempTable = FALSE,
+  camelCaseToSnakeCase = TRUE,
+  progressBar = FALSE
+)
+```
+
+```{r tidy=FALSE,eval=TRUE, echo=TRUE}
+CohortAlgebra::intersectCohorts(
+  connection = connection,
+  cohortDatabaseSchema = cohortDatabaseSchema,
+  cohortTable = tableName,
+  cohortIds = c(1, 2),
+  newCohortId = 3
+)
+```
+
+![Cohort Intersect 1](IntersectExample1.PNG)
+
+Output
+
+```{r tidy=FALSE,eval=TRUE, echo=FALSE}
+
+data <-
+  DatabaseConnector::renderTranslateQuerySql(
+    connection = connection,
+    sql = paste0(
+      "SELECT * FROM @cohort_database_schema.@table_name
+        where cohort_definition_id = 3
+        order by cohort_definition_id, subject_id, cohort_start_date;"
+    ),
+    cohort_database_schema = cohortDatabaseSchema,
+    table_name = tableName,
+    snakeCaseToCamelCase = TRUE
+  ) %>%
+  dplyr::tibble()
+
+data
+```
+
+### Intersect cohort example 2
+
+Input:
+
+```{r tidy=FALSE,eval=TRUE}
+cohort <- dplyr::tibble(
+  cohortDefinitionId = c(1, 2, 2),
+  subjectId = c(1, 1, 1),
+  cohortStartDate = c(
+    as.Date("2022-01-01"),
+    as.Date("2021-12-15"),
+    as.Date("2022-01-10")
+  ),
+  cohortEndDate = c(
+    as.Date("2022-01-15"),
+    as.Date("2022-01-05"),
+    as.Date("2022-01-30")
+  )
+)
+cohort
+```
+```{r tidy=FALSE,eval=TRUE, echo=FALSE}
+
+DatabaseConnector::insertTable(
+  connection = connection,
+  databaseSchema = cohortDatabaseSchema,
+  tableName = tableName,
+  data = cohort,
+  dropTableIfExists = TRUE,
+  createTable = TRUE,
+  tempTable = FALSE,
+  camelCaseToSnakeCase = TRUE,
+  progressBar = FALSE
+)
+```
+
+```{r tidy=FALSE,eval=TRUE, echo=TRUE}
+CohortAlgebra::intersectCohorts(
+  connection = connection,
+  cohortDatabaseSchema = cohortDatabaseSchema,
+  cohortTable = tableName,
+  cohortIds = c(1, 2),
+  newCohortId = 3
+)
+```
+
+![Cohort Intersect 2](IntersectExample2.PNG)
+
+Output
+
+```{r tidy=FALSE,eval=TRUE, echo=FALSE}
+
+data <-
+  DatabaseConnector::renderTranslateQuerySql(
+    connection = connection,
+    sql = paste0(
+      "SELECT * FROM @cohort_database_schema.@table_name
+        where cohort_definition_id = 3
+        order by cohort_definition_id, subject_id, cohort_start_date;"
+    ),
+    cohort_database_schema = cohortDatabaseSchema,
+    table_name = tableName,
+    snakeCaseToCamelCase = TRUE
+  ) %>%
+  dplyr::tibble()
+
+data
+```
+
+
+### Intersect cohort example 3
+
+Input:
+
+```{r tidy=FALSE,eval=TRUE}
+cohort <- dplyr::tibble(
+  cohortDefinitionId = c(1, 2, 3),
+  subjectId = c(1, 1, 1),
+  cohortStartDate = c(
+    as.Date("2022-01-01"),
+    as.Date("2021-12-15"),
+    as.Date("2022-03-01")
+  ),
+  cohortEndDate = c(
+    as.Date("2022-01-15"),
+    as.Date("2022-01-30"),
+    as.Date("2022-03-15")
+  )
+)
+cohort
+```
+```{r tidy=FALSE,eval=TRUE, echo=FALSE}
+
+DatabaseConnector::insertTable(
+  connection = connection,
+  databaseSchema = cohortDatabaseSchema,
+  tableName = tableName,
+  data = cohort,
+  dropTableIfExists = TRUE,
+  createTable = TRUE,
+  tempTable = FALSE,
+  camelCaseToSnakeCase = TRUE,
+  progressBar = FALSE
+)
+```
+
+```{r tidy=FALSE,eval=TRUE, echo=TRUE}
+CohortAlgebra::intersectCohorts(
+  connection = connection,
+  cohortDatabaseSchema = cohortDatabaseSchema,
+  cohortTable = tableName,
+  cohortIds = c(1, 2, 3),
+  newCohortId = 4
+)
+```
+
+![Cohort Intersect 3](IntersectExample3.PNG)
+
+Output
+
+```{r tidy=FALSE,eval=TRUE, echo=FALSE}
+
+data <-
+  DatabaseConnector::renderTranslateQuerySql(
+    connection = connection,
+    sql = paste0(
+      "SELECT * FROM @cohort_database_schema.@table_name
+        where cohort_definition_id = 4
+        order by cohort_definition_id, subject_id, cohort_start_date;"
+    ),
+    cohort_database_schema = cohortDatabaseSchema,
+    table_name = tableName,
+    snakeCaseToCamelCase = TRUE
+  ) %>%
+  dplyr::tibble()
+
+data
+```
+
+
+### Intersect cohort example 4
+
+Input:
+
+```{r tidy=FALSE,eval=TRUE}
+cohort <- dplyr::tibble(
+  cohortDefinitionId = c(1, 2),
+  subjectId = c(1, 1),
+  cohortStartDate = c(
+    as.Date("2022-01-01"),
+    as.Date("2021-12-15")
+  ),
+  cohortEndDate = c(
+    as.Date("2022-01-15"),
+    as.Date("2022-01-30")
+  )
+)
+cohort
+```
+
+```{r tidy=FALSE,eval=TRUE, echo=FALSE}
+
+DatabaseConnector::insertTable(
+  connection = connection,
+  databaseSchema = cohortDatabaseSchema,
+  tableName = tableName,
+  data = cohort,
+  dropTableIfExists = TRUE,
+  createTable = TRUE,
+  tempTable = FALSE,
+  camelCaseToSnakeCase = TRUE,
+  progressBar = FALSE
+)
+```
+
+```{r tidy=FALSE,eval=TRUE, echo=TRUE}
+CohortAlgebra::intersectCohorts(
+  connection = connection,
+  cohortDatabaseSchema = cohortDatabaseSchema,
+  cohortTable = tableName,
+  cohortIds = c(1, 2, 3),
+  newCohortId = 4
+)
+```
+
+![Cohort Intersect 4](IntersectExample4.PNG)
+
+Output
+
+```{r tidy=FALSE,eval=TRUE, echo=FALSE}
+
+data <-
+  DatabaseConnector::renderTranslateQuerySql(
+    connection = connection,
+    sql = paste0(
+      "SELECT * FROM @cohort_database_schema.@table_name
+        where cohort_definition_id = 4
+        order by cohort_definition_id, subject_id, cohort_start_date;"
+    ),
+    cohort_database_schema = cohortDatabaseSchema,
+    table_name = tableName,
+    snakeCaseToCamelCase = TRUE
+  ) %>%
+  dplyr::tibble()
+
+data
+```
+
+### Intersect cohort example 5
+
+
+Input:
+
+```{r tidy=FALSE,eval=TRUE}
+cohort <- dplyr::tibble(
+  cohortDefinitionId = c(1, 2),
+  subjectId = c(1, 1),
+  cohortStartDate = c(
+    as.Date("2022-01-01"),
+    as.Date("2022-01-01")
+  ),
+  cohortEndDate = c(
+    as.Date("2022-01-01"),
+    as.Date("2022-01-02")
+  )
+)
+cohort
+```
+
+```{r tidy=FALSE,eval=TRUE, echo=FALSE}
+
+DatabaseConnector::insertTable(
+  connection = connection,
+  databaseSchema = cohortDatabaseSchema,
+  tableName = tableName,
+  data = cohort,
+  dropTableIfExists = TRUE,
+  createTable = TRUE,
+  tempTable = FALSE,
+  camelCaseToSnakeCase = TRUE,
+  progressBar = FALSE
+)
+```
+
+```{r tidy=FALSE,eval=TRUE, echo=TRUE}
+CohortAlgebra::intersectCohorts(
+  connection = connection,
+  cohortDatabaseSchema = cohortDatabaseSchema,
+  cohortTable = tableName,
+  cohortIds = c(1, 2),
+  newCohortId = 3
+)
+```
+
+![Cohort Intersect 5](IntersectExample5.PNG)
+
+Output
+
+```{r tidy=FALSE,eval=TRUE, echo=FALSE}
+
+data <-
+  DatabaseConnector::renderTranslateQuerySql(
+    connection = connection,
+    sql = paste0(
+      "SELECT * FROM @cohort_database_schema.@table_name
+        where cohort_definition_id = 3
+        order by cohort_definition_id, subject_id, cohort_start_date;"
+    ),
+    cohort_database_schema = cohortDatabaseSchema,
+    table_name = tableName,
+    snakeCaseToCamelCase = TRUE
+  ) %>%
+  dplyr::tibble()
+
+data
+```
 
 ## Minus Cohort
+
+
+Input:
+
+```{r tidy=FALSE,eval=TRUE}
+cohort <- dplyr::tibble(
+  cohortDefinitionId = c(1, 2),
+  subjectId = c(1, 1),
+  cohortStartDate = c(
+    as.Date("2022-01-01"),
+    as.Date("2022-02-10")
+  ),
+  cohortEndDate = c(
+    as.Date("2022-03-01"),
+    as.Date("2022-05-10")
+  )
+)
+cohort
+```
+
+```{r tidy=FALSE,eval=TRUE, echo=FALSE}
+
+DatabaseConnector::insertTable(
+  connection = connection,
+  databaseSchema = cohortDatabaseSchema,
+  tableName = tableName,
+  data = cohort,
+  dropTableIfExists = TRUE,
+  createTable = TRUE,
+  tempTable = FALSE,
+  camelCaseToSnakeCase = TRUE,
+  progressBar = FALSE
+)
+```
+
+```{r tidy=FALSE,eval=TRUE, echo=TRUE}
+CohortAlgebra::minusCohorts(
+  connection = connection,
+  cohortDatabaseSchema = cohortDatabaseSchema,
+  cohortTable = tableName,
+  firstCohortId = 1,
+  secondCohortId = 2,
+  newCohortId = 3
+)
+```
+
+![Cohort Minus](MinusExample1.PNG)
+
+Output for example 1
+
+```{r tidy=FALSE,eval=TRUE, echo=FALSE}
+
+data <-
+  DatabaseConnector::renderTranslateQuerySql(
+    connection = connection,
+    sql = paste0(
+      "SELECT * FROM @cohort_database_schema.@table_name
+        where cohort_definition_id = 3
+        order by cohort_definition_id, subject_id, cohort_start_date;"
+    ),
+    cohort_database_schema = cohortDatabaseSchema,
+    table_name = tableName,
+    snakeCaseToCamelCase = TRUE
+  ) %>%
+  dplyr::tibble()
+
+data
+```
+
+But if the cohorts are switched, i.e. minus cohort 1 from Cohort 2
+
+
+```{r tidy=FALSE,eval=TRUE, echo=TRUE}
+CohortAlgebra::minusCohorts(
+  connection = connection,
+  cohortDatabaseSchema = cohortDatabaseSchema,
+  cohortTable = tableName,
+  firstCohortId = 2,
+  secondCohortId = 1,
+  newCohortId = 4
+)
+```
+
+![Cohort Minus](MinusExample2.PNG)
+
+Output
+
+```{r tidy=FALSE,eval=TRUE, echo=FALSE}
+
+data <-
+  DatabaseConnector::renderTranslateQuerySql(
+    connection = connection,
+    sql = paste0(
+      "SELECT * FROM @cohort_database_schema.@table_name
+        where cohort_definition_id = 4
+        order by cohort_definition_id, subject_id, cohort_start_date;"
+    ),
+    cohort_database_schema = cohortDatabaseSchema,
+    table_name = tableName,
+    snakeCaseToCamelCase = TRUE
+  ) %>%
+  dplyr::tibble()
+
+data
+```
+
+Sequence of cohorts are important for minusCohort
