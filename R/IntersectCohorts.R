@@ -42,7 +42,7 @@
 #' NULL
 #'
 #' intersectCohorts(
-#'  connection = NULL,
+#'  connectionDetails = Eunomia::getEunomiaConnectionDetails(),
 #'  cohortDatabaseSchema = "study1234",
 #'  cohortTable = "cohort",
 #'  cohortIds = c(1, 2, 3),

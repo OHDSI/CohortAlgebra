@@ -52,7 +52,7 @@ cohort union operator to create new cohorts.
 }
 \examples{
 unionCohorts(
-  connection = NULL,
+  connectionDetails = Eunomia::getEunomiaConnectionDetails(),
   cohortDatabaseSchema = "study1234",
   cohortTable = "cohort",
   oldToNewCohortId = dplyr::tibble(

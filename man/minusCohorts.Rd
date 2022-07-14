@@ -54,7 +54,7 @@ dates the subject also had on the second cohort.
 }
 \examples{
 minusCohorts(
-  connection = NULL,
+  connectionDetails = Eunomia::getEunomiaConnectionDetails(),
   cohortDatabaseSchema = "study1234",
   cohortTable = "cohort",
   firstCohortId = 1,
