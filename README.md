@@ -19,8 +19,7 @@ Cohort Minus: Take only two cohorts (different from Cohort union and intersect).
 
 Features
 ========
-- Create new cohorts
-- Era fy cohorts
+- Create new cohorts from existing cohorts.
 
 Technology
 ============
