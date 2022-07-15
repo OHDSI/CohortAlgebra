@@ -19,7 +19,7 @@ be in the final cohort."><!-- mathjax --><script src="https://cdnjs.cloudflare.c
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">CohortAlgebra</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
       </span>
     </div>
 
@@ -129,6 +129,22 @@ temp tables. To emulate temp tables, provide a schema with write
 privileges where temp tables can be created.</p></dd>
 
 </dl></div>
+    <div id="value">
+    <h2>Value</h2>
+    
+
+<p>NULL</p>
+
+
+<p>intersectCohorts(
+connectionDetails = Eunomia::getEunomiaConnectionDetails(),
+cohortDatabaseSchema = "main",
+cohortTable = "cohort",
+cohortIds = c(1, 2, 3),
+newCohortId = 9,
+purgeConflicts = TRUE
+)</p>
+    </div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

@@ -1,3 +1,11 @@
+CohortAlgebra 0.2.0
+======================
+
+Changes:
+- Cohort union function
+- Cohort eraFy function is now a hidden function. 
+- Updated vignette
+
 CohortAlgebra 0.1.3
 ======================
 

@@ -41,6 +41,14 @@
 #' @return
 #' NULL
 #'
+#' intersectCohorts(
+#'  connectionDetails = Eunomia::getEunomiaConnectionDetails(),
+#'  cohortDatabaseSchema = "main",
+#'  cohortTable = "cohort",
+#'  cohortIds = c(1, 2, 3),
+#'  newCohortId = 9,
+#'  purgeConflicts = TRUE
+#' )
 #' @export
 intersectCohorts <- function(connectionDetails = NULL,
                              connection = NULL,
