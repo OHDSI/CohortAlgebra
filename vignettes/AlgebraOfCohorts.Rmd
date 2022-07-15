@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
   tidy = FALSE)
 ```
 
-CohortAlgebra explores the creation of algebraic operations on OHDSI cohorts and cohort definitions. This vignette will examine why and how we might want to define these operations as well as how to use the functions in CohortAlgebra to perform them.
+CohortAlgebra explores the creation of algebraic operations on OHDSI cohorts and cohort definitions. This vignette will examine why and how to define these operations.
 
 # Motivation
 
@@ -143,12 +143,12 @@ Cohort3 \bigcup Cohort4 = \\
 $$
 
 
-Cohort 1: 2 diagnosis codes
-Cohort 2: 2 diagnosis codes and 1 procedure
-Cohort 3 $\cup$ 4: 2 diagnosis codes and 1 procedure and (1 drug or at most 1 dx for Monoclonal gammopathy) 
-Cohort 3: 2 diagnosis codes and 1 procedure and 1 drug
-Cohort 4: 2 diagnosis codes and 1 procedure and at most 1 dx for Monoclonal gammopathy
-Cohort 3 $\cap$ 4: 2 diagnosis codes and 1 procedure and 1 drug and at most 1 dx for Monoclonal gammopathy
+* Cohort 1: 2 diagnosis codes
+* Cohort 2: 2 diagnosis codes and 1 procedure
+* Cohort 3 $\cup$ 4: 2 diagnosis codes and 1 procedure and (1 drug or at most 1 dx for Monoclonal gammopathy) 
+* Cohort 3: 2 diagnosis codes and 1 procedure and 1 drug
+* Cohort 4: 2 diagnosis codes and 1 procedure and at most 1 dx for Monoclonal gammopathy
+* Cohort 3 $\cap$ 4: 2 diagnosis codes and 1 procedure and 1 drug and at most 1 dx for Monoclonal gammopathy
 
 
 What we really have is two different ordered sets giving rise two two different cohort lattices. We have an ordering on *cohort definitions* and we also have an ordering on *generated cohorts*. We also have a natural mapping from cohort definitions to generated cohorts that preserves this order relation, namely the generation function which we will call $G$. The generate function maps cohort definitions to generated cohorts *on a specific CDM dataset*. Since we are interested in properties of $G$ that are not dependent on which CDM dataset we are using we will treat $G$ as the generate function for an arbitrary CDM dataset.
@@ -158,18 +158,14 @@ What we really have is two different ordered sets giving rise two two different 
 
 In OHDSI we have several different ways to create cohorts: circe-be cohorts created with Atlas or Capr, custom SQL, probabilistic cohorts created with Aphrodite. For the purposes of CohortAlgebra we are interested in cohort definitions that have well defined ordering as well as union and intersection operations.  
 
-What are the union and intersection operations for circe-be? It might be better to abstact the operations of union and intersection. Namely we have two operations that are each known by several different names:
+It might be better to abstact the operations of union and intersection. Namely we have two operations that are each known by several different names:
 
 Operation 1: $\cup$, union, join, $\lor$, logical OR
 
 Operation 2: $\cap$, intersection, meet, $\land$, logical AND
 
 
-The terms *join*, $\lor$, and *meet*, $\land$, are often used when discussing lattices to we will use these for cohort definitions.
-
-
-TODO: Define the join (logical OR) and meet (logical AND) operations for Cice-be cohort definitions
-
+The terms *join*, $\lor$, and *meet*, $\land$, are often used when discussing lattices to we will use these for cohort definitions. It is not clear yet if how to define these operations for circe-be cohort definitions.
 
 
 # Properties of the generation function $G$
@@ -203,7 +199,8 @@ Functions provided by the package:
 
 - union
 - intersection
-- setdiff
+- set difference
+- complement
 - ...
 
 
