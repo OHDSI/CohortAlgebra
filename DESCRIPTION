@@ -1,8 +1,8 @@
 Package: CohortAlgebra
 Type: Package
 Title: Cohort Algebra to create new cohort(s) from existing cohorts
-Version: 0.1.3
-Date: 2022-07-12
+Version: 0.2.0
+Date: 2022-07-14
 Authors@R: c(
     person("Gowtham", "Rao", email = "rao@ohdsi.org", role = c("aut", "cre")),
     person("Adam", "Black", email = "black@ohdsi.org", role = c("aut")),
@@ -16,6 +16,7 @@ Depends:
 Imports:
     checkmate,
     dplyr,
+    Eunomia,
     ParallelLogger,
   	rlang
 Suggests:
@@ -25,6 +26,7 @@ Suggests:
 	testthat,
 	withr
 Remotes:
+  ohdsi/Eunomia,
   ohdsi/ParallelLogger
 License: Apache License
 RoxygenNote: 7.2.0

@@ -41,6 +41,18 @@
 #' @return
 #' NULL
 #'
+#'
+#' @examples
+#' minusCohorts(
+#'   connectionDetails = Eunomia::getEunomiaConnectionDetails(),
+#'   cohortDatabaseSchema = "main",
+#'   cohortTable = "cohort",
+#'   firstCohortId = 1,
+#'   secondCohortId = 2,
+#'   newCohortId = 9,
+#'   purgeConflicts = TRUE
+#' )
+#'
 #' @export
 minusCohorts <- function(connectionDetails = NULL,
                          connection = NULL,

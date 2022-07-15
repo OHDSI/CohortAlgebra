@@ -4,7 +4,6 @@ testthat::test_that("Testing cohort era fy", {
   tableName <- paste0("cr", sysTime)
   tempTableName <- paste0("#", tableName, "_1")
 
-  undebug(eraFyCohorts)
   # make up date for a cohort table
   # this cohort table will have two subjects * two cohorts, within the same cohort
   cohort <- dplyr::tibble(
@@ -67,7 +66,7 @@ testthat::test_that("Testing cohort era fy", {
   DatabaseConnector::disconnect(connection)
 
   # should not throw error
-  CohortAlgebra::eraFyCohorts(
+  CohortAlgebra:::eraFyCohorts(
     connectionDetails = connectionDetails,
     cohortDatabaseSchema = cohortDatabaseSchema,
     cohortTable = tableName,
@@ -120,7 +119,7 @@ testthat::test_that("Testing cohort era fy", {
 
   # this should throw error as there is already a cohort with cohort_definition_id = 9
   testthat::expect_error(
-    CohortAlgebra::eraFyCohorts(
+    CohortAlgebra:::eraFyCohorts(
       connectionDetails = connectionDetails,
       cohortDatabaseSchema = cohortDatabaseSchema,
       cohortTable = tableName,
@@ -134,7 +133,7 @@ testthat::test_that("Testing cohort era fy", {
   # it should return a message
   testthat::expect_message(
     object =
-      CohortAlgebra::eraFyCohorts(
+      CohortAlgebra:::eraFyCohorts(
         connectionDetails = connectionDetails,
         cohortDatabaseSchema = cohortDatabaseSchema,
         cohortTable = tableName,
@@ -165,7 +164,7 @@ testthat::test_that("Testing cohort era fy", {
 
   testthat::expect_error(
     object = # throw error because cdmDatabaseSchema is not provide
-      CohortAlgebra::eraFyCohorts(
+      CohortAlgebra:::eraFyCohorts(
         connection = connection,
         cohortTable = tempTableName,
         oldToNewCohortId = dplyr::tibble(oldCohortId = 1, newCohortId = 10),
@@ -173,8 +172,8 @@ testthat::test_that("Testing cohort era fy", {
         purgeConflicts = FALSE
       )
   )
-  debug(eraFyCohorts)
-  CohortAlgebra::eraFyCohorts(
+
+  CohortAlgebra:::eraFyCohorts(
     connection = connection,
     cohortTable = tempTableName,
     oldToNewCohortId = dplyr::tibble(oldCohortId = 1, newCohortId = 10),
@@ -210,7 +209,7 @@ testthat::test_that("Testing cohort era fy", {
 
   # this should throw error as there is already a cohort with cohort_definition_id = 10
   testthat::expect_error(
-    CohortAlgebra::eraFyCohorts(
+    CohortAlgebra:::eraFyCohorts(
       connectionDetails = connectionDetails,
       cohortTable = tempTableName,
       oldToNewCohortId = dplyr::tibble(oldCohortId = 1, newCohortId = 10),
