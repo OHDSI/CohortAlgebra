@@ -65,6 +65,7 @@ unionCohorts <- function(connectionDetails = NULL,
     oldToNewCohortId = oldToNewCohortId,
     eraconstructorpad = 0,
     cdmDatabaseSchema = NULL,
-    tempEmulationSchema = tempEmulationSchema
+    tempEmulationSchema = tempEmulationSchema,
+    purgeConflicts = purgeConflicts
   )
 }
