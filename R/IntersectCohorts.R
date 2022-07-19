@@ -151,7 +151,7 @@ intersectCohorts <- function(connectionDetails = NULL,
   )
 
   numberOfCohorts <- length(cohortIds %>% unique())
-  
+
   sql <- SqlRender::loadRenderTranslateSql(
     sqlFilename = "IntersectCohorts.sql",
     packageName = utils::packageName(),
@@ -162,11 +162,13 @@ intersectCohorts <- function(connectionDetails = NULL,
     temp_table_1 = tempTable1,
     temp_table_2 = tempTable2
   )
-  DatabaseConnector::executeSql(connection = connection, 
-                                sql = sql,
-                                profile = FALSE,
-                                progressBar = FALSE,
-                                reportOverallTime = FALSE)
+  DatabaseConnector::executeSql(
+    connection = connection,
+    sql = sql,
+    profile = FALSE,
+    progressBar = FALSE,
+    reportOverallTime = FALSE
+  )
 
   suppressMessages(
     eraFyCohorts(

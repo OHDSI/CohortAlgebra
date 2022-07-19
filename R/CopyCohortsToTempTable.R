@@ -52,7 +52,7 @@ copyCohortsToTempTable <- function(connection = NULL,
     camelCaseToSnakeCase = TRUE,
     data = oldToNewCohortId
   )
-  
+
   sql <- SqlRender::loadRenderTranslateSql(
     sqlFilename = "CopyCohorts.sql",
     packageName = utils::packageName(),
@@ -62,9 +62,11 @@ copyCohortsToTempTable <- function(connection = NULL,
     target_cohort_table = targetCohortTable,
     tempEmulationSchema = tempEmulationSchema
   )
-  DatabaseConnector::executeSql(connection = connection, 
-                                sql = sql,
-                                profile = FALSE,
-                                progressBar = FALSE,
-                                reportOverallTime = FALSE)
+  DatabaseConnector::executeSql(
+    connection = connection,
+    sql = sql,
+    profile = FALSE,
+    progressBar = FALSE,
+    reportOverallTime = FALSE
+  )
 }

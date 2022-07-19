@@ -176,11 +176,13 @@ minusCohorts <- function(connectionDetails = NULL,
     temp_table_2 = tempTable2,
     tempEmulationSchema = tempEmulationSchema
   )
-  DatabaseConnector::executeSql(connection = connection, 
-                                sql = sql,
-                                profile = FALSE,
-                                progressBar = FALSE,
-                                reportOverallTime = FALSE)
+  DatabaseConnector::executeSql(
+    connection = connection,
+    sql = sql,
+    profile = FALSE,
+    progressBar = FALSE,
+    reportOverallTime = FALSE
+  )
 
   # date corrections
   dateCorrectionSql <- "

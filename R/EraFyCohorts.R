@@ -162,7 +162,7 @@ eraFyCohorts <- function(connectionDetails = NULL,
     sourceCohortTable = cohortTable,
     targetCohortTable = tempTable1
   )
-  
+
   sql <- SqlRender::loadRenderTranslateSql(
     sqlFilename = "EraFyCohorts.sql",
     packageName = utils::packageName(),
@@ -173,11 +173,13 @@ eraFyCohorts <- function(connectionDetails = NULL,
     temp_table_1 = tempTable1,
     temp_table_2 = tempTable2
   )
-  DatabaseConnector::executeSql(connection = connection, 
-                                sql = sql,
-                                profile = FALSE,
-                                progressBar = FALSE,
-                                reportOverallTime = FALSE)
+  DatabaseConnector::executeSql(
+    connection = connection,
+    sql = sql,
+    profile = FALSE,
+    progressBar = FALSE,
+    reportOverallTime = FALSE
+  )
 
   cohortIdsToDeleteFromSource <- oldToNewCohortId %>%
     dplyr::filter(.data$oldCohortId == .data$newCohortId) %>%

@@ -9,3 +9,4 @@ FROM {@source_database_schema != ''} ? {@source_database_schema.@source_cohort_t
 INNER JOIN #old_to_new_cohort_id target
 ON source.cohort_definition_id = target.old_cohort_id
 ;
+
