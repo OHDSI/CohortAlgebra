@@ -1,3 +1,12 @@
+CohortAlgebra 0.2.1
+======================
+
+Changes:
+- Code reorganization to follow HADES convention. Long SQL moved to inst/sql_server/sql folder per HADES convention.
+
+Bug fix:
+- Fixed missing purgeConflicts in unionCohorts function.
+
 CohortAlgebra 0.2.0
 ======================
 
