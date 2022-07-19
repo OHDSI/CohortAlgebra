@@ -18,7 +18,8 @@ Imports:
     dplyr,
     Eunomia,
     ParallelLogger,
-  	rlang
+  	rlang,
+  	SqlRender
 Suggests:
   remotes,
   rmarkdown,
