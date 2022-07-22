@@ -20,15 +20,9 @@ knitr::opts_chunk$set(
   tidy = FALSE)
 ```
 
-CohortAlgebra explores the creation of algebraic operations on OHDSI cohorts and cohort definitions. This vignette will examine why and how to define these operations.
-
-# Motivation
-
-Formal systems that are the domain of mathematics often exhibit properties that are both aesthetic and utilitarian. For example, symmetry, a property at the heart of algebraic systems, has application in both computer science and art. By adding a formal algebraic structure to cohort definitions we can apply theory developed in the abstract and apply it to the special case of observational cohort definition. Specifically, our aim is to apply the theory of lattices to OHDSI cohort definitions.
+_CohortAlgebra_ explores the application of [the algebra of sets](https://en.wikipedia.org/wiki/Algebra#Abstract_algebra) to OHDSI cohorts. This vignette will examine why and how to define these operations as well as their potential application to phenotyping across a data network. By adding an algebraic structure to cohort definitions we apply theory developed in the abstract to the special case of observational cohort definition. 
 
 # Set theory
-
-This vignette assumes no prior knowledge in math or lattice theory but will use math notation for it's ability to be both precise and concise.
 
 In OHDSI, "A cohort is a set of persons who satisfy one or more inclusion criteria for a duration of time."
 
@@ -37,18 +31,34 @@ In OHDSI, "A cohort is a set of persons who satisfy one or more inclusion criter
 - One person may not belong to the same cohort multiple times during the same period of time
 - A cohort may have zero or more members
 
-
-In math, a *set* is simply a collection of objects where the term "object" is used in a broad sense to mean anything we can formally define. The objects in a set are called *elements*.
+In mathematics, a *set* is simply a collection of objects where the term "object" is used in a broad sense to mean anything we can formally define. The objects in a set are called *elements*.
 
 - One object may belong to multiple sets
 - One object may not belong to the same set multiple times
 - A set may have zero or more elements
 
-We can define an OHDSI cohort as a set of person-days satisfying one or more inclusion criteria. The "objects" under consideration are the days in a person's life. More specifically they are the days during which a person was under observation by some data capture mechanism. In the OMOP Common Data Model (CDM) the entire set of person-days under observation is given by the `observation_period` table which represents the largest possible cohort. All other cohorts are subsets of the `observation_period`.
+We can restate the definition an OHDSI cohort as "a set of person-days satisfying a set of inclusion criteria".
+
+Formally, a _person-day_ is defined as an ordered pair $(p,d)$ where $p$ is an element of the set of all persons, $P$, and $d$ is an element of the set of all days, $D$. We will be somewhat imprecise about exactly what $P$ and $D$ are composed of but point out that for all tense and purposes they are finite. In the OMOP Common Data Model (CDM) the entire set of person-days under observation is given by the `observation_period` table which represents the largest possible cohort. All cohorts are subsets of the `observation_period`.
 
 Let's call $O$ the set of all person-days in the observation period table of an arbitrary OMOP CDM.
 
-In math, a set $C$ is a subset of another set $O$ if and only if every element of $C$ is also an element of $O$. The set of all subsets of $O$ is called the *power set* of $O$. There is a unique set with no elements called the *empty set* which is a subset of every other set including $O$. Thus the power set of $O$ represents every possible cohort including the empty cohort which we can denote $\emptyset$
+In set theory, a set $C$ is a subset of another set $O$ if and only if every element of $C$ is also an element of $O$. The set of all subsets of $O$ is called the *power set* of $O$. There is a unique set with no elements called the *empty set* which is a subset of every other set including $O$. Thus the power set of $O$ represents every possible cohort including the empty cohort which we can denote $\emptyset$
+
+Viewing cohorts as sets of person-days allows us to define three set operations on cohorts. Suppose $A$ and $B$ are cohorts (i.e. subsets of $O$).
+
+$A \bigcup B$ is the set of all person-days in either $A$ or $B$
+
+$A \bigcap B$ is the set of all person-days in both $A$ and $B$
+
+$A^c$ is the set of all person-days in $O$ but not in $A$
+
+Other operations can be defined in terms of these operations. 
+
+$A-B = A \cap B^c$  is the set of all person days in $A$ but not in $B$
+
+Many identities have been proven for these operations that can be applied to cohort definitions.
+
 
 # Partial Order
 
@@ -72,7 +82,7 @@ $$
 O \ge Cohort1 \ge Cohort2 \ge Cohort4 \ge \emptyset
 $$
 
-Can we compare Cohort 3 and Cohort 4? It is possible that on some datasets we may have $Cohort3 \ge Cohort4$ while on others we might have $Cohort4 \ge Cohort3$. The most likely case is that neither cohort will be a subset of the other making them incomparable. This illustrates an important point about order relation on subsets. It is a *partial ordering*. Not all subsets are comparable.
+Can we compare Cohort 3 and Cohort 4? It is possible that on some datasets we may have $Cohort3 \ge Cohort4$ while on others we might have $Cohort4 \ge Cohort3$. The most likely case is that neither cohort will be a subset of the other making them incomparable. This order relation on subsets is a *partial ordering*. Not all subsets are comparable.
 
 Partially ordered sets can be visualized using a diagram where arrows are used to denote the order relations. 
 
@@ -89,15 +99,9 @@ hasseDiagram::hasse(data, labels=c("Observation period", paste("Cohort", 1:4, se
 
 # Cohort Lattices
 
-Lattices provide additional constraints and structure on partially ordered sets. We can put OHDSI cohorts into a lattice structure by defining two binary operations on cohorts: Union and Intersection denoted $\bigcup$ and $\bigcap$ respectively. These operations come directly from set theory. 
+Lattices provide additional constraints and structure on partially ordered sets. We can put OHDSI cohorts into a lattice structure by using two binary operations on cohorts: Union and Intersection.
 
-If $A$ and $B$ are cohorts (i.e. subsets of $O$) then:
-
-$A \bigcup B$ is the set of all patient-days in either $A$ or $B$
-
-$A \bigcap B$ is the set of all patient-days in both $A$ and $B$
-
-If a set of cohorts contains the union and intersection of any two cohorts it contains then it is a lattice. The power set of $O$ (i.e. all possible cohorts of an arbitrary CDM) is a lattice.
+If a set of cohorts contains the union and intersection of any two cohorts it contains then it is guaranteed to be a lattice. The power set of $O$ (i.e. all possible cohorts of an arbitrary CDM) is a lattice.
 
 
 The two cohorts in our example that are not related by ordering are Cohort 3 and Cohort 4 so let's define two new cohorts, $Cohort5 = Cohort3 \cup C4$ and $Cohort6 = Cohort3 \cap Cohort4$ to the diagram.
@@ -125,9 +129,7 @@ hasseDiagram::hasse(data, labels = labels)
 
 Can we describe what patient-days are being captured by the two new cohorts? What are the definitions of these cohorts built using the union and intersection operations?
 
-If think of cohort definitions as a logical expression composed of inclusion criteria we might be able to make use of algebraic properties of logical AND and OR.
-
-
+If think of cohort definitions as a logical expression composed of inclusion criteria we can make use of algebraic properties of logical AND and OR operations.
 
 $$
 Cohort3 \bigcap Cohort4 = \\
@@ -135,6 +137,7 @@ Cohort3 \bigcap Cohort4 = \\
 (2dx \space AND \space 1procedure \space)  \space AND  \space (1drug \space AND \space \le 1Monoclonalgammopathy) = \\
 2dx \space AND \space 1procedure  \space AND  \space 1drug \space AND \space \le 1Monoclonalgammopathy 
 $$
+
 
 $$
 Cohort3 \bigcup Cohort4 = \\
@@ -191,17 +194,7 @@ Equality here means set equality: both sets contain the same patient-days. Keep 
 
 TODO: Show that G perserves the lattice structure in the multiple myeloma example.
 
-# Computational tools
 
-CohortAlgebra provides the computational tools to explore these properties, combine cohorts and cohort definitions, and built cohort lattices.
-
-Functions provided by the package:
-
-- union
-- intersection
-- set difference
-- complement
-- ...
 
 
 
