@@ -1,8 +1,8 @@
 Package: CohortAlgebra
 Type: Package
 Title: Cohort Algebra to create new cohort(s) from existing cohorts
-Version: 0.2.0
-Date: 2022-07-14
+Version: 0.2.1
+Date: 2022-07-19
 Authors@R: c(
     person("Gowtham", "Rao", email = "rao@ohdsi.org", role = c("aut", "cre")),
     person("Adam", "Black", email = "black@ohdsi.org", role = c("aut")),
@@ -18,7 +18,8 @@ Imports:
     dplyr,
     Eunomia,
     ParallelLogger,
-  	rlang
+  	rlang,
+  	SqlRender
 Suggests:
   remotes,
   rmarkdown,
@@ -29,7 +30,7 @@ Remotes:
   ohdsi/Eunomia,
   ohdsi/ParallelLogger
 License: Apache License
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.1
 VignetteBuilder: knitr
 Roxygen: list(markdown = TRUE)
 Encoding: UTF-8

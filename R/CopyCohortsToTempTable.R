@@ -53,27 +53,20 @@ copyCohortsToTempTable <- function(connection = NULL,
     data = oldToNewCohortId
   )
 
-  sqlCopyCohort <- "
-                  DROP TABLE IF EXISTS @target_cohort_table;
-                  SELECT target.new_cohort_id cohort_definition_id,
-                          source.subject_id,
-                          source.cohort_start_date,
-                          source.cohort_end_date
-                  INTO @target_cohort_table
-                  FROM {@source_database_schema != ''} ? {@source_database_schema.@source_cohort_table} : {@source_cohort_table} source
-                  INNER JOIN #old_to_new_cohort_id target
-                  ON source.cohort_definition_id = target.old_cohort_id
-                  ;"
-
-  DatabaseConnector::renderTranslateExecuteSql(
-    connection = connection,
-    sql = sqlCopyCohort,
-    profile = FALSE,
-    progressBar = FALSE,
-    reportOverallTime = FALSE,
+  sql <- SqlRender::loadRenderTranslateSql(
+    sqlFilename = "CopyCohorts.sql",
+    packageName = utils::packageName(),
+    dbms = connection@dbms,
     source_database_schema = sourceCohortDatabaseSchema,
     source_cohort_table = sourceCohortTable,
     target_cohort_table = targetCohortTable,
     tempEmulationSchema = tempEmulationSchema
+  )
+  DatabaseConnector::executeSql(
+    connection = connection,
+    sql = sql,
+    profile = FALSE,
+    progressBar = FALSE,
+    reportOverallTime = FALSE
   )
 }
