@@ -399,8 +399,12 @@ modifyCohort <- function(connectionDetails = NULL,
     sql <- "  DROP TABLE IF EXISTS @temp_table_2;
           	SELECT cohort_definition_id,
               	  subject_id,
-              	  {@cohort_start_pad_days != ''} ? {DATEADD(DAY, @cohort_start_pad_days, cohort_start_date)} ? {cohort_start_date},
-              	  {@cohort_end_pad_days != ''} ? {DATEADD(DAY, @cohort_end_pad_days, cohort_end_date)} ? {cohort_end_date}
+              	  {@cohort_start_pad_days != ''} ? 
+              	    {DATEADD(DAY, @cohort_start_pad_days, cohort_start_date)} : 
+              	    {cohort_start_date} cohort_start_date,
+                   {@cohort_end_pad_days != ''} ? 
+                    {DATEADD(DAY, @cohort_end_pad_days, cohort_end_date)} : 
+              	        {cohort_end_date} cohort_end_date
           	INTO @temp_table_2
           	FROM @temp_table_1;
 
