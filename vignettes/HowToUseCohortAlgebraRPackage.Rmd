@@ -802,35 +802,3 @@ We can pad days as follows:
   )
 ```
 Notes: because padding days may extend cohort period outside the observation_period (which is not allowed), this function will require access to the cdmDatabaseSchema and the observation_period table.
-
-```{r tidy=FALSE,eval=TRUE, echo=FALSE}
-  cohortObserved <-
-    DatabaseConnector::renderTranslateQuerySql(
-      connection = connection,
-      sql = paste0(
-        "SELECT * FROM @cohort_database_schema.@table_name
-        WHERE cohort_definition_id = 2
-        order by cohort_definition_id, subject_id, cohort_start_date;"
-      ),
-      cohort_database_schema = cohortDatabaseSchema,
-      table_name = tableName,
-      snakeCaseToCamelCase = TRUE
-    ) %>%
-    dplyr::tibble()
-```
-Gives the following output. 
-
-```{r tidy=FALSE,eval=TRUE, echo=FALSE}
-  cohortObserved
-```
-
-```{r tidy=FALSE,eval=TRUE, echo=FALSE}
-  DatabaseConnector::renderTranslateExecuteSql(
-    connection = DatabaseConnector::connect(connectionDetails = connectionDetails),
-    sql = "DROP TABLE IF EXISTS @cohort_database_schema.@table_temp;
-           DROP TABLE IF EXISTS @cdm_database_schema.observation_period;",
-    table_temp = tableName,
-    cohort_database_schema = cohortDatabaseSchema,
-    cdm_database_schema = cohortDatabaseSchema
-  )
-```
