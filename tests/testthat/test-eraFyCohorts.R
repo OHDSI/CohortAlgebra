@@ -234,7 +234,7 @@ testthat::test_that("Testing cohort era fy", {
   )
 
   DatabaseConnector::disconnect(connection)
-  testthat::expect_true(object = all(dataPostEraFyWithEraPad == cohortExpectedEraPad))
+  testthat::expect_true(object = all.equal(dataPostEraFyWithEraPad == cohortExpectedEraPad))
 
   DatabaseConnector::renderTranslateExecuteSql(
     connection = DatabaseConnector::connect(connectionDetails = connectionDetails),
