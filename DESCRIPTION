@@ -17,11 +17,11 @@ Imports:
     checkmate,
     clock,
     dplyr,
-    Eunomia,
     ParallelLogger,
   	rlang,
   	SqlRender
 Suggests:
+  Eunomia,
   remotes,
   rmarkdown,
   knitr,
