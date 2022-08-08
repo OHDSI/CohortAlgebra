@@ -83,7 +83,7 @@ testthat::test_that("Testing cohort union", {
 
   DatabaseConnector::renderTranslateExecuteSql(
     connection = DatabaseConnector::connect(connectionDetails = connectionDetails),
-    sql = "DROP TABLE IF EXISTS @cohort_databse_schema.@table_temp;
+    sql = "DROP TABLE IF EXISTS @cohort_database_schema.@table_temp;
            DROP TABLE IF EXISTS @cdm_database_schema.observation_period;",
     table_temp = tableName,
     cohort_database_schema = cohortDatabaseSchema,
