@@ -235,4 +235,13 @@ testthat::test_that("Testing cohort era fy", {
 
   DatabaseConnector::disconnect(connection)
   testthat::expect_true(object = all(dataPostEraFyWithEraPad == cohortExpectedEraPad))
+
+  DatabaseConnector::renderTranslateExecuteSql(
+    connection = DatabaseConnector::connect(connectionDetails = connectionDetails),
+    sql = "DROP TABLE IF EXISTS @cohort_databse_schema.@table_temp;
+           DROP TABLE IF EXISTS @cdm_database_schema.observation_period;",
+    table_temp = tableName,
+    cohort_database_schema = cohortDatabaseSchema,
+    cdm_database_schema = cohortDatabaseSchema
+  )
 })

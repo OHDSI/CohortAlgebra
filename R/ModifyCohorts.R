@@ -160,12 +160,14 @@ modifyCohort <- function(connectionDetails = NULL,
     null.ok = TRUE,
     add = errorMessages
   )
-  
+
   checkmate::reportAssertions(collection = errorMessages)
-  
+
   if (is.null(cdmDatabaseSchema)) {
-    if (any(cohortStartPadDays > 0,
-            cohortEndPadDays > 0)) {
+    if (any(
+      cohortStartPadDays > 0,
+      cohortEndPadDays > 0
+    )) {
       stop(
         "cdmDatabaseSchema is NULL but cohort pad days > 0. This may result in cohorts that
             that are outside a persons observation period - ie. the resultant cohort is not valid.
@@ -174,12 +176,12 @@ modifyCohort <- function(connectionDetails = NULL,
       )
     }
   }
-  
+
   if (is.null(connection)) {
     connection <- DatabaseConnector::connect(connectionDetails)
     on.exit(DatabaseConnector::disconnect(connection))
   }
-  
+
   if (oldCohortId != newCohortId) {
     if (!purgeConflicts) {
       cohortIdsInCohortTable <-
@@ -190,26 +192,28 @@ modifyCohort <- function(connectionDetails = NULL,
           tempEmulationSchema = tempEmulationSchema
         )
       conflicitingCohortIdsInTargetCohortTable <-
-        intersect(x = newCohortId,
-                  y = cohortIdsInCohortTable %>% unique())
-      
+        intersect(
+          x = newCohortId,
+          y = cohortIdsInCohortTable %>% unique()
+        )
+
       if (length(conflicitingCohortIdsInTargetCohortTable) > 0) {
         stop(
           paste0(
             "The following cohortIds already exist in the target cohort table, causing conflicts :",
             paste0(newCohortId,
-                   collapse = ",")
+              collapse = ","
+            )
           )
         )
-        
       }
     }
   }
-  
+
   tempTableName <- generateRandomString()
   tempTable1 <- paste0("#", tempTableName, "1")
   tempTable2 <- paste0("#", tempTableName, "2")
-  
+
   copyCohortsToTempTable(
     connection = connection,
     oldToNewCohortId = dplyr::tibble(oldCohortId = oldCohortId, newCohortId = newCohortId),
@@ -217,7 +221,7 @@ modifyCohort <- function(connectionDetails = NULL,
     sourceCohortTable = cohortTable,
     targetCohortTable = tempTable1
   )
-  
+
   ## Cohort Censor Start Date -----
   if (!is.null(cohortStartCensorDate)) {
     sql <- "  DROP TABLE IF EXISTS @temp_table_2;
@@ -245,7 +249,7 @@ modifyCohort <- function(connectionDetails = NULL,
 
           DROP TABLE IF EXISTS @temp_table_2;
   "
-    
+
     DatabaseConnector::renderTranslateExecuteSql(
       connection = connection,
       sql = sql,
@@ -260,7 +264,7 @@ modifyCohort <- function(connectionDetails = NULL,
       temp_table_2 = tempTable2
     )
   }
-  
+
   ## Cohort Censor End Date -----
   if (!is.null(cohortEndCensorDate)) {
     sql <- "  DROP TABLE IF EXISTS @temp_table_2;
@@ -288,7 +292,7 @@ modifyCohort <- function(connectionDetails = NULL,
 
           DROP TABLE IF EXISTS @temp_table_2;
   "
-    
+
     DatabaseConnector::renderTranslateExecuteSql(
       connection = connection,
       sql = sql,
@@ -303,8 +307,8 @@ modifyCohort <- function(connectionDetails = NULL,
       temp_table_2 = tempTable2
     )
   }
-  
-  
+
+
   ## Cohort Start Filter Range -----
   if (!is.null(cohortStartFilterRange)) {
     sql <- "  DROP TABLE IF EXISTS @temp_table_2;
@@ -331,7 +335,7 @@ modifyCohort <- function(connectionDetails = NULL,
 
           DROP TABLE IF EXISTS @temp_table_2;
   "
-    
+
     DatabaseConnector::renderTranslateExecuteSql(
       connection = connection,
       sql = sql,
@@ -349,7 +353,7 @@ modifyCohort <- function(connectionDetails = NULL,
       temp_table_2 = tempTable2
     )
   }
-  
+
   ## Cohort End Filter Range -----
   if (!is.null(cohortEndFilterRange)) {
     sql <- "  DROP TABLE IF EXISTS @temp_table_2;
@@ -375,7 +379,7 @@ modifyCohort <- function(connectionDetails = NULL,
 
           DROP TABLE IF EXISTS @temp_table_2;
   "
-    
+
     DatabaseConnector::renderTranslateExecuteSql(
       connection = connection,
       sql = sql,
@@ -393,17 +397,17 @@ modifyCohort <- function(connectionDetails = NULL,
       temp_table_2 = tempTable2
     )
   }
-  
+
   ## Cohort Pad -----
   if (any(!is.null(cohortStartPadDays), !is.null(cohortEndPadDays))) {
     sql <- "  DROP TABLE IF EXISTS @temp_table_2;
           	SELECT cohort_definition_id,
               	  subject_id,
-              	  {@cohort_start_pad_days != ''} ? 
-              	    {DATEADD(DAY, @cohort_start_pad_days, cohort_start_date)} : 
+              	  {@cohort_start_pad_days != ''} ?
+              	    {DATEADD(DAY, @cohort_start_pad_days, cohort_start_date)} :
               	    {cohort_start_date} cohort_start_date,
-                   {@cohort_end_pad_days != ''} ? 
-                    {DATEADD(DAY, @cohort_end_pad_days, cohort_end_date)} : 
+                   {@cohort_end_pad_days != ''} ?
+                    {DATEADD(DAY, @cohort_end_pad_days, cohort_end_date)} :
               	        {cohort_end_date} cohort_end_date
           	INTO @temp_table_2
           	FROM @temp_table_1;
@@ -417,7 +421,7 @@ modifyCohort <- function(connectionDetails = NULL,
 
           DROP TABLE IF EXISTS @temp_table_2;
   "
-    
+
     DatabaseConnector::renderTranslateExecuteSql(
       connection = connection,
       sql = sql,
@@ -430,18 +434,21 @@ modifyCohort <- function(connectionDetails = NULL,
       temp_table_1 = tempTable1,
       temp_table_2 = tempTable2
     )
-    
+
     eraFyCohorts(
       connection = connection,
-      oldToNewCohortId = dplyr::tibble(oldCohortId = oldCohortId,
-                                       newCohortId = newCohortId),
+      oldToNewCohortId = dplyr::tibble(
+        oldCohortId = oldCohortId,
+        newCohortId = oldCohortId
+      ),
       cdmDatabaseSchema = cdmDatabaseSchema,
       tempEmulationSchema = tempEmulationSchema,
       cohortTable = tempTable1,
-      cohortDatabaseSchema = NULL
+      cohortDatabaseSchema = NULL,
+      purgeConflicts = TRUE
     )
   }
-  
+
   if (oldCohortId != newCohortId) {
     ParallelLogger::logTrace(
       paste0(
@@ -457,7 +464,7 @@ modifyCohort <- function(connectionDetails = NULL,
     cohortTable = cohortTable,
     cohortIds = newCohortId
   )
-  
+
   DatabaseConnector::renderTranslateExecuteSql(
     connection = connection,
     sql = " INSERT INTO {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table}
@@ -471,7 +478,7 @@ modifyCohort <- function(connectionDetails = NULL,
     cohort_table = cohortTable,
     temp_table_1 = tempTable1
   )
-  
+
   DatabaseConnector::renderTranslateExecuteSql(
     connection = connection,
     sql = " DROP TABLE IF EXISTS @temp_table_1;
