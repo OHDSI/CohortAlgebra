@@ -108,7 +108,8 @@ testthat::test_that("Testing cohort era fy", {
     cohortExpected,
     cohortExpected %>%
       dplyr::mutate(subjectId = 2)
-  ) %>%
+  ) %>% 
+    dplyr::distinct() %>%
     dplyr::arrange(
       .data$cohortDefinitionId,
       .data$subjectId,
