@@ -135,8 +135,8 @@ follows:</li>
 <pre><code><span><span class="co">#&gt; The following objects are masked from 'package:base':</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;     intersect, setdiff, setequal, union</span></span></code></pre>
-<pre><code><span><span class="co">#&gt; Consider adding `DATABASECONNECTOR_JAR_FOLDER='C:/Users/admin_grao9/Documents\RtmpITjbfV\jdbcDriversdd440335294'` to C:/Users/admin_grao9/Documents/.Renviron and restarting R.</span></span>
-<span><span class="co">#&gt; DatabaseConnector postgresql JDBC driver downloaded to 'C:/Users/admin_grao9/Documents\RtmpITjbfV\jdbcDriversdd440335294'.</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Consider adding `DATABASECONNECTOR_JAR_FOLDER='C:/Users/admin_grao9/Documents\Rtmp0gwCMZ\jdbcDrivers3a20c2d460e'` to C:/Users/admin_grao9/Documents/.Renviron and restarting R.</span></span>
+<span><span class="co">#&gt; DatabaseConnector postgresql JDBC driver downloaded to 'C:/Users/admin_grao9/Documents\Rtmp0gwCMZ\jdbcDrivers3a20c2d460e'.</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="cohort-union">Cohort UNION<a class="anchor" aria-label="anchor" href="#cohort-union"></a>
@@ -552,8 +552,6 @@ is useful if you need to force exit based on calendar dates.</p>
 <span>  <span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">#&gt; Currently in a tryCatch or withCallingHandlers block, so unable to add global calling handlers. ParallelLogger will not capture R messages, errors, and warnings, only explicit calls to ParallelLogger.</span></span></code></pre>
 <p>Gives the following output</p>
-<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span>  <span class="va">cohortObserved</span></span></code></pre></div>
 <pre><code><span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 1 x 4</span></span></span>
 <span><span class="co">#&gt;   cohortDefinitionId subjectId cohortStartDate cohortEndDate</span></span>
 <span><span class="co">#&gt;                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>       </span></span>
@@ -574,7 +572,7 @@ example:</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>                  3         3 1999-01-15      1999-01-25</span></span></code></pre>
 <p>We can filter by cohort_start_date using the parameter
 cohortStartFilterRange as follows:</p>
-<div class="sourceCode" id="cb54"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>  <span class="fu">CohortAlgebra</span><span class="fu">:::</span><span class="fu"><a href="../reference/modifyCohort.html">modifyCohort</a></span><span class="op">(</span></span>
 <span>    connection <span class="op">=</span> <span class="va">connection</span>,</span>
 <span>    cohortDatabaseSchema <span class="op">=</span> <span class="va">cohortDatabaseSchema</span>,</span>
@@ -587,8 +585,6 @@ cohortStartFilterRange as follows:</p>
 <pre><code><span><span class="co">#&gt; Currently in a tryCatch or withCallingHandlers block, so unable to add global calling handlers. ParallelLogger will not capture R messages, errors, and warnings, only explicit calls to ParallelLogger.</span></span></code></pre>
 <p>Gives the following output. Note only records where the
 cohort_start_date was within the given date range became cohortId 2.</p>
-<div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span>  <span class="va">cohortObserved</span></span></code></pre></div>
 <pre><code><span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 1 x 4</span></span></span>
 <span><span class="co">#&gt;   cohortDefinitionId subjectId cohortStartDate cohortEndDate</span></span>
 <span><span class="co">#&gt;                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>       </span></span>
@@ -605,7 +601,7 @@ new cohort. Lets take this cohort as an example:</p>
 <span><span class="co">#&gt;                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>       </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>                  1         1 1999-01-01      1999-01-31</span></span></code></pre>
 <p>We can pad days as follows:</p>
-<div class="sourceCode" id="cb59"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb57"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>  <span class="fu">CohortAlgebra</span><span class="fu">:::</span><span class="fu"><a href="../reference/modifyCohort.html">modifyCohort</a></span><span class="op">(</span></span>
 <span>    connection <span class="op">=</span> <span class="va">connection</span>,</span>
 <span>    cohortDatabaseSchema <span class="op">=</span> <span class="va">cohortDatabaseSchema</span>,</span>
@@ -623,8 +619,6 @@ new cohort. Lets take this cohort as an example:</p>
 observation_period (which is not allowed), this function will require
 access to the cdmDatabaseSchema and the observation_period table.</p>
 <p>Gives the following output.</p>
-<div class="sourceCode" id="cb61"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span>  <span class="va">cohortObserved</span></span></code></pre></div>
 <pre><code><span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 1 x 4</span></span></span>
 <span><span class="co">#&gt;   cohortDefinitionId subjectId cohortStartDate cohortEndDate</span></span>
 <span><span class="co">#&gt;                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>       </span></span>

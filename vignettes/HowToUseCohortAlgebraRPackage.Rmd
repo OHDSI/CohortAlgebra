@@ -726,7 +726,7 @@ We can censor the dates (left, right, or both). Parameter `cohortStartCensorDate
 ```
 Gives the following output
 
-```{r tidy=FALSE,eval=TRUE, echo=TRUE}
+```{r tidy=FALSE,eval=TRUE, echo=FALSE}
   cohortObserved
 ```
 
@@ -771,7 +771,7 @@ We can filter by cohort_start_date using the parameter cohortStartFilterRange as
 ```
 Gives the following output. Note only records where the cohort_start_date was within the given date range became cohortId 2.
 
-```{r tidy=FALSE,eval=TRUE, echo=TRUE}
+```{r tidy=FALSE,eval=TRUE, echo=FALSE}
   cohortObserved
 ```
 
@@ -821,6 +821,6 @@ Notes: because padding days may extend cohort period outside the observation_per
 ```
 Gives the following output. 
 
-```{r tidy=FALSE,eval=TRUE, echo=TRUE}
+```{r tidy=FALSE,eval=TRUE, echo=FALSE}
   cohortObserved
 ```
