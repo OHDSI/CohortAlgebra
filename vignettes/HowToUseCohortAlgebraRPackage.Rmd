@@ -784,7 +784,6 @@ We can add or substracts days to an instantiated cohort and create a new cohort.
 ```{r tidy=FALSE,eval=TRUE, echo=FALSE}
 cohort %>% 
   dplyr::filter(.data$cohortDefinitionId == 1)
-cdmDatabaseSchema <- cohortDatabaseSchema
 ```
 
 We can pad days as follows:
@@ -793,7 +792,7 @@ We can pad days as follows:
   CohortAlgebra:::modifyCohort(
     connection = connection,
     cohortDatabaseSchema = cohortDatabaseSchema,
-    cdmDatabaseSchema = cdmDatabaseSchema,
+    cdmDatabaseSchema = cohortDatabaseSchema,
     cohortTable = tableName,
     oldCohortId = 1,
     newCohortId = 2,
@@ -823,4 +822,15 @@ Gives the following output.
 
 ```{r tidy=FALSE,eval=TRUE, echo=FALSE}
   cohortObserved
+```
+
+```{r tidy=FALSE,eval=TRUE, echo=FALSE}
+  DatabaseConnector::renderTranslateExecuteSql(
+    connection = DatabaseConnector::connect(connectionDetails = connectionDetails),
+    sql = "DROP TABLE IF EXISTS @cohort_database_schema.@table_temp;
+           DROP TABLE IF EXISTS @cdm_database_schema.observation_period;",
+    table_temp = tableName,
+    cohort_database_schema = cohortDatabaseSchema,
+    cdm_database_schema = cohortDatabaseSchema
+  )
 ```
