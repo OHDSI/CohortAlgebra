@@ -234,7 +234,7 @@ testthat::test_that("Testing Modify cohorts", {
     connectionDetails = connectionDetails,
     cohortDatabaseSchema = cohortDatabaseSchema,
     cohortTable = tableName,
-    cohortIds = 1
+    oldCohortId = 1
   )
 
   DatabaseConnector::renderTranslateExecuteSql(
