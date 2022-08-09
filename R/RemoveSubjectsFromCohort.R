@@ -178,7 +178,7 @@ removeSubjectsFromCohorts <- function(connectionDetails = NULL,
     DatabaseConnector::renderTranslateExecuteSql(
       connection = connection,
       sql = " DELETE FROM {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table}
-            WHERE c.cohort_definition_id IN (@given_cohort_ids);",
+            WHERE cohort_definition_id IN (@given_cohort_ids);",
       profile = FALSE,
       progressBar = FALSE,
       reportOverallTime = FALSE,

@@ -77,13 +77,13 @@ Limit cohort periods: Filter the cohorts to a given date range of cohort start, 
 }
 \examples{
 CohortAlgebra:::modifyCohort(
- connection = connection,
- cohortDatabaseSchema = cohortDatabaseSchema,
- cohortTable = tableName,
- oldCohortId = 3,
- newCohortId = 2,
- cohortEndFilterRange = c(as.Date("2010-01-01"), as.Date("2010-01-09")),
- purgeConflicts = TRUE
+  connection = connection,
+  cohortDatabaseSchema = cohortDatabaseSchema,
+  cohortTable = tableName,
+  oldCohortId = 3,
+  newCohortId = 2,
+  cohortEndFilterRange = c(as.Date("2010-01-01"), as.Date("2010-01-09")),
+  purgeConflicts = TRUE
 )
 
 }
