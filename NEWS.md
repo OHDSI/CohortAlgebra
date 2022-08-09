@@ -3,6 +3,7 @@ CohortAlgebra 0.3.0
 
 Changes:
 - New function modifyCohorts. Allows modifying previously instantiated cohort by censoring by date, filtering by date range or padding days.
+- New function removeSubjectsFromCohort. Remove subjects from a given array of cohort(s) who are present in any of another array of cohort(s).
 
 Bug fix:
 

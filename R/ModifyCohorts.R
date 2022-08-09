@@ -55,8 +55,23 @@
 #'
 #' @param cohortEndPadDays        An integer value to pad the cohort end date. Default is 0 - no padding. The final cohort will have no days outside the observation period dates.
 #'
+#'
 #' @return
 #' NULL
+#'
+#'
+#' @examples
+#' CohortAlgebra:::modifyCohort(
+#'  connection = connection,
+#'  cohortDatabaseSchema = cohortDatabaseSchema,
+#'  cohortTable = tableName,
+#'  oldCohortId = 3,
+#'  newCohortId = 2,
+#'  cohortEndFilterRange = c(as.Date("2010-01-01"), as.Date("2010-01-09")),
+#'  purgeConflicts = TRUE
+#')
+#'
+#' @export
 modifyCohort <- function(connectionDetails = NULL,
                          connection = NULL,
                          cohortDatabaseSchema = NULL,

@@ -698,7 +698,7 @@ cohort %>%
 We can censor the dates (left, right, or both). Parameter `cohortStartCensorDate` performs left censor, while `cohortEndEndCensorDate` performs right censor. This function is useful if you need to force exit based on calendar dates.
 
 ```{r tidy=FALSE,eval=TRUE, echo=TRUE}
-  CohortAlgebra:::modifyCohort(
+  CohortAlgebra::modifyCohort(
     connection = connection,
     cohortDatabaseSchema = cohortDatabaseSchema,
     cohortTable = tableName,
@@ -743,7 +743,7 @@ cohort %>%
 We can filter by cohort_start_date using the parameter cohortStartFilterRange as follows:
 
 ```{r tidy=FALSE,eval=TRUE, echo=TRUE}
-  CohortAlgebra:::modifyCohort(
+  CohortAlgebra::modifyCohort(
     connection = connection,
     cohortDatabaseSchema = cohortDatabaseSchema,
     cohortTable = tableName,
@@ -789,7 +789,7 @@ cohort %>%
 We can pad days as follows:
 
 ```{r tidy=FALSE,eval=FALSE, echo=TRUE}
-  CohortAlgebra:::modifyCohort(
+  CohortAlgebra::modifyCohort(
     connection = connection,
     cohortDatabaseSchema = cohortDatabaseSchema,
     cdmDatabaseSchema = cohortDatabaseSchema,
@@ -802,3 +802,88 @@ We can pad days as follows:
   )
 ```
 Notes: because padding days may extend cohort period outside the observation_period (which is not allowed), this function will require access to the cdmDatabaseSchema and the observation_period table.
+
+
+
+
+## Remove subjects from Cohort
+If you need to remove subjects from one or more cohorts, who are present in one or more of other cohorts - this can be achieved using this function.
+
+
+```{r tidy=FALSE,eval=TRUE, echo=FALSE}
+# generate unique name for a cohort table
+  sysTime <- as.numeric(Sys.time()) * 100000
+  tableName <- paste0("cr", sysTime)
+  tempTableName <- paste0("#", tableName, "_1")
+  
+  # make up date for a cohort table
+  cohort <- dplyr::tibble(
+    cohortDefinitionId = c(1, 1, 3, 5),
+    subjectId = c(1, 2, 2, 2),
+    cohortStartDate = c(
+      as.Date("1999-01-01"),
+      as.Date("2010-01-01"),
+      as.Date("1999-01-15"),
+      as.Date("1999-01-01")
+    ),
+    cohortEndDate = c(
+      as.Date("1999-01-31"),
+      as.Date("2010-01-05"),
+      as.Date("1999-01-25"),
+      as.Date("1999-01-31")
+    )
+  )
+  
+  # upload table
+  connection <-
+    DatabaseConnector::connect(connectionDetails = connectionDetails)
+  DatabaseConnector::insertTable(
+    connection = connection,
+    databaseSchema = cohortDatabaseSchema,
+    tableName = tableName,
+    data = cohort,
+    dropTableIfExists = TRUE,
+    createTable = TRUE,
+    tempTable = FALSE,
+    camelCaseToSnakeCase = TRUE,
+    progressBar = FALSE
+  )
+```
+
+lets suppose we have a cohort table with following data:
+
+```{r tidy=FALSE,eval=TRUE, echo=FALSE}
+cohort %>% 
+  dplyr::filter(.data$cohortDefinitionId %in% c(1, 3))
+```
+
+and we decide to remove from cohort id 1, all subjects in cohort id 3, and create a new cohort with cohort id 6. `removeSubjectsFromCohorts` can do this.
+
+```{r tidy=FALSE,eval=TRUE, echo=TRUE}
+  CohortAlgebra::removeSubjectsFromCohorts(
+    connection = connection,
+    cohortDatabaseSchema = cohortDatabaseSchema,
+    oldToNewCohortId = dplyr::tibble(oldCohortId = 1, newCohortId = 6),
+    cohortsWithSubjectsToRemove = c(3),
+    purgeConflicts = FALSE,
+    cohortTable = tableName
+  )
+```
+
+```{r tidy=FALSE,eval=TRUE, echo=FALSE}
+  cohortObserved <-
+    DatabaseConnector::renderTranslateQuerySql(
+      connection = connection,
+      sql = paste0(
+        "SELECT * FROM @cohort_database_schema.@table_name
+        WHERE cohort_definition_id = 6
+        order by cohort_definition_id, subject_id, cohort_start_date;"
+      ),
+      cohort_database_schema = cohortDatabaseSchema,
+      table_name = tableName,
+      snakeCaseToCamelCase = TRUE
+    ) %>%
+    dplyr::tibble()
+
+  cohortObserved
+```
