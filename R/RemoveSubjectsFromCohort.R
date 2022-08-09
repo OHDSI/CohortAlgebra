@@ -24,6 +24,8 @@
 #'
 #' @template Connection
 #'
+#' @template CohortTable
+#'
 #' @template OldToNewCohortId
 #'
 #' @param cohortsWithSubjectsToRemove An array of one or more cohorts with subjects to remove from given cohorts.
