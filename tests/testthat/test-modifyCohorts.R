@@ -94,8 +94,8 @@ testthat::test_that("Testing Modify cohorts", {
   )
   testthat::expect_true(object = all.equal(target = cohortExpected, current = cohortObserved))
 
-  
-  # test for range date start ---- 
+
+  # test for range date start ----
   # should error because purgeConflicts if FALSE
   testthat::expect_error(
     CohortAlgebra:::modifyCohort(
@@ -108,7 +108,7 @@ testthat::test_that("Testing Modify cohorts", {
       purgeConflicts = FALSE
     )
   )
-  
+
   CohortAlgebra:::modifyCohort(
     connection = connection,
     cohortDatabaseSchema = cohortDatabaseSchema,

@@ -75,3 +75,17 @@ Censoring: Provide a date for right, left, both censoring. All cohorts will be t
 Pad days: Add days to either cohort start or cohort end dates. Maybe negative numbers. Final cohort will not be outside the persons observation period.
 Limit cohort periods: Filter the cohorts to a given date range of cohort start, or cohort end or both.
 }
+\examples{
+\dontrun{
+CohortAlgebra:::modifyCohort(
+  connection = connection,
+  cohortDatabaseSchema = cohortDatabaseSchema,
+  cohortTable = tableName,
+  oldCohortId = 3,
+  newCohortId = 2,
+  cohortEndFilterRange = c(as.Date("2010-01-01"), as.Date("2010-01-09")),
+  purgeConflicts = TRUE
+)
+}
+
+}

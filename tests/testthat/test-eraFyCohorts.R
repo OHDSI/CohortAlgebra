@@ -96,7 +96,7 @@ testthat::test_that("Testing cohort era fy", {
     cohortExpected,
     cohortExpected %>%
       dplyr::mutate(subjectId = 2)
-  ) %>% 
+  ) %>%
     dplyr::distinct() %>%
     dplyr::arrange(
       .data$cohortDefinitionId,
@@ -118,20 +118,6 @@ testthat::test_that("Testing cohort era fy", {
     )
   )
 
-  # this should NOT throw error as we will purge conflicts.
-  # it should return a message
-  DatabaseConnector::insertTable(
-    connection = DatabaseConnector::connect(connectionDetails = connectionDetails),
-    databaseSchema = cohortDatabaseSchema,
-    tableName = "observation_period",
-    data = observationPeriod,
-    dropTableIfExists = TRUE,
-    createTable = TRUE,
-    tempTable = FALSE,
-    camelCaseToSnakeCase = TRUE,
-    progressBar = FALSE
-  )
-  
   testthat::expect_message(
     object =
       CohortAlgebra:::eraFyCohorts(
@@ -172,6 +158,20 @@ testthat::test_that("Testing cohort era fy", {
         eraconstructorpad = 30,
         purgeConflicts = FALSE
       )
+  )
+
+  # this should NOT throw error as we will purge conflicts.
+  # it should return a message
+  DatabaseConnector::insertTable(
+    connection = connection,
+    databaseSchema = cohortDatabaseSchema,
+    tableName = "observation_period",
+    data = observationPeriod,
+    dropTableIfExists = TRUE,
+    createTable = TRUE,
+    tempTable = FALSE,
+    camelCaseToSnakeCase = TRUE,
+    progressBar = FALSE
   )
 
   CohortAlgebra:::eraFyCohorts(

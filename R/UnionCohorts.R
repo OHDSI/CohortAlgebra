@@ -38,6 +38,7 @@
 #' NULL
 #'
 #' @examples
+#' \dontrun{
 #' unionCohorts(
 #'   connectionDetails = Eunomia::getEunomiaConnectionDetails(),
 #'   cohortDatabaseSchema = "main",
@@ -48,6 +49,7 @@
 #'   ),
 #'   purgeConflicts = TRUE
 #' )
+#' }
 #'
 #' @export
 unionCohorts <- function(connectionDetails = NULL,
