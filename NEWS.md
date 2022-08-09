@@ -1,3 +1,11 @@
+CohortAlgebra 0.3.0
+======================
+
+Changes:
+- New function modifyCohorts. Allows modifying previously instantiated cohort by censoring by date, filtering by date range or padding days.
+
+Bug fix:
+
 CohortAlgebra 0.2.1
 ======================
 

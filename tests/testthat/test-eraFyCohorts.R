@@ -50,18 +50,6 @@ testthat::test_that("Testing cohort era fy", {
     camelCaseToSnakeCase = TRUE,
     progressBar = FALSE
   )
-
-  DatabaseConnector::insertTable(
-    connection = connection,
-    databaseSchema = cohortDatabaseSchema,
-    tableName = "observation_period",
-    data = observationPeriod,
-    dropTableIfExists = TRUE,
-    createTable = TRUE,
-    tempTable = FALSE,
-    camelCaseToSnakeCase = TRUE,
-    progressBar = FALSE
-  )
   # disconnecting - as this is a test for a non temp cohort table
   DatabaseConnector::disconnect(connection)
 
@@ -108,7 +96,8 @@ testthat::test_that("Testing cohort era fy", {
     cohortExpected,
     cohortExpected %>%
       dplyr::mutate(subjectId = 2)
-  ) %>%
+  ) %>% 
+    dplyr::distinct() %>%
     dplyr::arrange(
       .data$cohortDefinitionId,
       .data$subjectId,
@@ -131,6 +120,18 @@ testthat::test_that("Testing cohort era fy", {
 
   # this should NOT throw error as we will purge conflicts.
   # it should return a message
+  DatabaseConnector::insertTable(
+    connection = DatabaseConnector::connect(connectionDetails = connectionDetails),
+    databaseSchema = cohortDatabaseSchema,
+    tableName = "observation_period",
+    data = observationPeriod,
+    dropTableIfExists = TRUE,
+    createTable = TRUE,
+    tempTable = FALSE,
+    camelCaseToSnakeCase = TRUE,
+    progressBar = FALSE
+  )
+  
   testthat::expect_message(
     object =
       CohortAlgebra:::eraFyCohorts(
@@ -234,5 +235,14 @@ testthat::test_that("Testing cohort era fy", {
   )
 
   DatabaseConnector::disconnect(connection)
-  testthat::expect_true(object = all(dataPostEraFyWithEraPad == cohortExpectedEraPad))
+  testthat::expect_true(object = all.equal(target = dataPostEraFyWithEraPad, current = cohortExpectedEraPad))
+
+  DatabaseConnector::renderTranslateExecuteSql(
+    connection = DatabaseConnector::connect(connectionDetails = connectionDetails),
+    sql = "DROP TABLE IF EXISTS @cohort_database_schema.@table_temp;
+           DROP TABLE IF EXISTS @cdm_database_schema.observation_period;",
+    table_temp = tableName,
+    cohort_database_schema = cohortDatabaseSchema,
+    cdm_database_schema = cohortDatabaseSchema
+  )
 })

@@ -105,6 +105,12 @@ eraFyCohorts <- function(connectionDetails = NULL,
     min.len = 1,
     add = errorMessages
   )
+  checkmate::assertIntegerish(
+    x = eraconstructorpad,
+    len = 1,
+    null.ok = FALSE,
+    add = errorMessages
+  )
   checkmate::reportAssertions(collection = errorMessages)
 
   if (is.null(cdmDatabaseSchema)) {
