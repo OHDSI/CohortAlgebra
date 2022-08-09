@@ -7,17 +7,19 @@ testthat::test_that("Testing Modify cohorts", {
   # make up date for a cohort table
   # this cohort table will have two subjects * two cohorts, within the same cohort
   cohort <- dplyr::tibble(
-    cohortDefinitionId = c(1, 3, 3),
-    subjectId = c(1, 3, 3),
+    cohortDefinitionId = c(1, 3, 3, 5),
+    subjectId = c(1, 3, 3, 1),
     cohortStartDate = c(
       as.Date("1999-01-01"),
       as.Date("2010-01-01"),
-      as.Date("1999-01-15")
+      as.Date("1999-01-15"),
+      as.Date("1999-01-01")
     ),
     cohortEndDate = c(
       as.Date("1999-01-31"),
       as.Date("2010-01-05"),
-      as.Date("1999-01-25")
+      as.Date("1999-01-25"),
+      as.Date("1999-01-31")
     )
   )
 
@@ -92,8 +94,21 @@ testthat::test_that("Testing Modify cohorts", {
   )
   testthat::expect_true(object = all.equal(target = cohortExpected, current = cohortObserved))
 
-
-  # test for range date start ----
+  
+  # test for range date start ---- 
+  # should error because purgeConflicts if FALSE
+  testthat::expect_error(
+    CohortAlgebra:::modifyCohort(
+      connection = connection,
+      cohortDatabaseSchema = cohortDatabaseSchema,
+      cohortTable = tableName,
+      oldCohortId = 3,
+      newCohortId = 5,
+      cohortStartFilterRange = c(as.Date("1998-01-01"), as.Date("1999-12-31")),
+      purgeConflicts = FALSE
+    )
+  )
+  
   CohortAlgebra:::modifyCohort(
     connection = connection,
     cohortDatabaseSchema = cohortDatabaseSchema,
