@@ -76,6 +76,7 @@ Pad days: Add days to either cohort start or cohort end dates. Maybe negative nu
 Limit cohort periods: Filter the cohorts to a given date range of cohort start, or cohort end or both.
 }
 \examples{
+\dontrun{
 CohortAlgebra:::modifyCohort(
   connection = connection,
   cohortDatabaseSchema = cohortDatabaseSchema,
@@ -85,5 +86,6 @@ CohortAlgebra:::modifyCohort(
   cohortEndFilterRange = c(as.Date("2010-01-01"), as.Date("2010-01-09")),
   purgeConflicts = TRUE
 )
+}
 
 }

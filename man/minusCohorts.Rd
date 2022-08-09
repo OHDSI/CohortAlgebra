@@ -53,6 +53,7 @@ Given two cohorts, substract (minus) the dates from the first cohort, the
 dates the subject also had on the second cohort.
 }
 \examples{
+\dontrun{
 minusCohorts(
   connectionDetails = Eunomia::getEunomiaConnectionDetails(),
   cohortDatabaseSchema = "main",
@@ -62,5 +63,6 @@ minusCohorts(
   newCohortId = 9,
   purgeConflicts = TRUE
 )
+}
 
 }

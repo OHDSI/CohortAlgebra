@@ -54,6 +54,7 @@ Remove subjects from a given array of cohort(s) who are present in any of
 another array of cohort(s).
 }
 \examples{
+\dontrun{
 removeSubjectsFromCohorts(
   connection = connection,
   cohortDatabaseSchema = cohortDatabaseSchema,
@@ -62,5 +63,6 @@ removeSubjectsFromCohorts(
   purgeConflicts = FALSE,
   cohortTable = tableName
 )
+}
 
 }

@@ -43,6 +43,7 @@
 #'
 #'
 #' @examples
+#' \dontrun{
 #' minusCohorts(
 #'   connectionDetails = Eunomia::getEunomiaConnectionDetails(),
 #'   cohortDatabaseSchema = "main",
@@ -52,6 +53,7 @@
 #'   newCohortId = 9,
 #'   purgeConflicts = TRUE
 #' )
+#' }
 #'
 #' @export
 minusCohorts <- function(connectionDetails = NULL,

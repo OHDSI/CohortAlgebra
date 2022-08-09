@@ -61,6 +61,7 @@
 #'
 #'
 #' @examples
+#' \dontrun{
 #' CohortAlgebra:::modifyCohort(
 #'   connection = connection,
 #'   cohortDatabaseSchema = cohortDatabaseSchema,
@@ -70,6 +71,7 @@
 #'   cohortEndFilterRange = c(as.Date("2010-01-01"), as.Date("2010-01-09")),
 #'   purgeConflicts = TRUE
 #' )
+#' }
 #'
 #' @export
 modifyCohort <- function(connectionDetails = NULL,

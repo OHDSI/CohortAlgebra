@@ -134,7 +134,8 @@ privileges where temp tables can be created.</p></dd>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">removeSubjectsFromCohorts</span><span class="op">(</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="fu">removeSubjectsFromCohorts</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  connection <span class="op">=</span> <span class="va">connection</span>,</span></span>
 <span class="r-in"><span>  cohortDatabaseSchema <span class="op">=</span> <span class="va">cohortDatabaseSchema</span>,</span></span>
 <span class="r-in"><span>  oldToNewCohortId <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span>oldCohortId <span class="op">=</span> <span class="fl">1</span>, newCohortId <span class="op">=</span> <span class="fl">6</span><span class="op">)</span>,</span></span>
@@ -142,7 +143,7 @@ privileges where temp tables can be created.</p></dd>
 <span class="r-in"><span>  purgeConflicts <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
 <span class="r-in"><span>  cohortTable <span class="op">=</span> <span class="va">tableName</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in isTRUE(lhs):</span> object 'cohortDatabaseSchema' not found</span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

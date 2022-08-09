@@ -41,6 +41,7 @@
 #'
 #'
 #' @examples
+#' \dontrun{
 #' removeSubjectsFromCohorts(
 #'   connection = connection,
 #'   cohortDatabaseSchema = cohortDatabaseSchema,
@@ -49,6 +50,7 @@
 #'   purgeConflicts = FALSE,
 #'   cohortTable = tableName
 #' )
+#' }
 #'
 #' @export
 removeSubjectsFromCohorts <- function(connectionDetails = NULL,
