@@ -58,9 +58,11 @@ removeSubjectsFromCohorts <- function(connectionDetails = NULL,
                                       purgeConflicts = FALSE,
                                       tempEmulationSchema = getOption("sqlRenderTempEmulationSchema")) {
   errorMessages <- checkmate::makeAssertCollection()
-  checkmate::assertDataFrame(x = oldToNewCohortId,
-                             min.rows = 1,
-                             add = errorMessages)
+  checkmate::assertDataFrame(
+    x = oldToNewCohortId,
+    min.rows = 1,
+    add = errorMessages
+  )
   checkmate::assertNames(
     x = colnames(oldToNewCohortId),
     must.include = c("oldCohortId", "newCohortId"),
@@ -99,12 +101,12 @@ removeSubjectsFromCohorts <- function(connectionDetails = NULL,
     add = errorMessages
   )
   checkmate::reportAssertions(collection = errorMessages)
-  
+
   if (is.null(connection)) {
     connection <- DatabaseConnector::connect(connectionDetails)
     on.exit(DatabaseConnector::disconnect(connection))
   }
-  
+
   if (nrow(oldToNewCohortId) > 0) {
     if (!purgeConflicts) {
       cohortIdsInCohortTable <-
@@ -115,24 +117,27 @@ removeSubjectsFromCohorts <- function(connectionDetails = NULL,
           tempEmulationSchema = tempEmulationSchema
         )
       conflicitingCohortIdsInTargetCohortTable <-
-        intersect(x = oldToNewCohortId$newCohortId %>% unique(),
-                  y = cohortIdsInCohortTable %>% unique())
-      
+        intersect(
+          x = oldToNewCohortId$newCohortId %>% unique(),
+          y = cohortIdsInCohortTable %>% unique()
+        )
+
       if (length(conflicitingCohortIdsInTargetCohortTable) > 0) {
         stop(
           paste0(
             "The following cohortIds already exist in the target cohort table, causing conflicts :",
             paste0(newCohortId,
-                   collapse = ",")
+              collapse = ","
+            )
           )
         )
       }
     }
   }
-  
+
   tempTableName <- generateRandomString()
   tempTable1 <- paste0("#", tempTableName, "1")
-  
+
   DatabaseConnector::renderTranslateExecuteSql(
     connection = connection,
     sql = " SELECT c.*
@@ -157,7 +162,7 @@ removeSubjectsFromCohorts <- function(connectionDetails = NULL,
     remove_cohort_ids = cohortsWithSubjectsToRemove,
     temp_table_1 = tempTable1
   )
-  
+
   eraFyCohorts(
     connection = connection,
     cohortDatabaseSchema = NULL,
@@ -168,7 +173,7 @@ removeSubjectsFromCohorts <- function(connectionDetails = NULL,
     tempEmulationSchema = tempEmulationSchema,
     purgeConflicts = TRUE
   )
-  
+
   if (purgeConflicts) {
     DatabaseConnector::renderTranslateExecuteSql(
       connection = connection,

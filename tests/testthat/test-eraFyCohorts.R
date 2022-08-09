@@ -96,7 +96,7 @@ testthat::test_that("Testing cohort era fy", {
     cohortExpected,
     cohortExpected %>%
       dplyr::mutate(subjectId = 2)
-  ) %>% 
+  ) %>%
     dplyr::distinct() %>%
     dplyr::arrange(
       .data$cohortDefinitionId,
@@ -131,7 +131,7 @@ testthat::test_that("Testing cohort era fy", {
     camelCaseToSnakeCase = TRUE,
     progressBar = FALSE
   )
-  
+
   testthat::expect_message(
     object =
       CohortAlgebra:::eraFyCohorts(
