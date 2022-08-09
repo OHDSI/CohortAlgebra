@@ -45,7 +45,7 @@
 #'
 #' @return
 #' NULL
-#' s
+#'
 eraFyCohorts <- function(connectionDetails = NULL,
                          connection = NULL,
                          cohortDatabaseSchema = NULL,
@@ -103,6 +103,12 @@ eraFyCohorts <- function(connectionDetails = NULL,
     x = purgeConflicts,
     any.missing = FALSE,
     min.len = 1,
+    add = errorMessages
+  )
+  checkmate::assertIntegerish(
+    x = eraconstructorpad,
+    len = 1,
+    null.ok = FALSE,
     add = errorMessages
   )
   checkmate::reportAssertions(collection = errorMessages)

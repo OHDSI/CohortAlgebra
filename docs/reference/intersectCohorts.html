@@ -19,7 +19,7 @@ be in the final cohort."><!-- mathjax --><script src="https://cdnjs.cloudflare.c
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">CohortAlgebra</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.0</span>
       </span>
     </div>
 
@@ -129,23 +129,21 @@ temp tables. To emulate temp tables, provide a schema with write
 privileges where temp tables can be created.</p></dd>
 
 </dl></div>
-    <div id="value">
-    <h2>Value</h2>
-    
 
-<p>NULL</p>
-
-
-<p>intersectCohorts(
-connectionDetails = Eunomia::getEunomiaConnectionDetails(),
-cohortDatabaseSchema = "main",
-cohortTable = "cohort",
-cohortIds = c(1, 2, 3),
-newCohortId = 9,
-purgeConflicts = TRUE
-)</p>
+    <div id="ref-examples">
+    <h2>Examples</h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="fu">intersectCohorts</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  connectionDetails <span class="op">=</span> <span class="fu">Eunomia</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Eunomia/man/getEunomiaConnectionDetails.html" class="external-link">getEunomiaConnectionDetails</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,</span></span>
+<span class="r-in"><span>  cohortTable <span class="op">=</span> <span class="st">"cohort"</span>,</span></span>
+<span class="r-in"><span>  cohortIds <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  newCohortId <span class="op">=</span> <span class="fl">9</span>,</span></span>
+<span class="r-in"><span>  purgeConflicts <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+</code></pre></div>
     </div>
-
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top"><h2 data-toc-skip>Contents</h2>
@@ -158,7 +156,7 @@ purgeConflicts = TRUE
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

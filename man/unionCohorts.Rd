@@ -51,6 +51,7 @@ Given a specified array of cohortIds in a cohort table, perform
 cohort union operator to create new cohorts.
 }
 \examples{
+\dontrun{
 unionCohorts(
   connectionDetails = Eunomia::getEunomiaConnectionDetails(),
   cohortDatabaseSchema = "main",
@@ -61,5 +62,6 @@ unionCohorts(
   ),
   purgeConflicts = TRUE
 )
+}
 
 }
