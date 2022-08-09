@@ -173,7 +173,7 @@ testthat::test_that("Testing cohort era fy", {
     camelCaseToSnakeCase = TRUE,
     progressBar = FALSE
   )
-  
+
   CohortAlgebra:::eraFyCohorts(
     connection = connection,
     cohortTable = tempTableName,

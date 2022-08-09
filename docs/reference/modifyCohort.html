@@ -173,13 +173,13 @@ with transformed. By default - it will not be replaced, and an error message is 
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">CohortAlgebra</span><span class="fu">:::</span><span class="fu">modifyCohort</span><span class="op">(</span></span></span>
-<span class="r-in"><span> connection <span class="op">=</span> <span class="va">connection</span>,</span></span>
-<span class="r-in"><span> cohortDatabaseSchema <span class="op">=</span> <span class="va">cohortDatabaseSchema</span>,</span></span>
-<span class="r-in"><span> cohortTable <span class="op">=</span> <span class="va">tableName</span>,</span></span>
-<span class="r-in"><span> oldCohortId <span class="op">=</span> <span class="fl">3</span>,</span></span>
-<span class="r-in"><span> newCohortId <span class="op">=</span> <span class="fl">2</span>,</span></span>
-<span class="r-in"><span> cohortEndFilterRange <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2010-01-01"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2010-01-09"</span><span class="op">)</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span> purgeConflicts <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span>  connection <span class="op">=</span> <span class="va">connection</span>,</span></span>
+<span class="r-in"><span>  cohortDatabaseSchema <span class="op">=</span> <span class="va">cohortDatabaseSchema</span>,</span></span>
+<span class="r-in"><span>  cohortTable <span class="op">=</span> <span class="va">tableName</span>,</span></span>
+<span class="r-in"><span>  oldCohortId <span class="op">=</span> <span class="fl">3</span>,</span></span>
+<span class="r-in"><span>  newCohortId <span class="op">=</span> <span class="fl">2</span>,</span></span>
+<span class="r-in"><span>  cohortEndFilterRange <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2010-01-01"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2010-01-09"</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  purgeConflicts <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in isTRUE(lhs):</span> object 'cohortDatabaseSchema' not found</span>
 <span class="r-in"><span></span></span>

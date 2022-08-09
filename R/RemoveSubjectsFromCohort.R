@@ -126,7 +126,7 @@ removeSubjectsFromCohorts <- function(connectionDetails = NULL,
         stop(
           paste0(
             "The following cohortIds already exist in the target cohort table, causing conflicts :",
-            paste0(newCohortId,
+            paste0(oldToNewCohortId$newCohortId,
               collapse = ","
             )
           )
