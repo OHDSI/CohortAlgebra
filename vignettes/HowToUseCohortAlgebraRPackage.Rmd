@@ -778,7 +778,7 @@ Gives the following output. Note only records where the cohort_start_date was wi
 
 
 ### Example 3: Pad cohorts by adding/substracting days from cohort start or end date.
-We can add or substracts days to an instantiated cohort and create a new cohort. Lets take this cohort as an example:
+We can add or subtracts days to an instantiated cohort and create a new cohort. Lets take this cohort as an example:
 
 
 ```{r tidy=FALSE,eval=TRUE, echo=FALSE}
@@ -788,7 +788,7 @@ cohort %>%
 
 We can pad days as follows:
 
-```{r tidy=FALSE,eval=TRUE, echo=TRUE}
+```{r tidy=FALSE,eval=FALSE, echo=TRUE}
   CohortAlgebra:::modifyCohort(
     connection = connection,
     cohortDatabaseSchema = cohortDatabaseSchema,
