@@ -20,7 +20,7 @@ Limit cohort periods: Filter the cohorts to a given date range of cohort start, 
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">CohortAlgebra</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.1</span>
       </span>
     </div>
 
@@ -76,6 +76,7 @@ Limit cohort periods: Filter the cohorts to a given date range of cohort start, 
 <span>  connectionDetails <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  connection <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  cohortDatabaseSchema <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  cdmDatabaseSchema <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  cohortTable <span class="op">=</span> <span class="st">"cohort"</span>,</span>
 <span>  <span class="va">oldCohortId</span>,</span>
 <span>  newCohortId <span class="op">=</span> <span class="va">oldCohortId</span>,</span>
@@ -85,7 +86,8 @@ Limit cohort periods: Filter the cohorts to a given date range of cohort start, 
 <span>  cohortEndFilterRange <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  cohortStartPadDays <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  cohortEndPadDays <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  cdmDatabaseSchema <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  filterGenderConceptId <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  filterByAgeRange <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  tempEmulationSchema <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"sqlRenderTempEmulationSchema"</span><span class="op">)</span>,</span>
 <span>  purgeConflicts <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -114,6 +116,13 @@ this should include both the database and schema name, for example
 'scratch.dbo'.</p></dd>
 
 
+<dt>cdmDatabaseSchema</dt>
+<dd><p>Schema name where your patient-level data in OMOP CDM format resides.
+Note that for SQL Server, this should include both the database and
+schema name, for example 'cdm_data.dbo'. cdmDataschema is required
+when eraConstructorPad is &gt; 0. eraConstructorPad is optional.</p></dd>
+
+
 <dt>cohortTable</dt>
 <dd><p>The name of the cohort table.</p></dd>
 
@@ -127,15 +136,18 @@ this should include both the database and schema name, for example
 
 
 <dt>cohortStartCensorDate</dt>
-<dd><p>the minimum date for the cohort. All rows with cohort start date before this date will be censored to given date.</p></dd>
+<dd><p>the minimum date for the cohort. All rows with cohort start date before this date
+will be censored to given date.</p></dd>
 
 
 <dt>cohortEndCensorDate</dt>
-<dd><p>the maximum date for the cohort. All rows with cohort end date after this date will be censored to given date.</p></dd>
+<dd><p>the maximum date for the cohort. All rows with cohort end date after this date
+will be censored to given date.</p></dd>
 
 
 <dt>cohortStartFilterRange</dt>
-<dd><p>A range of dates representing minimum to maximum to filter the cohort by its cohort start date e.g c(as.Date('1999-01-01'), as.Date('1999-12-31'))</p></dd>
+<dd><p>A range of dates representing minimum to maximum to filter the cohort by its cohort start
+date e.g c(as.Date('1999-01-01'), as.Date('1999-12-31'))</p></dd>
 
 
 <dt>cohortEndFilterRange</dt>
@@ -143,18 +155,33 @@ this should include both the database and schema name, for example
 
 
 <dt>cohortStartPadDays</dt>
-<dd><p>An integer value to pad the cohort start date. Default is 0 - no padding. The final cohort will have no days outside the observation period dates.</p></dd>
+<dd><p>An integer value to pad the cohort start date. Default is 0 - no padding. The final cohort will
+have no days outside the observation period dates of the initial observation period. If negative
+padding, then cohortStartDate will not shift to before corresponding observationPeriodStartDate,
+it will be forced to be equal to observationPeriodStartDate. If positive padding, then
+cohortStartDate will not shift beyond observationPeriodEndDate, it will be forced to be
+equal to observationPeriodEndDate. Also cohortStartDate will not be more than
+cohortEndDate - it will be forced to be equal to cohortEndDate.</p></dd>
 
 
 <dt>cohortEndPadDays</dt>
-<dd><p>An integer value to pad the cohort end date. Default is 0 - no padding. The final cohort will have no days outside the observation period dates.</p></dd>
+<dd><p>An integer value to pad the cohort start date. Default is 0 - no padding. The final cohort will
+have no days outside the observation period dates of the initial observation period. If negative
+padding, then cohortEndDate will not shift to before corresponding observationPeriodEndDate,
+it will be forced to be equal to observationPeriodEndDate. If positive padding, then
+cohortEndDate will not shift beyond observationPeriodStartDate, it will be forced to be
+equal to observationPeriodStartDate. Also cohortEndDate will not be less than
+cohortStartDate - it will be forced to be equal to cohortStartDate.</p></dd>
 
 
-<dt>cdmDatabaseSchema</dt>
-<dd><p>Schema name where your patient-level data in OMOP CDM format resides.
-Note that for SQL Server, this should include both the database and
-schema name, for example 'cdm_data.dbo'. cdmDataschema is required
-when eraConstructorPad is &gt; 0. eraConstructorPad is optional.</p></dd>
+<dt>filterGenderConceptId</dt>
+<dd><p>Provide an array of integers corresponding to conceptId to look for in the gender_concept_id
+field of the person table.</p></dd>
+
+
+<dt>filterByAgeRange</dt>
+<dd><p>Provide an array of two values, where second value is &gt;= first value to filter the persons age on cohort_start_date.
+Age is calculated as YEAR(cohort_start_date) - person.year_of_birth</p></dd>
 
 
 <dt>tempEmulationSchema</dt>

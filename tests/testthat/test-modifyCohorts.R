@@ -7,26 +7,34 @@ testthat::test_that("Testing Modify cohorts", {
   # make up date for a cohort table
   # this cohort table will have two subjects * two cohorts, within the same cohort
   cohort <- dplyr::tibble(
-    cohortDefinitionId = c(1, 3, 3, 5),
-    subjectId = c(1, 3, 3, 1),
+    cohortDefinitionId = c(1, 3, 3, 5, 5),
+    subjectId = c(1, 3, 3, 1, 3),
     cohortStartDate = c(
       as.Date("1999-01-01"),
       as.Date("2010-01-01"),
       as.Date("1999-01-15"),
+      as.Date("1999-01-01"),
       as.Date("1999-01-01")
     ),
     cohortEndDate = c(
       as.Date("1999-01-31"),
       as.Date("2010-01-05"),
       as.Date("1999-01-25"),
+      as.Date("1999-01-31"),
       as.Date("1999-01-31")
     )
   )
 
   observationPeriod <- dplyr::tibble(
     personId = c(1),
-    observation_period_start_date = as.Date("1979-01-01"),
+    observation_period_start_date = as.Date("1998-12-30"),
     observation_period_end_date = as.Date("2020-12-31")
+  )
+
+  person <- dplyr::tibble(
+    personId = c(1, 3, 5),
+    gender_concept_id = c(8507, 8532, 8532),
+    year_of_birth = c(1990, 1930, 1930)
   )
 
   # upload table
@@ -55,8 +63,19 @@ testthat::test_that("Testing Modify cohorts", {
     camelCaseToSnakeCase = TRUE,
     progressBar = FALSE
   )
+  DatabaseConnector::insertTable(
+    connection = connection,
+    databaseSchema = cohortDatabaseSchema,
+    tableName = "person",
+    data = person,
+    dropTableIfExists = TRUE,
+    createTable = TRUE,
+    tempTable = FALSE,
+    camelCaseToSnakeCase = TRUE,
+    progressBar = FALSE
+  )
 
-  CohortAlgebra:::modifyCohort(
+  CohortAlgebra::modifyCohort(
     connection = connection,
     cohortDatabaseSchema = cohortDatabaseSchema,
     cohortTable = tableName,
@@ -98,7 +117,7 @@ testthat::test_that("Testing Modify cohorts", {
   # test for range date start ----
   # should error because purgeConflicts if FALSE
   testthat::expect_error(
-    CohortAlgebra:::modifyCohort(
+    CohortAlgebra::modifyCohort(
       connection = connection,
       cohortDatabaseSchema = cohortDatabaseSchema,
       cohortTable = tableName,
@@ -109,7 +128,7 @@ testthat::test_that("Testing Modify cohorts", {
     )
   )
 
-  CohortAlgebra:::modifyCohort(
+  CohortAlgebra::modifyCohort(
     connection = connection,
     cohortDatabaseSchema = cohortDatabaseSchema,
     cohortTable = tableName,
@@ -150,7 +169,7 @@ testthat::test_that("Testing Modify cohorts", {
 
 
   # test for range date end ----
-  CohortAlgebra:::modifyCohort(
+  CohortAlgebra::modifyCohort(
     connection = connection,
     cohortDatabaseSchema = cohortDatabaseSchema,
     cohortTable = tableName,
@@ -190,7 +209,7 @@ testthat::test_that("Testing Modify cohorts", {
 
   # test era pad ----
   testthat::expect_error(
-    CohortAlgebra:::modifyCohort(
+    CohortAlgebra::modifyCohort(
       connection = connection,
       cohortDatabaseSchema = cohortDatabaseSchema,
       cdmDatabaseSchema = NULL,
@@ -203,10 +222,11 @@ testthat::test_that("Testing Modify cohorts", {
     )
   )
 
-  CohortAlgebra:::modifyCohort(
+  ## test 1 era pad ----
+  CohortAlgebra::modifyCohort(
     connection = connection,
     cohortDatabaseSchema = cohortDatabaseSchema,
-    cdmDatabaseSchema = cdmDatabaseSchema,
+    cdmDatabaseSchema = cohortDatabaseSchema,
     cohortTable = tableName,
     oldCohortId = 1,
     newCohortId = 2,
@@ -215,11 +235,10 @@ testthat::test_that("Testing Modify cohorts", {
     cohortEndPadDays = 5
   )
 
-
   cohortExpected <- dplyr::tibble(
     cohortDefinitionId = c(2),
     subjectId = c(1),
-    cohortStartDate = c(as.Date("1998-12-22")),
+    cohortStartDate = c(as.Date("1998-12-30")),
     cohortEndDate = as.Date("1999-02-05")
   )
 
@@ -244,8 +263,133 @@ testthat::test_that("Testing Modify cohorts", {
   )
   testthat::expect_true(object = all.equal(target = cohortExpected, current = cohortObserved))
 
+  ## test 2 era pad ----
+  CohortAlgebra::modifyCohort(
+    connection = connection,
+    cohortDatabaseSchema = cohortDatabaseSchema,
+    cdmDatabaseSchema = cohortDatabaseSchema,
+    cohortTable = tableName,
+    oldCohortId = 1,
+    newCohortId = 2,
+    purgeConflicts = TRUE,
+    cohortStartPadDays = -1,
+    cohortEndPadDays = 500000
+  )
+
+  cohortExpected <- dplyr::tibble(
+    cohortDefinitionId = c(2),
+    subjectId = c(1),
+    cohortStartDate = c(as.Date("1998-12-31")),
+    cohortEndDate = as.Date("2020-12-31")
+  )
+
+  cohortObserved <-
+    DatabaseConnector::renderTranslateQuerySql(
+      connection = connection,
+      sql = paste0(
+        "SELECT * FROM @cohort_database_schema.@table_name
+        WHERE cohort_definition_id = 2
+        order by cohort_definition_id, subject_id, cohort_start_date;"
+      ),
+      cohort_database_schema = cohortDatabaseSchema,
+      table_name = tableName,
+      snakeCaseToCamelCase = TRUE
+    ) %>%
+    dplyr::tibble()
+
+  testthat::expect_equal(
+    object = cohortObserved %>%
+      nrow(),
+    expected = 1
+  )
+  testthat::expect_true(object = all.equal(target = cohortExpected, current = cohortObserved))
+
+
+
+  # test filter by gender ----
+  CohortAlgebra::modifyCohort(
+    connection = connection,
+    cohortDatabaseSchema = cohortDatabaseSchema,
+    cdmDatabaseSchema = cohortDatabaseSchema,
+    cohortTable = tableName,
+    oldCohortId = 5,
+    newCohortId = 6,
+    purgeConflicts = FALSE,
+    filterGenderConceptId = 8507
+  )
+
+  cohortExpected <- dplyr::tibble(
+    cohortDefinitionId = c(6),
+    subjectId = c(1),
+    cohortStartDate = c(as.Date("1999-01-01")),
+    cohortEndDate = as.Date("1999-01-31")
+  )
+
+  cohortObserved <-
+    DatabaseConnector::renderTranslateQuerySql(
+      connection = connection,
+      sql = paste0(
+        "SELECT * FROM @cohort_database_schema.@table_name
+        WHERE cohort_definition_id = 6
+        order by cohort_definition_id, subject_id, cohort_start_date;"
+      ),
+      cohort_database_schema = cohortDatabaseSchema,
+      table_name = tableName,
+      snakeCaseToCamelCase = TRUE
+    ) %>%
+    dplyr::tibble()
+
+  testthat::expect_equal(
+    object = cohortObserved %>%
+      nrow(),
+    expected = 1
+  )
+  testthat::expect_true(object = all.equal(target = cohortExpected, current = cohortObserved))
+
+
+
+  # test filter by age range ----
+  CohortAlgebra::modifyCohort(
+    connection = connection,
+    cohortDatabaseSchema = cohortDatabaseSchema,
+    cdmDatabaseSchema = cohortDatabaseSchema,
+    cohortTable = tableName,
+    oldCohortId = 5,
+    newCohortId = 7,
+    purgeConflicts = FALSE,
+    filterByAgeRange = c(5, 20)
+  )
+
+  cohortExpected <- dplyr::tibble(
+    cohortDefinitionId = c(7),
+    subjectId = c(1),
+    cohortStartDate = c(as.Date("1999-01-01")),
+    cohortEndDate = as.Date("1999-01-31")
+  )
+
+  cohortObserved <-
+    DatabaseConnector::renderTranslateQuerySql(
+      connection = connection,
+      sql = paste0(
+        "SELECT * FROM @cohort_database_schema.@table_name
+        WHERE cohort_definition_id = 7
+        order by cohort_definition_id, subject_id, cohort_start_date;"
+      ),
+      cohort_database_schema = cohortDatabaseSchema,
+      table_name = tableName,
+      snakeCaseToCamelCase = TRUE
+    ) %>%
+    dplyr::tibble()
+
+  testthat::expect_equal(
+    object = cohortObserved %>%
+      nrow(),
+    expected = 1
+  )
+  testthat::expect_true(object = all.equal(target = cohortExpected, current = cohortObserved))
+
   # test with new connection
-  CohortAlgebra:::modifyCohort(
+  CohortAlgebra::modifyCohort(
     connectionDetails = connectionDetails,
     cohortDatabaseSchema = cohortDatabaseSchema,
     cohortTable = tableName,

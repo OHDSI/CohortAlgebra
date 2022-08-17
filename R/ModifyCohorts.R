@@ -43,18 +43,38 @@
 #'                            schema name, for example 'cdm_data.dbo'. cdmDataschema is required
 #'                            when eraConstructorPad is > 0. eraConstructorPad is optional.
 #'
-#' @param cohortStartCensorDate   the minimum date for the cohort. All rows with cohort start date before this date will be censored to given date.
+#' @param cohortStartCensorDate   the minimum date for the cohort. All rows with cohort start date before this date
+#'                                will be censored to given date.
 #'
-#' @param cohortEndCensorDate     the maximum date for the cohort. All rows with cohort end date after this date will be censored to given date.
+#' @param cohortEndCensorDate     the maximum date for the cohort. All rows with cohort end date after this date
+#'                                will be censored to given date.
 #'
-#' @param cohortStartFilterRange  A range of dates representing minimum to maximum to filter the cohort by its cohort start date e.g c(as.Date('1999-01-01'), as.Date('1999-12-31'))
+#' @param cohortStartFilterRange  A range of dates representing minimum to maximum to filter the cohort by its cohort start
+#'                                date e.g c(as.Date('1999-01-01'), as.Date('1999-12-31'))
 #'
 #' @param cohortEndFilterRange    A range of dates representing minimum to maximum to filter the cohort by its cohort end date e.g c(as.Date('1999-01-01'), as.Date('1999-12-31'))
 #'
-#' @param cohortStartPadDays      An integer value to pad the cohort start date. Default is 0 - no padding. The final cohort will have no days outside the observation period dates.
+#' @param cohortStartPadDays      An integer value to pad the cohort start date. Default is 0 - no padding. The final cohort will
+#'                                have no days outside the observation period dates of the initial observation period. If negative
+#'                                padding, then cohortStartDate will not shift to before corresponding observationPeriodStartDate,
+#'                                it will be forced to be equal to observationPeriodStartDate. If positive padding, then
+#'                                cohortStartDate will not shift beyond observationPeriodEndDate, it will be forced to be
+#'                                equal to observationPeriodEndDate. Also cohortStartDate will not be more than
+#'                                cohortEndDate - it will be forced to be equal to cohortEndDate.
 #'
-#' @param cohortEndPadDays        An integer value to pad the cohort end date. Default is 0 - no padding. The final cohort will have no days outside the observation period dates.
+#' @param cohortEndPadDays        An integer value to pad the cohort start date. Default is 0 - no padding. The final cohort will
+#'                                have no days outside the observation period dates of the initial observation period. If negative
+#'                                padding, then cohortEndDate will not shift to before corresponding observationPeriodEndDate,
+#'                                it will be forced to be equal to observationPeriodEndDate. If positive padding, then
+#'                                cohortEndDate will not shift beyond observationPeriodStartDate, it will be forced to be
+#'                                equal to observationPeriodStartDate. Also cohortEndDate will not be less than
+#'                                cohortStartDate - it will be forced to be equal to cohortStartDate.
 #'
+#' @param filterGenderConceptId   Provide an array of integers corresponding to conceptId to look for in the gender_concept_id
+#'                                field of the person table.
+#'
+#' @param filterByAgeRange        Provide an array of two values, where second value is >= first value to filter the persons age on cohort_start_date.
+#'                                Age is calculated as YEAR(cohort_start_date) - person.year_of_birth
 #'
 #' @return
 #' NULL
@@ -77,6 +97,7 @@
 modifyCohort <- function(connectionDetails = NULL,
                          connection = NULL,
                          cohortDatabaseSchema = NULL,
+                         cdmDatabaseSchema = NULL,
                          cohortTable = "cohort",
                          oldCohortId,
                          newCohortId = oldCohortId,
@@ -86,7 +107,8 @@ modifyCohort <- function(connectionDetails = NULL,
                          cohortEndFilterRange = NULL,
                          cohortStartPadDays = NULL,
                          cohortEndPadDays = NULL,
-                         cdmDatabaseSchema = NULL,
+                         filterGenderConceptId = NULL,
+                         filterByAgeRange = NULL,
                          tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
                          purgeConflicts = TRUE) {
   errorMessages <- checkmate::makeAssertCollection()
@@ -177,6 +199,21 @@ modifyCohort <- function(connectionDetails = NULL,
     null.ok = TRUE,
     add = errorMessages
   )
+  checkmate::assertIntegerish(
+    x = filterGenderConceptId,
+    min.len = 1,
+    null.ok = TRUE,
+    add = errorMessages
+  )
+  checkmate::assertIntegerish(
+    x = filterByAgeRange,
+    min.len = 2,
+    null.ok = TRUE,
+    add = errorMessages
+  )
+  if (!is.null(filterByAgeRange)) {
+    checkmate::assert_true(x = filterByAgeRange[1] <= filterByAgeRange[2])
+  }
 
   checkmate::reportAssertions(collection = errorMessages)
 
@@ -415,26 +452,157 @@ modifyCohort <- function(connectionDetails = NULL,
     )
   }
 
-  ## Cohort Pad -----
-  if (any(!is.null(cohortStartPadDays), !is.null(cohortEndPadDays))) {
-    sql <- "  DROP TABLE IF EXISTS @temp_table_2;
+  ## filter- Gender Concept Id -----
+  if (!is.null(filterGenderConceptId)) {
+    sql <- "DROP TABLE IF EXISTS @temp_table_2;
           	SELECT cohort_definition_id,
               	  subject_id,
-              	  {@cohort_start_pad_days != ''} ?
-              	    {DATEADD(DAY, @cohort_start_pad_days, cohort_start_date)} :
-              	    {cohort_start_date} cohort_start_date,
-                   {@cohort_end_pad_days != ''} ?
-                    {DATEADD(DAY, @cohort_end_pad_days, cohort_end_date)} :
-              	        {cohort_end_date} cohort_end_date
+              	  cohort_start_date,
+              	  cohort_end_date
           	INTO @temp_table_2
-          	FROM @temp_table_1;
+          	FROM @temp_table_1 t
+          	INNER JOIN @cdm_database_schema.person p
+          	ON t.subject_id = p.person_id
+          	WHERE p.gender_concept_id IN (@gender_concept_id);
 
           	DROP TABLE IF EXISTS @temp_table_1;
 
           SELECT *
           INTO @temp_table_1
-          FROM @temp_table_2
-          WHERE cohort_start_date <= cohort_end_date;
+          FROM @temp_table_2;
+
+          DROP TABLE IF EXISTS @temp_table_2;
+  "
+
+    DatabaseConnector::renderTranslateExecuteSql(
+      connection = connection,
+      sql = sql,
+      profile = FALSE,
+      progressBar = FALSE,
+      reportOverallTime = FALSE,
+      tempEmulationSchema = tempEmulationSchema,
+      gender_concept_id = filterGenderConceptId,
+      cdm_database_schema = cdmDatabaseSchema,
+      temp_table_1 = tempTable1,
+      temp_table_2 = tempTable2
+    )
+  }
+
+
+  ## filter- Age Range -----
+  if (!is.null(filterByAgeRange)) {
+    sql <- "DROP TABLE IF EXISTS @temp_table_2;
+          	SELECT cohort_definition_id,
+              	  subject_id,
+              	  cohort_start_date,
+              	  cohort_end_date
+          	INTO @temp_table_2
+          	FROM @temp_table_1 t
+          	INNER JOIN @cdm_database_schema.person p
+          	ON t.subject_id = p.person_id
+          	WHERE YEAR(t.cohort_start_date) - p.year_of_birth >= @age_lower
+          	      AND YEAR(t.cohort_start_date) - p.year_of_birth <= @age_higher;
+
+          	DROP TABLE IF EXISTS @temp_table_1;
+
+          SELECT *
+          INTO @temp_table_1
+          FROM @temp_table_2;
+
+          DROP TABLE IF EXISTS @temp_table_2;
+  "
+
+    DatabaseConnector::renderTranslateExecuteSql(
+      connection = connection,
+      sql = sql,
+      profile = FALSE,
+      progressBar = FALSE,
+      reportOverallTime = FALSE,
+      tempEmulationSchema = tempEmulationSchema,
+      age_lower = min(filterByAgeRange),
+      age_higher = max(filterByAgeRange),
+      cdm_database_schema = cdmDatabaseSchema,
+      temp_table_1 = tempTable1,
+      temp_table_2 = tempTable2
+    )
+  }
+
+  ## Cohort Pad -----
+  if (any(!is.null(cohortStartPadDays), !is.null(cohortEndPadDays))) {
+    sql <- "  DROP TABLE IF EXISTS @temp_table_2;
+
+            with date_offset as
+            (
+            	SELECT cohort_definition_id,
+                	  subject_id,
+                	  {@cohort_start_pad_days != ''} ?
+                	    {DATEADD(DAY, @cohort_start_pad_days, cohort_start_date)} :
+                	    {cohort_start_date} cohort_start_date,
+                     {@cohort_end_pad_days != ''} ?
+                      {DATEADD(DAY, @cohort_end_pad_days, cohort_end_date)} :
+                	        {cohort_end_date} cohort_end_date,
+                	   observation_period_start_date,
+                	   observation_period_end_date
+            	FROM @temp_table_1 t
+            	INNER JOIN @cdm_database_schema.observation_period op
+            	ON t.subject_id = op.person_id
+              WHERE op.observation_period_start_date <= t.cohort_start_date
+                    AND op.observation_period_end_date >= t.cohort_start_date
+            )
+            , fix_outside as
+            (
+            SELECT cohort_definition_id,
+                    subject_id,
+                    CASE WHEN cohort_start_date < observation_period_start_date
+                          THEN observation_period_start_date
+                        ELSE cohort_start_date
+                    END cohort_start_date,
+                    CASE WHEN cohort_end_date > observation_period_end_date
+                        THEN observation_period_end_date
+                      ELSE cohort_end_date
+                    END cohort_end_date,
+                    observation_period_start_date,
+                    observation_period_end_date
+            from date_offset
+            )
+            , fix_inside as
+            (
+            SELECT cohort_definition_id,
+                    subject_id,
+                    CASE WHEN cohort_start_date > observation_period_end_date
+                          THEN observation_period_end_date
+                        ELSE cohort_start_date
+                    END cohort_start_date,
+                    CASE WHEN cohort_end_date < observation_period_start_date
+                        THEN observation_period_start_date
+                      ELSE cohort_end_date
+                    END cohort_end_date
+            from fix_outside
+            )
+            , fix_cohort_date as
+            (
+            SELECT cohort_definition_id,
+                    subject_id,
+                    CASE WHEN cohort_start_date > cohort_end_date
+                          THEN cohort_end_date
+                        ELSE cohort_end_date
+                    END cohort_start_date,
+                    cohort_end_date
+            from fix_inside
+            )
+            SELECT DISTINCT
+                    cohort_definition_id,
+                   subject_id,
+                   cohort_start_date,
+                   cohort_end_date
+          	INTO @temp_table_2
+          	FROM fix_inside;
+
+          	DROP TABLE IF EXISTS @temp_table_1;
+
+          SELECT *
+          INTO @temp_table_1
+          FROM @temp_table_2;
 
           DROP TABLE IF EXISTS @temp_table_2;
   "
@@ -448,6 +616,7 @@ modifyCohort <- function(connectionDetails = NULL,
       tempEmulationSchema = tempEmulationSchema,
       cohort_start_pad_days = cohortStartPadDays,
       cohort_end_pad_days = cohortEndPadDays,
+      cdm_database_schema = cdmDatabaseSchema,
       temp_table_1 = tempTable1,
       temp_table_2 = tempTable2
     )
@@ -455,8 +624,8 @@ modifyCohort <- function(connectionDetails = NULL,
     eraFyCohorts(
       connection = connection,
       oldToNewCohortId = dplyr::tibble(
-        oldCohortId = oldCohortId,
-        newCohortId = oldCohortId
+        oldCohortId = newCohortId,
+        newCohortId = newCohortId
       ),
       cdmDatabaseSchema = cdmDatabaseSchema,
       tempEmulationSchema = tempEmulationSchema,
