@@ -387,6 +387,52 @@ testthat::test_that("Testing Modify cohorts", {
     expected = 1
   )
   testthat::expect_true(object = all.equal(target = cohortExpected, current = cohortObserved))
+  
+  
+  
+  # test first occurrence ----
+  CohortAlgebra::modifyCohort(
+    connection = connection,
+    cohortDatabaseSchema = cohortDatabaseSchema,
+    cdmDatabaseSchema = cohortDatabaseSchema,
+    cohortTable = tableName,
+    oldCohortId = 3,
+    newCohortId = 8,
+    firstOccurrence = TRUE,
+    purgeConflicts = TRUE
+  )
+  
+  cohortExpected <- dplyr::tibble(
+    cohortDefinitionId = c(8),
+    subjectId = c(3),
+    cohortStartDate = c(
+      as.Date("1999-01-15")
+    ),
+    cohortEndDate = c(
+      as.Date("1999-01-25")
+    )
+  )
+  
+  cohortObserved <-
+    DatabaseConnector::renderTranslateQuerySql(
+      connection = connection,
+      sql = paste0(
+        "SELECT * FROM @cohort_database_schema.@table_name
+        WHERE cohort_definition_id = 8
+        order by cohort_definition_id, subject_id, cohort_start_date;"
+      ),
+      cohort_database_schema = cohortDatabaseSchema,
+      table_name = tableName,
+      snakeCaseToCamelCase = TRUE
+    ) %>%
+    dplyr::tibble()
+  
+  testthat::expect_equal(
+    object = cohortObserved %>%
+      nrow(),
+    expected = 1
+  )
+  testthat::expect_true(object = all.equal(target = cohortExpected, current = cohortObserved))
 
   # test with new connection
   CohortAlgebra::modifyCohort(

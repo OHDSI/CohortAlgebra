@@ -20,6 +20,7 @@ modifyCohort(
   cohortEndPadDays = NULL,
   filterGenderConceptId = NULL,
   filterByAgeRange = NULL,
+  firstOccurrence = FALSE,
   tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
   purgeConflicts = TRUE
 )
@@ -83,6 +84,8 @@ field of the person table.}
 
 \item{filterByAgeRange}{Provide an array of two values, where second value is >= first value to filter the persons age on cohort_start_date.
 Age is calculated as YEAR(cohort_start_date) - person.year_of_birth}
+
+\item{firstOccurrence}{Do you want to restrict the cohort to the first occurrence per person?}
 
 \item{tempEmulationSchema}{Some database platforms like Oracle and Impala do not truly support
 temp tables. To emulate temp tables, provide a schema with write
