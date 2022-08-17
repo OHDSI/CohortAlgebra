@@ -224,8 +224,8 @@ modifyCohort <- function(connectionDetails = NULL,
     if (any(
       cohortStartPadDays > 0,
       cohortEndPadDays > 0,
-      filterByAgeRange,
-      filterGenderConceptId
+      !is.null(filterByAgeRange),
+      !is.null(filterGenderConceptId)
     )) {
       if (any(
         cohortStartPadDays != 0,
@@ -240,8 +240,8 @@ modifyCohort <- function(connectionDetails = NULL,
         )
       }
       if (any(
-        filterByAgeRange,
-        filterGenderConceptId
+        !is.null(filterByAgeRange),
+        !is.null(filterGenderConceptId)
       )) {
         stop(
           "cdmDatabaseSchema is NULL.
