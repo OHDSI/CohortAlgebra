@@ -115,7 +115,8 @@ testthat::test_that("Testing Modify cohorts", {
 
 
   # test for range date start ----
-  # should error because purgeConflicts if FALSE
+
+  # should error because purgeConflicts is FALSE
   testthat::expect_error(
     CohortAlgebra::modifyCohort(
       connection = connection,
@@ -209,6 +210,7 @@ testthat::test_that("Testing Modify cohorts", {
 
   # test era pad ----
   testthat::expect_error(
+    # cdmDatabaseSchema is NULL
     CohortAlgebra::modifyCohort(
       connection = connection,
       cohortDatabaseSchema = cohortDatabaseSchema,
@@ -307,6 +309,19 @@ testthat::test_that("Testing Modify cohorts", {
 
 
   # test filter by gender ----
+  testthat::expect_error(
+    # cdm database schema not provided
+    CohortAlgebra::modifyCohort(
+      connection = connection,
+      cohortDatabaseSchema = cohortDatabaseSchema,
+      cohortTable = tableName,
+      oldCohortId = 5,
+      newCohortId = 6,
+      purgeConflicts = FALSE,
+      filterGenderConceptId = 8507
+    )
+  )
+
   CohortAlgebra::modifyCohort(
     connection = connection,
     cohortDatabaseSchema = cohortDatabaseSchema,
@@ -387,9 +402,9 @@ testthat::test_that("Testing Modify cohorts", {
     expected = 1
   )
   testthat::expect_true(object = all.equal(target = cohortExpected, current = cohortObserved))
-  
-  
-  
+
+
+
   # test first occurrence ----
   CohortAlgebra::modifyCohort(
     connection = connection,
@@ -401,7 +416,7 @@ testthat::test_that("Testing Modify cohorts", {
     firstOccurrence = TRUE,
     purgeConflicts = TRUE
   )
-  
+
   cohortExpected <- dplyr::tibble(
     cohortDefinitionId = c(8),
     subjectId = c(3),
@@ -412,7 +427,7 @@ testthat::test_that("Testing Modify cohorts", {
       as.Date("1999-01-25")
     )
   )
-  
+
   cohortObserved <-
     DatabaseConnector::renderTranslateQuerySql(
       connection = connection,
@@ -426,7 +441,7 @@ testthat::test_that("Testing Modify cohorts", {
       snakeCaseToCamelCase = TRUE
     ) %>%
     dplyr::tibble()
-  
+
   testthat::expect_equal(
     object = cohortObserved %>%
       nrow(),

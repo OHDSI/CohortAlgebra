@@ -75,8 +75,8 @@
 #'
 #' @param filterByAgeRange        Provide an array of two values, where second value is >= first value to filter the persons age on cohort_start_date.
 #'                                Age is calculated as YEAR(cohort_start_date) - person.year_of_birth
-#'                                
-#' @param firstOccurrence         Do you want to restrict the cohort to the first occurrence per person?                                
+#'
+#' @param firstOccurrence         Do you want to restrict the cohort to the first occurrence per person?
 #'
 #' @return
 #' NULL
@@ -223,14 +223,31 @@ modifyCohort <- function(connectionDetails = NULL,
   if (is.null(cdmDatabaseSchema)) {
     if (any(
       cohortStartPadDays > 0,
-      cohortEndPadDays > 0
+      cohortEndPadDays > 0,
+      !is.null(filterByAgeRange),
+      !is.null(filterGenderConceptId)
     )) {
-      stop(
-        "cdmDatabaseSchema is NULL but cohort pad days > 0. This may result in cohorts that
-            that are outside a persons observation period - ie. the resultant cohort is not valid.
-            To avoid this - please always provide cdmDatabaseSchema with era Pad.
+      if (any(
+        cohortStartPadDays != 0,
+        cohortEndPadDays != 0
+      )) {
+        stop(
+          "cdmDatabaseSchema is NULL but cohort pad days is not 0.
+            When padding, the output cohort may result in cohort days that
+            are outside a persons observation period. This makes the resultant cohort is not valid.
+            To avoid this - we require provide cdmDatabaseSchema with era Pad.
             The function will then ensure that cohort days are always in observation period."
-      )
+        )
+      }
+      if (any(
+        !is.null(filterByAgeRange),
+        !is.null(filterGenderConceptId)
+      )) {
+        stop(
+          "cdmDatabaseSchema is NULL.
+            To filter cohort by age range or by gender, OMOP person table in cdmDatabaseSchema is required."
+        )
+      }
     }
   }
 
@@ -637,7 +654,7 @@ modifyCohort <- function(connectionDetails = NULL,
       purgeConflicts = TRUE
     )
   }
-  
+
   ## First Occurrence -----
   if (firstOccurrence) {
     sql <- "  DROP TABLE IF EXISTS @temp_table_2;
@@ -658,7 +675,7 @@ modifyCohort <- function(connectionDetails = NULL,
 
           DROP TABLE IF EXISTS @temp_table_2;
   "
-    
+
     DatabaseConnector::renderTranslateExecuteSql(
       connection = connection,
       sql = sql,

@@ -20,7 +20,7 @@ Limit cohort periods: Filter the cohorts to a given date range of cohort start, 
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">CohortAlgebra</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.3</span>
       </span>
     </div>
 
@@ -88,6 +88,7 @@ Limit cohort periods: Filter the cohorts to a given date range of cohort start, 
 <span>  cohortEndPadDays <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  filterGenderConceptId <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  filterByAgeRange <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  firstOccurrence <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  tempEmulationSchema <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"sqlRenderTempEmulationSchema"</span><span class="op">)</span>,</span>
 <span>  purgeConflicts <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -182,6 +183,10 @@ field of the person table.</p></dd>
 <dt>filterByAgeRange</dt>
 <dd><p>Provide an array of two values, where second value is &gt;= first value to filter the persons age on cohort_start_date.
 Age is calculated as YEAR(cohort_start_date) - person.year_of_birth</p></dd>
+
+
+<dt>firstOccurrence</dt>
+<dd><p>Do you want to restrict the cohort to the first occurrence per person?</p></dd>
 
 
 <dt>tempEmulationSchema</dt>
