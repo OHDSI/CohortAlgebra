@@ -229,7 +229,7 @@ modifyCohort <- function(connectionDetails = NULL,
     )) {
       if (any(
         cohortStartPadDays != 0,
-        cohortEndPadDay != 0
+        cohortEndPadDays != 0
       )) {
         stop(
           "cdmDatabaseSchema is NULL but cohort pad days is not 0.
