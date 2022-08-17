@@ -1,3 +1,12 @@
+CohortAlgebra 0.3.2
+======================
+
+Changes:
+- function modifyCohorts gets one new parameters, firstOccurrence
+
+Bug fix:
+
+
 CohortAlgebra 0.3.1
 ======================
 

@@ -75,6 +75,8 @@
 #'
 #' @param filterByAgeRange        Provide an array of two values, where second value is >= first value to filter the persons age on cohort_start_date.
 #'                                Age is calculated as YEAR(cohort_start_date) - person.year_of_birth
+#'                                
+#' @param firstOccurrence         Do you want to restrict the cohort to the first occurrence per person?                                
 #'
 #' @return
 #' NULL
@@ -109,6 +111,7 @@ modifyCohort <- function(connectionDetails = NULL,
                          cohortEndPadDays = NULL,
                          filterGenderConceptId = NULL,
                          filterByAgeRange = NULL,
+                         firstOccurrence = FALSE,
                          tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
                          purgeConflicts = TRUE) {
   errorMessages <- checkmate::makeAssertCollection()
@@ -632,6 +635,39 @@ modifyCohort <- function(connectionDetails = NULL,
       cohortTable = tempTable1,
       cohortDatabaseSchema = NULL,
       purgeConflicts = TRUE
+    )
+  }
+  
+  ## First Occurrence -----
+  if (firstOccurrence) {
+    sql <- "  DROP TABLE IF EXISTS @temp_table_2;
+
+            SELECT cohort_definition_id,
+                   subject_id,
+                   min(cohort_start_date) cohort_start_date,
+                   min(cohort_end_date) cohort_end_date
+          	INTO @temp_table_2
+          	FROM @temp_table_1
+          	GROUP BY cohort_definition_id, subject_id;
+
+          	DROP TABLE IF EXISTS @temp_table_1;
+
+          SELECT *
+          INTO @temp_table_1
+          FROM @temp_table_2;
+
+          DROP TABLE IF EXISTS @temp_table_2;
+  "
+    
+    DatabaseConnector::renderTranslateExecuteSql(
+      connection = connection,
+      sql = sql,
+      profile = FALSE,
+      progressBar = FALSE,
+      reportOverallTime = FALSE,
+      tempEmulationSchema = tempEmulationSchema,
+      temp_table_1 = tempTable1,
+      temp_table_2 = tempTable2
     )
   }
 
