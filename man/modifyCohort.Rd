@@ -8,6 +8,7 @@ modifyCohort(
   connectionDetails = NULL,
   connection = NULL,
   cohortDatabaseSchema = NULL,
+  cdmDatabaseSchema = NULL,
   cohortTable = "cohort",
   oldCohortId,
   newCohortId = oldCohortId,
@@ -17,7 +18,8 @@ modifyCohort(
   cohortEndFilterRange = NULL,
   cohortStartPadDays = NULL,
   cohortEndPadDays = NULL,
-  cdmDatabaseSchema = NULL,
+  filterGenderConceptId = NULL,
+  filterByAgeRange = NULL,
   tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
   purgeConflicts = TRUE
 )
@@ -38,28 +40,49 @@ of the function, and closed when the function finishes.}
 this should include both the database and schema name, for example
 'scratch.dbo'.}
 
+\item{cdmDatabaseSchema}{Schema name where your patient-level data in OMOP CDM format resides.
+Note that for SQL Server, this should include both the database and
+schema name, for example 'cdm_data.dbo'. cdmDataschema is required
+when eraConstructorPad is > 0. eraConstructorPad is optional.}
+
 \item{cohortTable}{The name of the cohort table.}
 
 \item{oldCohortId}{The cohort id of the cohort that needs to be modified.}
 
 \item{newCohortId}{The cohort id of the result cohort.}
 
-\item{cohortStartCensorDate}{the minimum date for the cohort. All rows with cohort start date before this date will be censored to given date.}
+\item{cohortStartCensorDate}{the minimum date for the cohort. All rows with cohort start date before this date
+will be censored to given date.}
 
-\item{cohortEndCensorDate}{the maximum date for the cohort. All rows with cohort end date after this date will be censored to given date.}
+\item{cohortEndCensorDate}{the maximum date for the cohort. All rows with cohort end date after this date
+will be censored to given date.}
 
-\item{cohortStartFilterRange}{A range of dates representing minimum to maximum to filter the cohort by its cohort start date e.g c(as.Date('1999-01-01'), as.Date('1999-12-31'))}
+\item{cohortStartFilterRange}{A range of dates representing minimum to maximum to filter the cohort by its cohort start
+date e.g c(as.Date('1999-01-01'), as.Date('1999-12-31'))}
 
 \item{cohortEndFilterRange}{A range of dates representing minimum to maximum to filter the cohort by its cohort end date e.g c(as.Date('1999-01-01'), as.Date('1999-12-31'))}
 
-\item{cohortStartPadDays}{An integer value to pad the cohort start date. Default is 0 - no padding. The final cohort will have no days outside the observation period dates.}
+\item{cohortStartPadDays}{An integer value to pad the cohort start date. Default is 0 - no padding. The final cohort will
+have no days outside the observation period dates of the initial observation period. If negative
+padding, then cohortStartDate will not shift to before corresponding observationPeriodStartDate,
+it will be forced to be equal to observationPeriodStartDate. If positive padding, then
+cohortStartDate will not shift beyond observationPeriodEndDate, it will be forced to be
+equal to observationPeriodEndDate. Also cohortStartDate will not be more than
+cohortEndDate - it will be forced to be equal to cohortEndDate.}
 
-\item{cohortEndPadDays}{An integer value to pad the cohort end date. Default is 0 - no padding. The final cohort will have no days outside the observation period dates.}
+\item{cohortEndPadDays}{An integer value to pad the cohort start date. Default is 0 - no padding. The final cohort will
+have no days outside the observation period dates of the initial observation period. If negative
+padding, then cohortEndDate will not shift to before corresponding observationPeriodEndDate,
+it will be forced to be equal to observationPeriodEndDate. If positive padding, then
+cohortEndDate will not shift beyond observationPeriodStartDate, it will be forced to be
+equal to observationPeriodStartDate. Also cohortEndDate will not be less than
+cohortStartDate - it will be forced to be equal to cohortStartDate.}
 
-\item{cdmDatabaseSchema}{Schema name where your patient-level data in OMOP CDM format resides.
-Note that for SQL Server, this should include both the database and
-schema name, for example 'cdm_data.dbo'. cdmDataschema is required
-when eraConstructorPad is > 0. eraConstructorPad is optional.}
+\item{filterGenderConceptId}{Provide an array of integers corresponding to conceptId to look for in the gender_concept_id
+field of the person table.}
+
+\item{filterByAgeRange}{Provide an array of two values, where second value is >= first value to filter the persons age on cohort_start_date.
+Age is calculated as YEAR(cohort_start_date) - person.year_of_birth}
 
 \item{tempEmulationSchema}{Some database platforms like Oracle and Impala do not truly support
 temp tables. To emulate temp tables, provide a schema with write

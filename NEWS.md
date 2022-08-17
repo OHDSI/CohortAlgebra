@@ -1,3 +1,13 @@
+CohortAlgebra 0.3.1
+======================
+
+Changes:
+- function modifyCohorts gets two new parameters, filterGenderConceptId and filterByAgeRange.
+
+Bug fix:
+- bug fix in era pad logic of modifyCohorts function
+
+
 CohortAlgebra 0.3.0
 ======================
 
