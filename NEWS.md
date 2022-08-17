@@ -1,3 +1,11 @@
+CohortAlgebra 0.3.3
+======================
+
+Changes:
+- minor change to function modifyCohorts
+
+Bug fix:
+
 CohortAlgebra 0.3.2
 ======================
 
