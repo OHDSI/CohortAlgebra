@@ -17,9 +17,10 @@ Imports:
     checkmate,
     clock,
     dplyr,
+    lifecycle,
     ParallelLogger,
-  	rlang,
-  	SqlRender
+    rlang,
+    SqlRender
 Suggests:
   Eunomia,
   remotes,

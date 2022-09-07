@@ -49,6 +49,8 @@ with transformed. By default - it will not be replaced, and an error message is 
 \description{
 Given a specified array of cohortIds in a cohort table, perform
 cohort union operator to create new cohorts.
+
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}
 }
 \examples{
 \dontrun{

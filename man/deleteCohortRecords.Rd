@@ -40,4 +40,6 @@ privileges where temp tables can be created.}
 \description{
 Delete all records from cohort table with the given cohort id. Edit privileges
 to the cohort table is required.
+
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}
 }

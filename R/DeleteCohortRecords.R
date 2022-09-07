@@ -19,6 +19,8 @@
 #' @description
 #' Delete all records from cohort table with the given cohort id. Edit privileges
 #' to the cohort table is required.
+#' 
+#' `r lifecycle::badge("stable")`
 #'
 #' @template ConnectionDetails
 #'

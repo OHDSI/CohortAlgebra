@@ -18,6 +18,8 @@
 #'
 #' @description
 #' Get cohort ids in table. This function is not exported.
+#' 
+#' `r lifecycle::badge("stable")`
 #'
 #' @template Connection
 #'

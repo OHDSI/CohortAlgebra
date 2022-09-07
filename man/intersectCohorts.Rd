@@ -49,6 +49,8 @@ privileges where temp tables can be created.}
 Find the common cohort period for persons present in all the cohorts. Note: if
 subject is not found in any of the cohorts, then they will not
 be in the final cohort.
+
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}
 }
 \examples{
 \dontrun{

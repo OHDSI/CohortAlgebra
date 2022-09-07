@@ -21,6 +21,8 @@
 #' cohort_end_date execute era logic. This will delete and replace the
 #' original rows with the cohort_definition_id(s). edit privileges
 #' to the cohort table is required.
+#' 
+#' `r lifecycle::badge("stable")`
 #'
 #' @template ConnectionDetails
 #'

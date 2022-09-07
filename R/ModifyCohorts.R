@@ -22,6 +22,8 @@
 #' Pad days: Add days to either cohort start or cohort end dates. Maybe negative numbers. Final cohort will not be outside the persons observation period.
 #' Limit cohort periods: Filter the cohorts to a given date range of cohort start, or cohort end or both.
 #'
+#' `r lifecycle::badge("experimental")`
+#' 
 #' @template ConnectionDetails
 #'
 #' @template Connection

@@ -100,6 +100,8 @@ Modify cohort by censoring, padding, limiting cohorts periods.
 Censoring: Provide a date for right, left, both censoring. All cohorts will be truncated to the given date.
 Pad days: Add days to either cohort start or cohort end dates. Maybe negative numbers. Final cohort will not be outside the persons observation period.
 Limit cohort periods: Filter the cohorts to a given date range of cohort start, or cohort end or both.
+
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 }
 \examples{
 \dontrun{
