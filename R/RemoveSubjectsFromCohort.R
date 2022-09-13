@@ -19,7 +19,7 @@
 #' @description
 #' Remove subjects from a given array of cohort(s) who are present in any of
 #' another array of cohort(s).
-#' 
+#'
 #' `r lifecycle::badge("experimental")`
 #'
 #' @template ConnectionDetails

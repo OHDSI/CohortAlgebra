@@ -18,7 +18,7 @@
 #'
 #' @description
 #' Get cohort ids in table
-#' 
+#'
 #' `r lifecycle::badge("stable")`
 #'
 #' @template Connection

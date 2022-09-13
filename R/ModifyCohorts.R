@@ -23,7 +23,7 @@
 #' Limit cohort periods: Filter the cohorts to a given date range of cohort start, or cohort end or both.
 #'
 #' `r lifecycle::badge("experimental")`
-#' 
+#'
 #' @template ConnectionDetails
 #'
 #' @template Connection

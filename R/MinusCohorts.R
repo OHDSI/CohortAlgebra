@@ -19,7 +19,7 @@
 #' @description
 #' Given two cohorts, substract (minus) the dates from the first cohort, the
 #' dates the subject also had on the second cohort.
-#' 
+#'
 #' `r lifecycle::badge("stable")`
 #'
 #' @template ConnectionDetails

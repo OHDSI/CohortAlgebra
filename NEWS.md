@@ -2,6 +2,14 @@ CohortAlgebra 0.3.3
 ======================
 
 Changes:
+- update to vignette
+
+Bug fix:
+
+CohortAlgebra 0.3.3
+======================
+
+Changes:
 - minor change to function modifyCohorts
 
 Bug fix:

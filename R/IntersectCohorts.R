@@ -21,7 +21,7 @@
 #' Find the common cohort period for persons present in all the cohorts. Note: if
 #' subject is not found in any of the cohorts, then they will not
 #' be in the final cohort.
-#' 
+#'
 #' `r lifecycle::badge("stable")`
 #'
 #' @template ConnectionDetails
