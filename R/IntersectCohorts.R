@@ -22,6 +22,8 @@
 #' subject is not found in any of the cohorts, then they will not
 #' be in the final cohort.
 #'
+#' `r lifecycle::badge("stable")`
+#'
 #' @template ConnectionDetails
 #'
 #' @template Connection

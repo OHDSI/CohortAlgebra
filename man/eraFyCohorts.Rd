@@ -60,4 +60,6 @@ Given a table with cohort_definition_id, subject_id, cohort_start_date,
 cohort_end_date execute era logic. This will delete and replace the
 original rows with the cohort_definition_id(s). edit privileges
 to the cohort table is required.
+
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}
 }

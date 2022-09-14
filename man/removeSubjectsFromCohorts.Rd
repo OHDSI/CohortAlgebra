@@ -52,6 +52,8 @@ privileges where temp tables can be created.}
 \description{
 Remove subjects from a given array of cohort(s) who are present in any of
 another array of cohort(s).
+
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 }
 \examples{
 \dontrun{

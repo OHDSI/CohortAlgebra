@@ -20,6 +20,8 @@
 #' Given a specified array of cohortIds in a cohort table, perform
 #' cohort union operator to create new cohorts.
 #'
+#' `r lifecycle::badge("stable")`
+#'
 #' @template ConnectionDetails
 #'
 #' @template Connection

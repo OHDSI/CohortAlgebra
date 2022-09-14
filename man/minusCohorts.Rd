@@ -51,6 +51,8 @@ privileges where temp tables can be created.}
 \description{
 Given two cohorts, substract (minus) the dates from the first cohort, the
 dates the subject also had on the second cohort.
+
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}
 }
 \examples{
 \dontrun{

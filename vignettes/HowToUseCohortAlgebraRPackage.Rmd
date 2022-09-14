@@ -69,9 +69,9 @@ tempTableName <- paste0("#", tableName, "_1")
 ```
 
 ## Cohort UNION
-- Given two or more cohorts, an UNION operator on these cohorts creates a new cohort with continuous days the persons was present in any of the cohorts.
+- Given two or more cohorts, an UNION operator on these cohorts creates a new cohort with continuous days the persons was present in any of the cohorts. For example: given a cohort table as follows
 
-```{r tidy=FALSE,eval=TRUE}
+```{r tidy=FALSE,eval=TRUE, echo=FALSE}
 cohort <- dplyr::tibble(
   cohortDefinitionId = c(1, 2, 2),
   subjectId = c(1, 1, 1),
@@ -86,6 +86,9 @@ cohort <- dplyr::tibble(
     as.Date("2022-12-30")
   )
 )
+```
+
+```{r tidy=FALSE,eval=TRUE, echo=TRUE}
 cohort
 ```
 
@@ -106,16 +109,20 @@ DatabaseConnector::insertTable(
 )
 ```
 
-The union of the three cohorts is expected to give us
+The union of the two cohorts is expected to give us
 
 
-```{r tidy=FALSE,eval=TRUE}
+```{r tidy=FALSE,eval=TRUE, echo=FALSE}
 cohortExpected <- dplyr::tibble(
   cohortDefinitionId = c(3, 3),
   subjectId = c(1, 1),
   cohortStartDate = c(as.Date("2022-01-01"), as.Date("2022-08-15")),
   cohortEndDate = c(as.Date("2022-05-10"), as.Date("2022-12-30"))
 )
+```
+
+```{r tidy=FALSE, eval=TRUE, echo=TRUE}
+
 cohortExpected
 ```
 
@@ -138,7 +145,7 @@ CohortAlgebra::unionCohorts(
 
 Now we will have a new cohortId '3' which is the union of cohortId's 1 and 2.
 
-```{r tidy=FALSE,eval=TRUE}
+```{r tidy=FALSE,eval=TRUE, echo=FALSE}
 data <-
   DatabaseConnector::renderTranslateQuerySql(
     connection = connection,
@@ -152,6 +159,9 @@ data <-
     snakeCaseToCamelCase = TRUE
   ) %>%
   dplyr::tibble()
+```
+
+```{r tidy=FALSE,eval=TRUE, echo=TRUE}
 
 data
 ```
@@ -166,7 +176,7 @@ Note: if the target cohort table had a cohort with cohortId = 3, before running 
 
 Input:
 
-```{r tidy=FALSE,eval=TRUE}
+```{r tidy=FALSE,eval=TRUE, echo=FALSE}
 cohort <- dplyr::tibble(
   cohortDefinitionId = c(1, 2),
   subjectId = c(1, 1),
@@ -179,8 +189,13 @@ cohort <- dplyr::tibble(
     as.Date("2022-01-30")
   )
 )
+```
+
+```{r tidy=FALSE,eval=TRUE, echo=TRUE}
 cohort
 ```
+
+
 ```{r tidy=FALSE,eval=TRUE, echo=FALSE}
 
 DatabaseConnector::insertTable(
@@ -226,6 +241,11 @@ data <-
   ) %>%
   dplyr::tibble()
 
+```
+
+
+```{r tidy=FALSE,eval=TRUE, echo=FALSE}
+
 data
 ```
 
@@ -233,7 +253,7 @@ data
 
 Input:
 
-```{r tidy=FALSE,eval=TRUE}
+```{r tidy=FALSE,eval=TRUE, echo=FALSE}
 cohort <- dplyr::tibble(
   cohortDefinitionId = c(1, 2, 2),
   subjectId = c(1, 1, 1),
@@ -248,8 +268,13 @@ cohort <- dplyr::tibble(
     as.Date("2022-01-30")
   )
 )
+```
+
+```{r tidy=FALSE,eval=TRUE, echo=TRUE}
 cohort
 ```
+
+
 ```{r tidy=FALSE,eval=TRUE, echo=FALSE}
 
 DatabaseConnector::insertTable(
@@ -295,6 +320,10 @@ data <-
   ) %>%
   dplyr::tibble()
 
+```
+
+
+```{r tidy=FALSE,eval=TRUE, echo=FALSE}
 data
 ```
 
@@ -303,7 +332,7 @@ data
 
 Input:
 
-```{r tidy=FALSE,eval=TRUE}
+```{r tidy=FALSE,eval=TRUE, echo=FALSE}
 cohort <- dplyr::tibble(
   cohortDefinitionId = c(1, 2, 3),
   subjectId = c(1, 1, 1),
@@ -318,8 +347,13 @@ cohort <- dplyr::tibble(
     as.Date("2022-03-15")
   )
 )
+```
+
+```{r tidy=FALSE,eval=TRUE, echo=TRUE}
 cohort
 ```
+
+
 ```{r tidy=FALSE,eval=TRUE, echo=FALSE}
 
 DatabaseConnector::insertTable(
@@ -365,6 +399,12 @@ data <-
   ) %>%
   dplyr::tibble()
 
+```
+
+
+
+```{r tidy=FALSE,eval=TRUE, echo=FALSE, echo=TRUE}
+
 data
 ```
 
@@ -373,7 +413,7 @@ data
 
 Input:
 
-```{r tidy=FALSE,eval=TRUE}
+```{r tidy=FALSE,eval=TRUE, echo=FALSE}
 cohort <- dplyr::tibble(
   cohortDefinitionId = c(1, 2),
   subjectId = c(1, 1),
@@ -386,6 +426,11 @@ cohort <- dplyr::tibble(
     as.Date("2022-01-30")
   )
 )
+```
+
+
+
+```{r tidy=FALSE,eval=TRUE, echo=TRUE}
 cohort
 ```
 
@@ -433,6 +478,10 @@ data <-
     snakeCaseToCamelCase = TRUE
   ) %>%
   dplyr::tibble()
+```
+
+
+```{r tidy=FALSE,eval=TRUE, echo=TRUE}
 
 data
 ```
@@ -442,7 +491,7 @@ data
 
 Input:
 
-```{r tidy=FALSE,eval=TRUE}
+```{r tidy=FALSE,eval=TRUE,echo=FALSE}
 cohort <- dplyr::tibble(
   cohortDefinitionId = c(1, 2),
   subjectId = c(1, 1),
@@ -455,8 +504,13 @@ cohort <- dplyr::tibble(
     as.Date("2022-01-02")
   )
 )
+```
+
+
+```{r tidy=FALSE,eval=TRUE, echo=TRUE}
 cohort
 ```
+
 
 ```{r tidy=FALSE,eval=TRUE, echo=FALSE}
 
@@ -502,6 +556,11 @@ data <-
     snakeCaseToCamelCase = TRUE
   ) %>%
   dplyr::tibble()
+```
+
+
+
+```{r tidy=FALSE,eval=TRUE, echo=TRUE}
 
 data
 ```
@@ -511,7 +570,7 @@ data
 
 Input:
 
-```{r tidy=FALSE,eval=TRUE}
+```{r tidy=FALSE,eval=TRUE, echo=FALSE}
 cohort <- dplyr::tibble(
   cohortDefinitionId = c(1, 2),
   subjectId = c(1, 1),
@@ -524,8 +583,13 @@ cohort <- dplyr::tibble(
     as.Date("2022-05-10")
   )
 )
+```
+
+
+```{r tidy=FALSE,eval=TRUE, echo=TRUE}
 cohort
 ```
+
 
 ```{r tidy=FALSE,eval=TRUE, echo=FALSE}
 
@@ -573,6 +637,10 @@ data <-
   ) %>%
   dplyr::tibble()
 
+```
+
+
+```{r tidy=FALSE,eval=TRUE, echo=TRUE}
 data
 ```
 
@@ -609,7 +677,9 @@ data <-
     snakeCaseToCamelCase = TRUE
   ) %>%
   dplyr::tibble()
+```
 
+```{r tidy=FALSE,eval=TRUE, echo=TRUE}
 data
 ```
 

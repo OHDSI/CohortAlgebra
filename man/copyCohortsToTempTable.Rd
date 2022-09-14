@@ -38,4 +38,6 @@ privileges where temp tables can be created.}
 }
 \description{
 Get cohort ids in table. This function is not exported.
+
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}
 }
