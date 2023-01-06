@@ -40,10 +40,7 @@
 #'
 #' @param eraconstructorpad   Optional value to pad cohort era construction logic. Default = 0. i.e. no padding.
 #'
-#' @param cdmDatabaseSchema   Schema name where your patient-level data in OMOP CDM format resides.
-#'                            Note that for SQL Server, this should include both the database and
-#'                            schema name, for example 'cdm_data.dbo'. cdmDataschema is required
-#'                            when eraConstructorPad is > 0. eraConstructorPad is optional.
+#' @template CdmDatabaseSchema
 #'
 #' @return
 #' NULL

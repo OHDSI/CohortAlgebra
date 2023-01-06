@@ -44,8 +44,7 @@ will be replaced by the data from the newCohortId.}
 
 \item{cdmDatabaseSchema}{Schema name where your patient-level data in OMOP CDM format resides.
 Note that for SQL Server, this should include both the database and
-schema name, for example 'cdm_data.dbo'. cdmDataschema is required
-when eraConstructorPad is > 0. eraConstructorPad is optional.}
+schema name, for example 'cdm_data.dbo'.}
 
 \item{tempEmulationSchema}{Some database platforms like Oracle and Impala do not truly support
 temp tables. To emulate temp tables, provide a schema with write

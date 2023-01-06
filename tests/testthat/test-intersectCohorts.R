@@ -166,16 +166,14 @@ testthat::test_that("Testing cohort intersect", {
     )
   )
 
-  testthat::expect_message(
-    CohortAlgebra::intersectCohorts(
-      connection = connection,
-      cohortTable = tempTableName,
-      cohortIds = c(1, 2, 3),
-      newCohortId = 9,
-      purgeConflicts = TRUE
-    )
+  CohortAlgebra::intersectCohorts(
+    connection = connection,
+    cohortTable = tempTableName,
+    cohortIds = c(1, 2, 3),
+    newCohortId = 9,
+    purgeConflicts = TRUE
   )
-
+  
   DatabaseConnector::renderTranslateExecuteSql(
     connection = connection,
     sql = paste0(

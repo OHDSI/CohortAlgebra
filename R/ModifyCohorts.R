@@ -21,6 +21,8 @@
 #' Censoring: Provide a date for right, left, both censoring. All cohorts will be truncated to the given date.
 #' Pad days: Add days to either cohort start or cohort end dates. Maybe negative numbers. Final cohort will not be outside the persons observation period.
 #' Limit cohort periods: Filter the cohorts to a given date range of cohort start, or cohort end or both.
+#' 
+#' cdmDataschema is required when eraConstructorPad is > 0. eraConstructorPad is optional.
 #'
 #' `r lifecycle::badge("experimental")`
 #'
@@ -40,10 +42,7 @@
 #'
 #' @template TempEmulationSchema
 #'
-#' @param cdmDatabaseSchema   Schema name where your patient-level data in OMOP CDM format resides.
-#'                            Note that for SQL Server, this should include both the database and
-#'                            schema name, for example 'cdm_data.dbo'. cdmDataschema is required
-#'                            when eraConstructorPad is > 0. eraConstructorPad is optional.
+#' @template CdmDatabaseSchema
 #'
 #' @param cohortStartCensorDate   the minimum date for the cohort. All rows with cohort start date before this date
 #'                                will be censored to given date.
