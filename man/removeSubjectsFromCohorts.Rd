@@ -10,6 +10,7 @@ removeSubjectsFromCohorts(
   cohortDatabaseSchema,
   oldToNewCohortId,
   cohortsWithSubjectsToRemove,
+  startDateOverlapWindow = c(-99999, 99999),
   cohortTable = "cohort",
   purgeConflicts = FALSE,
   tempEmulationSchema = getOption("sqlRenderTempEmulationSchema")
@@ -48,6 +49,9 @@ with transformed. By default - it will not be replaced, and an error message is 
 \item{tempEmulationSchema}{Some database platforms like Oracle and Impala do not truly support
 temp tables. To emulate temp tables, provide a schema with write
 privileges where temp tables can be created.}
+
+\item{startDayOverlapWindow}{An array of two integers that represent the offset to calculate the overlap
+between the target cohorts and the cohortWithSubjectsToRemove}
 }
 \description{
 Remove subjects from a given array of cohort(s) who are present in any of
