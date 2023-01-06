@@ -32,8 +32,8 @@
 #'
 #' @param cohortsWithSubjectsToRemove An array of one or more cohorts with subjects to remove from given cohorts.
 #'
-#' @param startDayOverlapWindow An array of two integers that represent the offset to calculate the overlap
-#'                              between the target cohorts and the cohortWithSubjectsToRemove
+#' @param startDateOverlapWindow An array of two integers that represent the offset to calculate the overlap
+#'                               between the target cohorts and the cohortWithSubjectsToRemove
 #'
 #' @template CohortDatabaseSchema
 #'

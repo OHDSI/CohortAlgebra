@@ -118,6 +118,11 @@ will be replaced by the data from the newCohortId.</p></dd>
 <dd><p>An array of one or more cohorts with subjects to remove from given cohorts.</p></dd>
 
 
+<dt>startDateOverlapWindow</dt>
+<dd><p>An array of two integers that represent the offset to calculate the overlap
+between the target cohorts and the cohortWithSubjectsToRemove</p></dd>
+
+
 <dt>cohortTable</dt>
 <dd><p>The name of the cohort table.</p></dd>
 
@@ -132,11 +137,6 @@ with transformed. By default - it will not be replaced, and an error message is 
 <dd><p>Some database platforms like Oracle and Impala do not truly support
 temp tables. To emulate temp tables, provide a schema with write
 privileges where temp tables can be created.</p></dd>
-
-
-<dt>startDayOverlapWindow</dt>
-<dd><p>An array of two integers that represent the offset to calculate the overlap
-between the target cohorts and the cohortWithSubjectsToRemove</p></dd>
 
 </dl></div>
 

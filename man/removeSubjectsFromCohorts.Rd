@@ -40,6 +40,9 @@ will be replaced by the data from the newCohortId.}
 
 \item{cohortsWithSubjectsToRemove}{An array of one or more cohorts with subjects to remove from given cohorts.}
 
+\item{startDateOverlapWindow}{An array of two integers that represent the offset to calculate the overlap
+between the target cohorts and the cohortWithSubjectsToRemove}
+
 \item{cohortTable}{The name of the cohort table.}
 
 \item{purgeConflicts}{If there are conflicts in the target cohort table i.e. the target cohort table
@@ -49,9 +52,6 @@ with transformed. By default - it will not be replaced, and an error message is 
 \item{tempEmulationSchema}{Some database platforms like Oracle and Impala do not truly support
 temp tables. To emulate temp tables, provide a schema with write
 privileges where temp tables can be created.}
-
-\item{startDayOverlapWindow}{An array of two integers that represent the offset to calculate the overlap
-between the target cohorts and the cohortWithSubjectsToRemove}
 }
 \description{
 Remove subjects from a given array of cohort(s) who are present in any of
