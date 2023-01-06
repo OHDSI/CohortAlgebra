@@ -3,7 +3,7 @@ testthat::test_that("Testing Remove Subjects from cohorts", {
   sysTime <- as.numeric(Sys.time()) * 100000
   tableName <- paste0("cr", sysTime)
   tempTableName <- paste0("#", tableName, "_1")
-
+  
   # make up date for a cohort table
   cohort <- dplyr::tibble(
     cohortDefinitionId = c(1, 1, 3, 5),
@@ -21,7 +21,7 @@ testthat::test_that("Testing Remove Subjects from cohorts", {
       as.Date("1999-01-31")
     )
   )
-
+  
   # upload table
   connection <-
     DatabaseConnector::connect(connectionDetails = connectionDetails)
@@ -36,7 +36,7 @@ testthat::test_that("Testing Remove Subjects from cohorts", {
     camelCaseToSnakeCase = TRUE,
     progressBar = FALSE
   )
-
+  
   removeSubjectsFromCohorts(
     connection = connection,
     cohortDatabaseSchema = cohortDatabaseSchema,
@@ -45,14 +45,14 @@ testthat::test_that("Testing Remove Subjects from cohorts", {
     purgeConflicts = FALSE,
     cohortTable = tableName
   )
-
+  
   cohortExpected <- dplyr::tibble(
     cohortDefinitionId = c(6),
     subjectId = c(1),
     cohortStartDate = as.Date("1999-01-01"),
     cohortEndDate = as.Date("1999-01-31")
   )
-
+  
   cohortObserved <-
     DatabaseConnector::renderTranslateQuerySql(
       connection = connection,
@@ -66,16 +66,54 @@ testthat::test_that("Testing Remove Subjects from cohorts", {
       snakeCaseToCamelCase = TRUE
     ) %>%
     dplyr::tibble()
-
-  testthat::expect_equal(
-    object = cohortObserved %>%
-      nrow(),
-    expected = 1
-  )
+  
+  testthat::expect_equal(object = cohortObserved %>%
+                           nrow(),
+                         expected = 1)
   testthat::expect_true(object = all.equal(target = cohortExpected, current = cohortObserved))
-
+  
   ####################
-
+  
+  removeSubjectsFromCohorts(
+    connection = connection,
+    cohortDatabaseSchema = cohortDatabaseSchema,
+    oldToNewCohortId = dplyr::tibble(oldCohortId = 1, newCohortId = 11),
+    cohortsWithSubjectsToRemove = c(5),
+    startDateOverlapWindow = c(0, 0),
+    purgeConflicts = FALSE,
+    cohortTable = tableName
+  )
+  
+  cohortExpected <- cohort %>%
+    dplyr::filter(cohortDefinitionId == 1)
+  
+  cohortObserved <-
+    DatabaseConnector::renderTranslateQuerySql(
+      connection = connection,
+      sql = paste0(
+        "SELECT * FROM @cohort_database_schema.@table_name
+        WHERE cohort_definition_id = 11
+        order by cohort_definition_id, subject_id, cohort_start_date;"
+      ),
+      cohort_database_schema = cohortDatabaseSchema,
+      table_name = tableName,
+      snakeCaseToCamelCase = TRUE
+    ) %>%
+    dplyr::tibble()
+  
+  testthat::expect_equal(object = cohortObserved %>%
+                           nrow(),
+                         expected = 2)
+  testthat::expect_true(object = all.equal(
+    target = cohortExpected,
+    current = cohortObserved %>%
+      dplyr::mutate(cohortDefinitionId = 1)
+  ))
+  
+  
+  ####################
+  
+  
   testthat::expect_error(
     removeSubjectsFromCohorts(
       connection = connection,
@@ -86,7 +124,7 @@ testthat::test_that("Testing Remove Subjects from cohorts", {
       cohortTable = tableName
     )
   )
-
+  
   removeSubjectsFromCohorts(
     connection = connection,
     cohortDatabaseSchema = cohortDatabaseSchema,
@@ -95,14 +133,14 @@ testthat::test_that("Testing Remove Subjects from cohorts", {
     purgeConflicts = TRUE,
     cohortTable = tableName
   )
-
+  
   cohortExpected <- dplyr::tibble(
     cohortDefinitionId = c(1),
     subjectId = c(1),
     cohortStartDate = as.Date("1999-01-01"),
     cohortEndDate = as.Date("1999-01-31")
   )
-
+  
   cohortObserved <-
     DatabaseConnector::renderTranslateQuerySql(
       connection = connection,
@@ -116,17 +154,15 @@ testthat::test_that("Testing Remove Subjects from cohorts", {
       snakeCaseToCamelCase = TRUE
     ) %>%
     dplyr::tibble()
-
-  testthat::expect_equal(
-    object = cohortObserved %>%
-      nrow(),
-    expected = 1
-  )
+  
+  testthat::expect_equal(object = cohortObserved %>%
+                           nrow(),
+                         expected = 1)
   testthat::expect_true(object = all.equal(target = cohortExpected, current = cohortObserved))
-
+  
   DatabaseConnector::disconnect(connection = connection)
-
-
+  
+  
   #######################################
   removeSubjectsFromCohorts(
     connectionDetails = connectionDetails,
@@ -136,15 +172,10 @@ testthat::test_that("Testing Remove Subjects from cohorts", {
     purgeConflicts = TRUE,
     cohortTable = tableName
   )
-
-  cohortExpected <- dplyr::tibble(
-    cohortDefinitionId = c(1),
-    subjectId = c(1),
-    cohortStartDate = as.Date("1999-01-01"),
-    cohortEndDate = as.Date("1999-01-31")
-  ) %>%
+  
+  cohortExpected <- cohort %>%
     dplyr::slice(0)
-
+  
   cohortObserved <-
     DatabaseConnector::renderTranslateQuerySql(
       connection = DatabaseConnector::connect(connectionDetails = connectionDetails),
@@ -156,14 +187,12 @@ testthat::test_that("Testing Remove Subjects from cohorts", {
       snakeCaseToCamelCase = TRUE
     ) %>%
     dplyr::tibble()
-
-  testthat::expect_equal(
-    object = cohortObserved %>%
-      nrow(),
-    expected = 0
-  )
+  
+  testthat::expect_equal(object = cohortObserved %>%
+                           nrow(),
+                         expected = 0)
   testthat::expect_true(object = all.equal(target = cohortExpected, current = cohortObserved))
-
+  
   DatabaseConnector::renderTranslateExecuteSql(
     connection = DatabaseConnector::connect(connectionDetails = connectionDetails),
     sql = "DROP TABLE IF EXISTS @cohort_database_schema.@table_temp;",

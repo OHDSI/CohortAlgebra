@@ -31,8 +31,8 @@
 #' @template OldToNewCohortId
 #'
 #' @param cohortsWithSubjectsToRemove An array of one or more cohorts with subjects to remove from given cohorts.
-#' 
-#' @param startDayOverlapWindow An array of two integers that represent the offset to calculate the overlap 
+#'
+#' @param startDayOverlapWindow An array of two integers that represent the offset to calculate the overlap
 #'                              between the target cohorts and the cohortWithSubjectsToRemove
 #'
 #' @template CohortDatabaseSchema
@@ -154,7 +154,7 @@ removeSubjectsFromCohorts <- function(connectionDetails = NULL,
   }
 
   tempTableName <- generateRandomString()
-  tempTable1 <- paste0("#", tempTableName, "1") # 
+  tempTable1 <- paste0("#", tempTableName, "1") #
   tempTable2 <- paste0("#", tempTableName, "2")
 
   # subject to remove
@@ -186,7 +186,7 @@ removeSubjectsFromCohorts <- function(connectionDetails = NULL,
     first_offset = startDateOverlapWindow[[1]] %>% as.double(),
     second_offset = startDateOverlapWindow[[2]] %>% as.double()
   )
-  
+
   DatabaseConnector::renderTranslateExecuteSql(
     connection = connection,
     sql = " DROP TABLE IF EXISTS @temp_table_2;
