@@ -16,6 +16,7 @@ Depends:
 Imports:
     checkmate,
     clock,
+    CohortGenerator,
     dplyr,
     lifecycle,
     ParallelLogger,
@@ -29,10 +30,11 @@ Suggests:
 	testthat,
 	withr
 Remotes:
+  ohdsi/CohortGenerator,
   ohdsi/Eunomia,
   ohdsi/ParallelLogger
 License: Apache License
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.2
 VignetteBuilder: knitr
 Roxygen: list(markdown = TRUE)
 Encoding: UTF-8

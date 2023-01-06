@@ -43,8 +43,7 @@ this should include both the database and schema name, for example
 
 \item{cdmDatabaseSchema}{Schema name where your patient-level data in OMOP CDM format resides.
 Note that for SQL Server, this should include both the database and
-schema name, for example 'cdm_data.dbo'. cdmDataschema is required
-when eraConstructorPad is > 0. eraConstructorPad is optional.}
+schema name, for example 'cdm_data.dbo'.}
 
 \item{cohortTable}{The name of the cohort table.}
 
@@ -101,11 +100,13 @@ Censoring: Provide a date for right, left, both censoring. All cohorts will be t
 Pad days: Add days to either cohort start or cohort end dates. Maybe negative numbers. Final cohort will not be outside the persons observation period.
 Limit cohort periods: Filter the cohorts to a given date range of cohort start, or cohort end or both.
 
+cdmDataschema is required when eraConstructorPad is > 0. eraConstructorPad is optional.
+
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 }
 \examples{
 \dontrun{
-CohortAlgebra:::modifyCohort(
+CohortAlgebra::modifyCohort(
   connection = connection,
   cohortDatabaseSchema = cohortDatabaseSchema,
   cohortTable = tableName,
