@@ -139,13 +139,13 @@ copyCohorts <- function(connectionDetails = NULL,
     }
   }
   
-  if (length(oldToNewCohortId$oldCohortId) != length(oldToNewCohortId$newCohortId)) {
+  if (length(oldToNewCohortId$oldCohortId %>% unique()) != length(oldToNewCohortId$newCohortId %>% unique())) {
     stop("Number of oldCohortId is not equal to number of new cohort id")
   }
-  if (length(oldToNewCohortId$oldCohortId) != nrow(oldToNewCohortId)) {
+  if (length(oldToNewCohortId$oldCohortId %>% unique()) != nrow(oldToNewCohortId)) {
     stop("oldCohortId is repeated")
   }
-  if (length(oldToNewCohortId$newCohortId) != nrow(oldToNewCohortId)) {
+  if (length(oldToNewCohortId$newCohortId %>% unique()) != nrow(oldToNewCohortId)) {
     stop("newCohortId is repeated")
   }
   
