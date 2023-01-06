@@ -205,7 +205,6 @@ generateBaseCohorts <- function(connectionDetails = NULL,
       y = cohortIdsInCohortTable %>% unique()
     )
 
-  performPurgeConflicts <- FALSE
   if (length(conflicitingCohortIdsInTargetCohortTable) > 0) {
     if (!purgeConflicts) {
       stop(

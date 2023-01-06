@@ -76,6 +76,7 @@ another array of cohort(s).</p>
 <span>  <span class="va">cohortDatabaseSchema</span>,</span>
 <span>  <span class="va">oldToNewCohortId</span>,</span>
 <span>  <span class="va">cohortsWithSubjectsToRemove</span>,</span>
+<span>  startDateOverlapWindow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">99999</span>, <span class="fl">99999</span><span class="op">)</span>,</span>
 <span>  cohortTable <span class="op">=</span> <span class="st">"cohort"</span>,</span>
 <span>  purgeConflicts <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  tempEmulationSchema <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"sqlRenderTempEmulationSchema"</span><span class="op">)</span></span>
@@ -131,6 +132,11 @@ with transformed. By default - it will not be replaced, and an error message is 
 <dd><p>Some database platforms like Oracle and Impala do not truly support
 temp tables. To emulate temp tables, provide a schema with write
 privileges where temp tables can be created.</p></dd>
+
+
+<dt>startDayOverlapWindow</dt>
+<dd><p>An array of two integers that represent the offset to calculate the overlap
+between the target cohorts and the cohortWithSubjectsToRemove</p></dd>
 
 </dl></div>
 
