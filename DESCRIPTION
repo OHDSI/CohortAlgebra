@@ -30,6 +30,7 @@ Suggests:
 	testthat,
 	withr
 Remotes:
+  ohdsi/CohortGenerator,
   ohdsi/Eunomia,
   ohdsi/ParallelLogger
 License: Apache License
