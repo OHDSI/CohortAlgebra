@@ -31,6 +31,9 @@
 #' @template OldToNewCohortId
 #'
 #' @param cohortsWithSubjectsToRemove An array of one or more cohorts with subjects to remove from given cohorts.
+#' 
+#' @param startDayOverlapWindow An array of two integers that represent the offset to calculate the overlap 
+#'                              between the target cohorts and the cohortWithSubjectsToRemove
 #'
 #' @template CohortDatabaseSchema
 #'
@@ -60,6 +63,7 @@ removeSubjectsFromCohorts <- function(connectionDetails = NULL,
                                       cohortDatabaseSchema,
                                       oldToNewCohortId,
                                       cohortsWithSubjectsToRemove,
+                                      startDateOverlapWindow = c(-99999, 99999),
                                       cohortTable = "cohort",
                                       purgeConflicts = FALSE,
                                       tempEmulationSchema = getOption("sqlRenderTempEmulationSchema")) {
@@ -72,6 +76,14 @@ removeSubjectsFromCohorts <- function(connectionDetails = NULL,
   checkmate::assertNames(
     x = colnames(oldToNewCohortId),
     must.include = c("oldCohortId", "newCohortId"),
+    add = errorMessages
+  )
+  checkmate::assertDouble(
+    x = startDateOverlapWindow,
+    lower = -99999,
+    upper = 99999,
+    any.missing = FALSE,
+    len = 2,
     add = errorMessages
   )
   checkmate::assertIntegerish(
@@ -142,20 +154,49 @@ removeSubjectsFromCohorts <- function(connectionDetails = NULL,
   }
 
   tempTableName <- generateRandomString()
-  tempTable1 <- paste0("#", tempTableName, "1")
+  tempTable1 <- paste0("#", tempTableName, "1") # 
+  tempTable2 <- paste0("#", tempTableName, "2")
 
+  # subject to remove
   DatabaseConnector::renderTranslateExecuteSql(
     connection = connection,
-    sql = " SELECT c.*
+    sql = " DROP TABLE IF EXISTS @temp_table_1;
+            SELECT DISTINCT c.cohort_definition_id, c.subject_id
             INTO @temp_table_1
             FROM {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table} c
-            LEFT JOIN
+            INNER JOIN
                 (
-                    SELECT DISTINCT SUBJECT_ID
+                    SELECT subject_id, cohort_start_date, cohort_end_date
                     FROM {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table} s
                     WHERE cohort_definition_id IN (@remove_cohort_ids)
                 ) r
             ON c.subject_id = r.subject_id
+            AND DATEADD(DAY, @first_offset, c.cohort_start_date) <= r.cohort_end_date
+            AND DATEADD(DAY, @second_offset, c.cohort_end_date) >= r.cohort_start_date
+            WHERE c.cohort_definition_id IN (@given_cohort_ids);",
+    profile = FALSE,
+    progressBar = FALSE,
+    reportOverallTime = FALSE,
+    cohort_database_schema = cohortDatabaseSchema,
+    tempEmulationSchema = tempEmulationSchema,
+    cohort_table = cohortTable,
+    given_cohort_ids = oldToNewCohortId$oldCohortId %>% unique(),
+    remove_cohort_ids = cohortsWithSubjectsToRemove,
+    temp_table_1 = tempTable1,
+    first_offset = startDateOverlapWindow[[1]] %>% as.double(),
+    second_offset = startDateOverlapWindow[[2]] %>% as.double()
+  )
+  
+  DatabaseConnector::renderTranslateExecuteSql(
+    connection = connection,
+    sql = " DROP TABLE IF EXISTS @temp_table_2;
+            SELECT DISTINCT c.*
+            INTO @temp_table_2
+            FROM {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table} c
+            LEFT JOIN
+                @temp_table_1 r
+            ON c.subject_id = r.subject_id
+              AND c.cohort_definition_id = r.cohort_definition_id
             WHERE c.cohort_definition_id IN (@given_cohort_ids)
                   AND r.subject_id IS NULL;",
     profile = FALSE,
@@ -165,14 +206,14 @@ removeSubjectsFromCohorts <- function(connectionDetails = NULL,
     tempEmulationSchema = tempEmulationSchema,
     cohort_table = cohortTable,
     given_cohort_ids = oldToNewCohortId$oldCohortId %>% unique(),
-    remove_cohort_ids = cohortsWithSubjectsToRemove,
-    temp_table_1 = tempTable1
+    temp_table_1 = tempTable1,
+    temp_table_2 = tempTable2
   )
 
   eraFyCohorts(
     connection = connection,
     cohortDatabaseSchema = NULL,
-    cohortTable = tempTable1,
+    cohortTable = tempTable2,
     oldToNewCohortId = oldToNewCohortId,
     eraconstructorpad = 0,
     cdmDatabaseSchema = NULL,
@@ -198,15 +239,17 @@ removeSubjectsFromCohorts <- function(connectionDetails = NULL,
     connection = connection,
     sql = " INSERT INTO {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table}
             SELECT *
-            FROM @temp_table_1;
+            FROM @temp_table_2;
 
-            DROP TABLE IF EXISTS @temp_table_1;",
+            DROP TABLE IF EXISTS @temp_table_1;
+            DROP TABLE IF EXISTS @temp_table_2;",
     profile = FALSE,
     progressBar = FALSE,
     reportOverallTime = FALSE,
     cohort_database_schema = cohortDatabaseSchema,
     tempEmulationSchema = tempEmulationSchema,
     cohort_table = cohortTable,
-    temp_table_1 = tempTable1
+    temp_table_1 = tempTable1,
+    temp_table_2 = tempTable2
   )
 }
