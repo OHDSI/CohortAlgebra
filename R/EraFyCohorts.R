@@ -225,7 +225,8 @@ eraFyCohorts <- function(connectionDetails = NULL,
     connection = connection,
     sql = " INSERT INTO {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table}
             SELECT cohort_definition_id, subject_id, cohort_start_date, cohort_end_date
-            FROM @temp_table_2;",
+            FROM @temp_table_2;
+            UPDATE STATISTICS  {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table};",
     profile = FALSE,
     progressBar = FALSE,
     reportOverallTime = FALSE,

@@ -240,6 +240,7 @@ removeSubjectsFromCohorts <- function(connectionDetails = NULL,
     sql = " INSERT INTO {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table}
             SELECT *
             FROM @temp_table_2;
+            UPDATE STATISTICS  {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table};
 
             DROP TABLE IF EXISTS @temp_table_1;
             DROP TABLE IF EXISTS @temp_table_2;",
