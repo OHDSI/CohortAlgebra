@@ -106,7 +106,7 @@ cdmDataschema is required when eraConstructorPad is > 0. eraConstructorPad is op
 }
 \examples{
 \dontrun{
-CohortAlgebra:::modifyCohort(
+CohortAlgebra::modifyCohort(
   connection = connection,
   cohortDatabaseSchema = cohortDatabaseSchema,
   cohortTable = tableName,

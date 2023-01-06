@@ -59,7 +59,7 @@ with the cohort_definition_id of 0, -1, -2, -3 for Observation Period, Visits al
 }
 \examples{
 \dontrun{
-CohortAlgebra:::generateBaseCohorts(
+CohortAlgebra::generateBaseCohorts(
   connection = connection,
   cohortDatabaseSchema = cohortDatabaseSchema,
   cdmDatabaseSchema = cdmDatabaseSchema,

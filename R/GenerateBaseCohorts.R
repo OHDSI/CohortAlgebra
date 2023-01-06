@@ -25,7 +25,7 @@
 #'
 getBaseCohortDefinitionSet <- function() {
   dplyr::tibble(
-    cohortId = c(0,-1, -2,-3),
+    cohortId = c(0, -1,-2, -3),
     cohortName = c(
       "Observation Period",
       "Visits all",
@@ -69,7 +69,7 @@ getBaseCohortDefinitionSet <- function() {
 #'
 #' @examples
 #' \dontrun{
-#' CohortAlgebra:::generateBaseCohorts(
+#' CohortAlgebra::generateBaseCohorts(
 #'   connection = connection,
 #'   cohortDatabaseSchema = cohortDatabaseSchema,
 #'   cdmDatabaseSchema = cdmDatabaseSchema,
@@ -232,7 +232,7 @@ generateBaseCohorts <- function(connectionDetails = NULL,
   
   ParallelLogger::logTrace(" Era fy base cohorts.")
   
-  CohortAlgebra:::eraFyCohorts(
+  eraFyCohorts(
     connection = connection,
     cohortDatabaseSchema = cohortDatabaseSchema,
     cohortTable = baseCohortTableNames$cohortTable,
