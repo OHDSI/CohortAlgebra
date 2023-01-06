@@ -202,7 +202,7 @@ testthat::test_that("Testing cohort intersect", {
       purgeConflicts = FALSE
     )
   )
-  
+
   CohortAlgebra::minusCohorts(
     connection = connection,
     cohortTable = tempTableName,

@@ -173,7 +173,7 @@ testthat::test_that("Testing cohort intersect", {
     newCohortId = 9,
     purgeConflicts = TRUE
   )
-  
+
   DatabaseConnector::renderTranslateExecuteSql(
     connection = connection,
     sql = paste0(

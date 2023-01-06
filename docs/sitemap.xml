@@ -34,6 +34,12 @@
     <loc>/reference/eraFyCohorts.html</loc>
   </url>
   <url>
+    <loc>/reference/generateBaseCohorts.html</loc>
+  </url>
+  <url>
+    <loc>/reference/getBaseCohortDefinitionSet.html</loc>
+  </url>
+  <url>
     <loc>/reference/getCohortIdsInCohortTable.html</loc>
   </url>
   <url>

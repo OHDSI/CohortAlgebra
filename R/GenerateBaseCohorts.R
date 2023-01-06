@@ -1,4 +1,4 @@
-# Copyright 2022 Observational Health Data Sciences and Informatics
+# Copyright 2023 Observational Health Data Sciences and Informatics
 #
 # This file is part of CohortAlgebra
 #
@@ -25,7 +25,7 @@
 #'
 getBaseCohortDefinitionSet <- function() {
   dplyr::tibble(
-    cohortId = c(0, -1,-2, -3),
+    cohortId = c(0, -1, -2, -3),
     cohortName = c(
       "Observation Period",
       "Visits all",
@@ -126,10 +126,12 @@ generateBaseCohorts <- function(connectionDetails = NULL,
     add = errorMessages
   )
   checkmate::reportAssertions(collection = errorMessages)
-  
-  cohortDefinitionSet <- dplyr::tibble(cohortId = 0,
-                                       cohortName = "Base Cohort")
-  
+
+  cohortDefinitionSet <- dplyr::tibble(
+    cohortId = 0,
+    cohortName = "Base Cohort"
+  )
+
   if (incremental) {
     if (is.null(incrementalFolder)) {
       stop("Must specify incrementalFolder when incremental = TRUE")
@@ -138,7 +140,7 @@ generateBaseCohorts <- function(connectionDetails = NULL,
       dir.create(incrementalFolder, recursive = TRUE)
     }
   }
-  
+
   taskRequired <- TRUE
   if (incremental) {
     cohortDefinitionSet$checksum <-
@@ -151,7 +153,7 @@ generateBaseCohorts <- function(connectionDetails = NULL,
       )
     recordKeepingFile <-
       file.path(incrementalFolder, "GeneratedCohorts.csv")
-    
+
     if (file.exists(recordKeepingFile)) {
       taskRequired <-
         CohortGenerator::isTaskRequired(
@@ -161,22 +163,22 @@ generateBaseCohorts <- function(connectionDetails = NULL,
         )
     }
   }
-  
+
   if (!taskRequired) {
     ParallelLogger::logTrace(
       "Skipping Base Cohort generation as it has already been generated according to incremental log"
     )
     return(NULL)
   }
-  
+
   if (is.null(connection)) {
     connection <- DatabaseConnector::connect(connectionDetails)
     on.exit(DatabaseConnector::disconnect(connection))
   }
-  
+
   baseCohortTableNames <-
     CohortGenerator::getCohortTableNames(cohortTable = cohortTable)
-  
+
   CohortGenerator::createCohortTables(
     connection = connection,
     cohortTableNames = baseCohortTableNames,
@@ -188,7 +190,7 @@ generateBaseCohorts <- function(connectionDetails = NULL,
     cohortDatabaseSchema = cohortDatabaseSchema,
     cohortTableNames = baseCohortTableNames
   )
-  
+
   cohortIdsInCohortTable <-
     getCohortIdsInCohortTable(
       connection = connection,
@@ -196,11 +198,13 @@ generateBaseCohorts <- function(connectionDetails = NULL,
       cohortTable = cohortTable,
       tempEmulationSchema = tempEmulationSchema
     )
-  
+
   conflicitingCohortIdsInTargetCohortTable <-
-    intersect(x = cohortDefinitionSet$cohortId %>% unique(),
-              y = cohortIdsInCohortTable %>% unique())
-  
+    intersect(
+      x = cohortDefinitionSet$cohortId %>% unique(),
+      y = cohortIdsInCohortTable %>% unique()
+    )
+
   performPurgeConflicts <- FALSE
   if (length(conflicitingCohortIdsInTargetCohortTable) > 0) {
     if (!purgeConflicts) {
@@ -229,9 +233,9 @@ generateBaseCohorts <- function(connectionDetails = NULL,
     progressBar = TRUE,
     reportOverallTime = TRUE
   )
-  
+
   ParallelLogger::logTrace(" Era fy base cohorts.")
-  
+
   eraFyCohorts(
     connection = connection,
     cohortDatabaseSchema = cohortDatabaseSchema,
@@ -244,10 +248,10 @@ generateBaseCohorts <- function(connectionDetails = NULL,
     cdmDatabaseSchema = cdmDatabaseSchema,
     purgeConflicts = TRUE
   )
-  
+
   CohortGenerator::recordTasksDone(
     cohortId = 0,
-    checksum = cohortDefinitionSet %>% dplyr::select(checksum) %>% dplyr::pull(checksum) %>% as.character(),
+    checksum = cohortDefinitionSet %>% dplyr::select("checksum") %>% dplyr::pull("checksum") %>% as.character(),
     recordKeepingFile = recordKeepingFile,
     incremental = incremental
   )

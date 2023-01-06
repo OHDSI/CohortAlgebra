@@ -82,7 +82,8 @@ testthat::test_that("Testing Modify cohorts", {
     oldCohortId = 1,
     newCohortId = 2,
     cohortStartCensorDate = as.Date("1999-01-05"),
-    cohortEndCensorDate = as.Date("1999-01-25")
+    cohortEndCensorDate = as.Date("1999-01-25"),
+    tempEmulationSchema = tempEmulationSchema
   )
 
   cohortExpected <- dplyr::tibble(
@@ -125,7 +126,8 @@ testthat::test_that("Testing Modify cohorts", {
       oldCohortId = 3,
       newCohortId = 5,
       cohortStartFilterRange = c(as.Date("1998-01-01"), as.Date("1999-12-31")),
-      purgeConflicts = FALSE
+      purgeConflicts = FALSE,
+      tempEmulationSchema = tempEmulationSchema
     )
   )
 
@@ -136,7 +138,8 @@ testthat::test_that("Testing Modify cohorts", {
     oldCohortId = 3,
     newCohortId = 2,
     cohortStartFilterRange = c(as.Date("1998-01-01"), as.Date("1999-12-31")),
-    purgeConflicts = TRUE
+    purgeConflicts = TRUE,
+    tempEmulationSchema = tempEmulationSchema
   )
 
   cohortExpected <- dplyr::tibble(
@@ -177,7 +180,8 @@ testthat::test_that("Testing Modify cohorts", {
     oldCohortId = 3,
     newCohortId = 2,
     cohortEndFilterRange = c(as.Date("2010-01-01"), as.Date("2010-01-09")),
-    purgeConflicts = TRUE
+    purgeConflicts = TRUE,
+    tempEmulationSchema = tempEmulationSchema
   )
 
   cohortExpected <- dplyr::tibble(
@@ -220,7 +224,8 @@ testthat::test_that("Testing Modify cohorts", {
       newCohortId = 2,
       purgeConflicts = TRUE,
       cohortStartPadDays = -10,
-      cohortEndPadDays = 5
+      cohortEndPadDays = 5,
+      tempEmulationSchema = tempEmulationSchema
     )
   )
 
@@ -234,7 +239,8 @@ testthat::test_that("Testing Modify cohorts", {
     newCohortId = 2,
     purgeConflicts = TRUE,
     cohortStartPadDays = -10,
-    cohortEndPadDays = 5
+    cohortEndPadDays = 5,
+    tempEmulationSchema = tempEmulationSchema
   )
 
   cohortExpected <- dplyr::tibble(
@@ -275,7 +281,8 @@ testthat::test_that("Testing Modify cohorts", {
     newCohortId = 2,
     purgeConflicts = TRUE,
     cohortStartPadDays = -1,
-    cohortEndPadDays = 500000
+    cohortEndPadDays = 500000,
+    tempEmulationSchema = tempEmulationSchema
   )
 
   cohortExpected <- dplyr::tibble(
@@ -318,7 +325,8 @@ testthat::test_that("Testing Modify cohorts", {
       oldCohortId = 5,
       newCohortId = 6,
       purgeConflicts = FALSE,
-      filterGenderConceptId = 8507
+      filterGenderConceptId = 8507,
+      tempEmulationSchema = tempEmulationSchema
     )
   )
 
@@ -330,7 +338,8 @@ testthat::test_that("Testing Modify cohorts", {
     oldCohortId = 5,
     newCohortId = 6,
     purgeConflicts = FALSE,
-    filterGenderConceptId = 8507
+    filterGenderConceptId = 8507,
+    tempEmulationSchema = tempEmulationSchema
   )
 
   cohortExpected <- dplyr::tibble(
@@ -372,7 +381,8 @@ testthat::test_that("Testing Modify cohorts", {
     oldCohortId = 5,
     newCohortId = 7,
     purgeConflicts = FALSE,
-    filterByAgeRange = c(5, 20)
+    filterByAgeRange = c(5, 20),
+    tempEmulationSchema = tempEmulationSchema
   )
 
   cohortExpected <- dplyr::tibble(
@@ -414,7 +424,8 @@ testthat::test_that("Testing Modify cohorts", {
     oldCohortId = 3,
     newCohortId = 8,
     firstOccurrence = TRUE,
-    purgeConflicts = TRUE
+    purgeConflicts = TRUE,
+    tempEmulationSchema = tempEmulationSchema
   )
 
   cohortExpected <- dplyr::tibble(
@@ -454,7 +465,8 @@ testthat::test_that("Testing Modify cohorts", {
     connectionDetails = connectionDetails,
     cohortDatabaseSchema = cohortDatabaseSchema,
     cohortTable = tableName,
-    oldCohortId = 1
+    oldCohortId = 1,
+    tempEmulationSchema = tempEmulationSchema
   )
 
   DatabaseConnector::renderTranslateExecuteSql(
