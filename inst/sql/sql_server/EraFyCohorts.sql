@@ -45,7 +45,7 @@ with cteEndDates (cohort_definition_id, subject_id, cohort_end_date) AS -- the m
 cteEnds (cohort_definition_id, subject_id, cohort_start_date, cohort_end_date) AS
 (
 	SELECT
-	  c. cohort_definition_id
+	  c.cohort_definition_id
 		, c.subject_id
 		, c.cohort_start_date
 		, MIN(e.cohort_end_date) AS cohort_end_date

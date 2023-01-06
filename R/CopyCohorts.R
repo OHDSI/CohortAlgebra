@@ -138,6 +138,17 @@ copyCohorts <- function(connectionDetails = NULL,
       )
     }
   }
+  
+  if (length(oldToNewCohortId$oldCohortId) != length(oldToNewCohortId$newCohortId)) {
+    stop("Number of oldCohortId is not equal to number of new cohort id")
+  }
+  if (length(oldToNewCohortId$oldCohortId) != nrow(oldToNewCohortId)) {
+    stop("oldCohortId is repeated")
+  }
+  if (length(oldToNewCohortId$newCohortId) != nrow(oldToNewCohortId)) {
+    stop("newCohortId is repeated")
+  }
+  
   if (is.null(connection)) {
     connection <- DatabaseConnector::connect(connectionDetails)
     on.exit(DatabaseConnector::disconnect(connection))
@@ -205,17 +216,5 @@ copyCohorts <- function(connectionDetails = NULL,
     profile = FALSE,
     progressBar = FALSE,
     reportOverallTime = FALSE
-  )
-
-  eraFyCohorts(
-    connection = connection,
-    cohortDatabaseSchema = targetCohortDatabaseSchema,
-    oldToNewCohortId = dplyr::tibble(
-      oldCohortId = oldToNewCohortId$newCohortId,
-      newCohortId = oldToNewCohortId$newCohortId
-    ),
-    eraconstructorpad = 0,
-    cohortTable = targetCohortTable,
-    purgeConflicts = TRUE
   )
 }
