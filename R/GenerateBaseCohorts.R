@@ -20,9 +20,9 @@
 #'
 #' @description
 #' Base cohort, cohort definition set.
-#' 
+#'
 #' @export
-#' 
+#'
 getBaseCohortDefinitionSet <- function() {
   dplyr::tibble(
     cohortId = c(0,-1, -2,-3),
@@ -63,7 +63,7 @@ getBaseCohortDefinitionSet <- function() {
 #'                                    kept of which definition has been executed.
 #'
 #' @template PurgeConflicts
-#' 
+#'
 #' @return
 #' NULL
 #'
@@ -88,7 +88,7 @@ generateBaseCohorts <- function(connectionDetails = NULL,
                                 cdmDatabaseSchema,
                                 cohortTable = "CohortsBase",
                                 incremental,
-                                incrementalFolder,
+                                incrementalFolder = NULL,
                                 purgeConflicts,
                                 tempEmulationSchema = getOption("sqlRenderTempEmulationSchema")) {
   errorMessages <- checkmate::makeAssertCollection()
@@ -154,13 +154,16 @@ generateBaseCohorts <- function(connectionDetails = NULL,
     
     if (file.exists(recordKeepingFile)) {
       taskRequired <-
-        CohortGenerator::isTaskRequired(checksum = cohortDefinitionSet$checksum,
-                                        recordKeepingFile = recordKeepingFile)
+        CohortGenerator::isTaskRequired(
+          cohortId = 0,
+          checksum = cohortDefinitionSet$checksum,
+          recordKeepingFile = recordKeepingFile
+        )
     }
   }
   
   if (!taskRequired) {
-    writeLines(
+    ParallelLogger::logTrace(
       "Skipping Base Cohort generation as it has already been generated according to incremental log"
     )
     return(NULL)
@@ -209,7 +212,7 @@ generateBaseCohorts <- function(connectionDetails = NULL,
       )
     }
   }
-  writeLines(" Generating base cohorts.")
+  ParallelLogger::logTrace(" Generating base cohorts.")
   sql <- SqlRender::loadRenderTranslateSql(
     sqlFilename = "BaseCohorts.sql",
     packageName = utils::packageName(),
@@ -227,7 +230,7 @@ generateBaseCohorts <- function(connectionDetails = NULL,
     reportOverallTime = TRUE
   )
   
-  writeLines(" Era fy base cohorts.")
+  ParallelLogger::logTrace(" Era fy base cohorts.")
   
   CohortAlgebra:::eraFyCohorts(
     connection = connection,
@@ -243,7 +246,8 @@ generateBaseCohorts <- function(connectionDetails = NULL,
   )
   
   CohortGenerator::recordTasksDone(
-    checksum = cohortDefinitionSet$checksum,
+    cohortId = 0,
+    checksum = cohortDefinitionSet %>% dplyr::select(checksum) %>% dplyr::pull(checksum) %>% as.character(),
     recordKeepingFile = recordKeepingFile,
     incremental = incremental
   )

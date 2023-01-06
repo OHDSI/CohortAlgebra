@@ -11,7 +11,7 @@ generateBaseCohorts(
   cdmDatabaseSchema,
   cohortTable = "CohortsBase",
   incremental,
-  incrementalFolder,
+  incrementalFolder = NULL,
   purgeConflicts,
   tempEmulationSchema = getOption("sqlRenderTempEmulationSchema")
 )
