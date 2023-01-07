@@ -49,9 +49,9 @@
 #' @param secondCohortId The cohort id of the cohort that will be used to check for the presence of overlap.
 #'
 #' @param minimumOverlaDays (Default = 1) The minimum number of days of overlap.
-#' 
+#'
 #' @param offsetCohortStartDate (Default = 0) If you want to offset cohort start date, please provide a integer number.
-#' 
+#'
 #' @param offsetCohortEndDate (Default = 0) If you want to offset cohort start date, please provide a integer number.
 #'
 #' @template NewCohortId
@@ -136,18 +136,18 @@ keepCohortOverlaps <- function(connectionDetails = NULL,
     add = errorMessages
   )
   checkmate::reportAssertions(collection = errorMessages)
-  
+
   if (firstCohortId == secondCohortId) {
     warning(
       "During overlap operation, both first and second cohorts have the same cohort id. The result may be a NULL cohort."
     )
   }
-  
+
   if (is.null(connection)) {
     connection <- DatabaseConnector::connect(connectionDetails)
     on.exit(DatabaseConnector::disconnect(connection))
   }
-  
+
   cohortIdsInCohortTable <-
     getCohortIdsInCohortTable(
       connection = connection,
@@ -155,11 +155,13 @@ keepCohortOverlaps <- function(connectionDetails = NULL,
       cohortTable = cohortTable,
       tempEmulationSchema = tempEmulationSchema
     )
-  
+
   conflicitingCohortIdsInTargetCohortTable <-
-    intersect(x = newCohortId %>% unique(),
-              y = cohortIdsInCohortTable %>% unique())
-  
+    intersect(
+      x = newCohortId %>% unique(),
+      y = cohortIdsInCohortTable %>% unique()
+    )
+
   performPurgeConflicts <- FALSE
   if (length(conflicitingCohortIdsInTargetCohortTable) > 0) {
     if (purgeConflicts) {
@@ -173,11 +175,11 @@ keepCohortOverlaps <- function(connectionDetails = NULL,
       )
     }
   }
-  
+
   tempTableName <- generateRandomString()
   tempTable1 <- paste0("#", tempTableName, "1")
   tempTable2 <- paste0("#", tempTableName, "2")
-  
+
   copyCohortsToTempTable(
     connection = connection,
     oldToNewCohortId = dplyr::tibble(oldCohortId = c(firstCohortId, secondCohortId)) %>%
@@ -187,7 +189,7 @@ keepCohortOverlaps <- function(connectionDetails = NULL,
     sourceCohortTable = cohortTable,
     targetCohortTable = tempTable1
   )
-  
+
   sql <- SqlRender::loadRenderTranslateSql(
     sqlFilename = "KeepErasWithOverlap.sql",
     packageName = utils::packageName(),
@@ -210,7 +212,7 @@ keepCohortOverlaps <- function(connectionDetails = NULL,
     progressBar = FALSE,
     reportOverallTime = FALSE
   )
-  
+
   if (performPurgeConflicts) {
     ParallelLogger::logTrace(
       paste0(
@@ -240,7 +242,7 @@ keepCohortOverlaps <- function(connectionDetails = NULL,
     cohort_table = cohortTable,
     temp_table_2 = tempTable2
   )
-  
+
   DatabaseConnector::renderTranslateExecuteSql(
     connection = connection,
     sql = " DROP TABLE IF EXISTS @temp_table_1;
