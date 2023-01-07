@@ -34,11 +34,13 @@ of the function, and closed when the function finishes.}
 this should include both the database and schema name, for example
 'scratch.dbo'.}
 
+\item{newCohortId}{The cohort id of the result cohort.}
+
 \item{cohortsWithSubjectsToRemove}{An array of one or more cohorts with subjects to remove from given cohorts.}
 
-\item{offsetCohortStartDate}{(Default = -99999) If you want to offset cohort start date, please provide a integer number.}
+\item{offsetCohortStartDate}{(Default = 0) If you want to offset cohort start date, please provide a integer number.}
 
-\item{offsetCohortEndDate}{(Default = 99999) If you want to offset cohort start date, please provide a integer number.}
+\item{offsetCohortEndDate}{(Default = 0) If you want to offset cohort start date, please provide a integer number.}
 
 \item{cohortTable}{The name of the cohort table.}
 
@@ -50,7 +52,7 @@ with transformed. By default - it will not be replaced, and an error message is 
 temp tables. To emulate temp tables, provide a schema with write
 privileges where temp tables can be created.}
 
-\item{cohort}{The cohort id of the cohort whose subjects will be removed.}
+\item{CohortId}{The cohort id of the cohort whose subjects will be removed.}
 }
 \description{
 Remove subjects in cohort that overlap with another cohort. Given a Cohort A, check if the records of

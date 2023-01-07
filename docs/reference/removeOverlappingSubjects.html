@@ -120,16 +120,20 @@ this should include both the database and schema name, for example
 'scratch.dbo'.</p></dd>
 
 
+<dt>newCohortId</dt>
+<dd><p>The cohort id of the result cohort.</p></dd>
+
+
 <dt>cohortsWithSubjectsToRemove</dt>
 <dd><p>An array of one or more cohorts with subjects to remove from given cohorts.</p></dd>
 
 
 <dt>offsetCohortStartDate</dt>
-<dd><p>(Default = -99999) If you want to offset cohort start date, please provide a integer number.</p></dd>
+<dd><p>(Default = 0) If you want to offset cohort start date, please provide a integer number.</p></dd>
 
 
 <dt>offsetCohortEndDate</dt>
-<dd><p>(Default = 99999) If you want to offset cohort start date, please provide a integer number.</p></dd>
+<dd><p>(Default = 0) If you want to offset cohort start date, please provide a integer number.</p></dd>
 
 
 <dt>cohortTable</dt>
@@ -148,7 +152,7 @@ temp tables. To emulate temp tables, provide a schema with write
 privileges where temp tables can be created.</p></dd>
 
 
-<dt>cohort</dt>
+<dt>CohortId</dt>
 <dd><p>The cohort id of the cohort whose subjects will be removed.</p></dd>
 
 </dl></div>

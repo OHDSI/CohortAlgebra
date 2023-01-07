@@ -3,7 +3,7 @@ testthat::test_that("Testing keep cohort overlaps", {
   sysTime <- as.numeric(Sys.time()) * 100000
   tableName <- paste0("cr", sysTime)
   tempTableName <- paste0("#", tableName, "_1")
-  
+
   # make up date for a cohort table
   cohort <- dplyr::tibble(
     cohortDefinitionId = c(1, 1, 2, 3),
@@ -21,10 +21,12 @@ testthat::test_that("Testing keep cohort overlaps", {
       as.Date("1999-01-20")
     )
   ) %>%
-    dplyr::arrange(.data$subjectId,
-                   .data$cohortDefinitionId,
-                   .data$cohortStartDate)
-  
+    dplyr::arrange(
+      .data$subjectId,
+      .data$cohortDefinitionId,
+      .data$cohortStartDate
+    )
+
   # upload table
   connection <-
     DatabaseConnector::connect(connectionDetails = connectionDetails)
@@ -39,7 +41,7 @@ testthat::test_that("Testing keep cohort overlaps", {
     camelCaseToSnakeCase = TRUE,
     progressBar = FALSE
   )
-  
+
   # should not throw error
   CohortAlgebra::keepCohortOverlaps(
     connection = connection,
@@ -54,7 +56,7 @@ testthat::test_that("Testing keep cohort overlaps", {
     offsetCohortEndDate = 0,
     tempEmulationSchema = tempEmulationSchema
   )
-  
+
   cohortObservered <-
     DatabaseConnector::renderTranslateQuerySql(
       connection = connection,
@@ -68,10 +70,12 @@ testthat::test_that("Testing keep cohort overlaps", {
       snakeCaseToCamelCase = TRUE
     ) %>%
     dplyr::tibble()
-  
-  testthat::expect_equal(object = nrow(cohortObservered),
-                         expected = 1)
-  
+
+  testthat::expect_equal(
+    object = nrow(cohortObservered),
+    expected = 1
+  )
+
   # create the expected output data frame object to compare
   cohortExpected <- dplyr::tibble(
     cohortDefinitionId = c(9),
@@ -79,9 +83,9 @@ testthat::test_that("Testing keep cohort overlaps", {
     cohortStartDate = c(as.Date("1999-01-01")),
     cohortEndDate = c(as.Date("1999-01-31"))
   )
-  
+
   testthat::expect_true(object = all(cohortObservered == cohortExpected))
-  
+
   # this should throw error as there is already a cohort with cohort_definition_id = 9
   testthat::expect_error(
     CohortAlgebra::keepCohortOverlaps(
@@ -98,7 +102,7 @@ testthat::test_that("Testing keep cohort overlaps", {
       tempEmulationSchema = tempEmulationSchema
     )
   )
-  
+
   # repeat after purging conflicts
   CohortAlgebra::keepCohortOverlaps(
     connection = connection,
@@ -113,7 +117,7 @@ testthat::test_that("Testing keep cohort overlaps", {
     offsetCohortEndDate = 0,
     tempEmulationSchema = tempEmulationSchema
   )
-  
+
   cohortObservered <-
     DatabaseConnector::renderTranslateQuerySql(
       connection = connection,
@@ -127,10 +131,12 @@ testthat::test_that("Testing keep cohort overlaps", {
       snakeCaseToCamelCase = TRUE
     ) %>%
     dplyr::tibble()
-  
-  testthat::expect_equal(object = nrow(cohortObservered),
-                         expected = 1)
-  
+
+  testthat::expect_equal(
+    object = nrow(cohortObservered),
+    expected = 1
+  )
+
   # create the expected output data frame object to compare
   cohortExpected <- dplyr::tibble(
     cohortDefinitionId = c(9),
@@ -138,10 +144,10 @@ testthat::test_that("Testing keep cohort overlaps", {
     cohortStartDate = c(as.Date("1999-01-01")),
     cohortEndDate = c(as.Date("1999-01-31"))
   )
-  
+
   testthat::expect_true(object = all(cohortObservered == cohortExpected))
-  
-  
+
+
   # should throw warning - check for NULL result
   testthat::expect_warning(
     CohortAlgebra::keepCohortOverlaps(
@@ -158,7 +164,7 @@ testthat::test_that("Testing keep cohort overlaps", {
       tempEmulationSchema = tempEmulationSchema
     )
   )
-  
+
   # with large offset
   CohortAlgebra::keepCohortOverlaps(
     connection = connection,
@@ -173,7 +179,7 @@ testthat::test_that("Testing keep cohort overlaps", {
     offsetCohortEndDate = 0,
     tempEmulationSchema = tempEmulationSchema
   )
-  
+
   cohortObservered <-
     DatabaseConnector::renderTranslateQuerySql(
       connection = connection,
@@ -187,10 +193,12 @@ testthat::test_that("Testing keep cohort overlaps", {
       snakeCaseToCamelCase = TRUE
     ) %>%
     dplyr::tibble()
-  
-  testthat::expect_equal(object = nrow(cohortObservered),
-                         expected = 1)
-  
+
+  testthat::expect_equal(
+    object = nrow(cohortObservered),
+    expected = 1
+  )
+
   # create the expected output data frame object to compare
   cohortExpected <- dplyr::tibble(
     cohortDefinitionId = c(11),
@@ -198,11 +206,11 @@ testthat::test_that("Testing keep cohort overlaps", {
     cohortStartDate = c(as.Date("1999-01-01")),
     cohortEndDate = c(as.Date("1999-01-31"))
   )
-  
+
   testthat::expect_true(object = all(cohortObservered == cohortExpected))
-  
-  
-  
+
+
+
   # with no offset
   CohortAlgebra::keepCohortOverlaps(
     connection = connection,
@@ -217,7 +225,7 @@ testthat::test_that("Testing keep cohort overlaps", {
     offsetCohortEndDate = 0,
     tempEmulationSchema = tempEmulationSchema
   )
-  
+
   cohortObservered <-
     DatabaseConnector::renderTranslateQuerySql(
       connection = connection,
@@ -231,18 +239,20 @@ testthat::test_that("Testing keep cohort overlaps", {
       snakeCaseToCamelCase = TRUE
     ) %>%
     dplyr::tibble()
-  
-  testthat::expect_equal(object = nrow(cohortObservered),
-                         expected = 0)
-  
+
+  testthat::expect_equal(
+    object = nrow(cohortObservered),
+    expected = 0
+  )
+
   # create the expected output data frame object to compare
   cohortExpected <- cohortExpected %>%
     dplyr::slice(0)
-  
+
   testthat::expect_true(object = all(cohortObservered == cohortExpected))
-  
+
   DatabaseConnector::disconnect(connection)
-  
+
   # check if establishes connection
   # also check if count of days workds - 20 vs 21
   CohortAlgebra::keepCohortOverlaps(
@@ -259,7 +269,7 @@ testthat::test_that("Testing keep cohort overlaps", {
     offsetCohortEndDate = 0,
     tempEmulationSchema = tempEmulationSchema
   )
-  
+
   cohortObservered <-
     DatabaseConnector::renderTranslateQuerySql(
       connection = DatabaseConnector::connect(connectionDetails = connectionDetails),
@@ -273,20 +283,24 @@ testthat::test_that("Testing keep cohort overlaps", {
       snakeCaseToCamelCase = TRUE
     ) %>%
     dplyr::tibble()
-  
-  testthat::expect_equal(object = nrow(cohortObservered),
-                         expected = 1)
-  
+
+  testthat::expect_equal(
+    object = nrow(cohortObservered),
+    expected = 1
+  )
+
   # create the expected output data frame object to compare
   cohortExpected <- cohort %>%
-    dplyr::filter(subjectId == 1,
-                  cohortDefinitionId == 1) %>%
+    dplyr::filter(
+      subjectId == 1,
+      cohortDefinitionId == 1
+    ) %>%
     dplyr::filter(cohortStartDate == as.Date("1999-01-01")) %>%
     dplyr::mutate(cohortDefinitionId = 16)
-  
+
   testthat::expect_true(object = all(cohortObservered == cohortExpected))
-  
-  
+
+
   # check if establishes connection
   # also check if using more than occurrence works
   CohortAlgebra::keepCohortOverlaps(
@@ -303,7 +317,7 @@ testthat::test_that("Testing keep cohort overlaps", {
     offsetCohortEndDate = 0,
     tempEmulationSchema = tempEmulationSchema
   )
-  
+
   cohortObservered <-
     DatabaseConnector::renderTranslateQuerySql(
       connection = DatabaseConnector::connect(connectionDetails = connectionDetails),
@@ -317,15 +331,15 @@ testthat::test_that("Testing keep cohort overlaps", {
       snakeCaseToCamelCase = TRUE
     ) %>%
     dplyr::tibble()
-  
-  testthat::expect_equal(object = nrow(cohortObservered),
-                         expected = 0)
-  
+
+  testthat::expect_equal(
+    object = nrow(cohortObservered),
+    expected = 0
+  )
+
   # create the expected output data frame object to compare
   cohortExpected <- cohortExpected %>%
     dplyr::slice(0)
-  
+
   testthat::expect_true(object = all(cohortObservered == cohortExpected))
-  
-  
 })

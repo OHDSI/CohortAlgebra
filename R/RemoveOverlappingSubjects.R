@@ -34,13 +34,15 @@
 #'
 #' @template CohortTable
 #'
-#' @param cohort The cohort id of the cohort whose subjects will be removed.
+#' @param CohortId The cohort id of the cohort whose subjects will be removed.
 #'
 #' @param cohortsWithSubjectsToRemove An array of one or more cohorts with subjects to remove from given cohorts.
 #'
-#' @param offsetCohortStartDate (Default = -99999) If you want to offset cohort start date, please provide a integer number.
+#' @param offsetCohortStartDate (Default = 0) If you want to offset cohort start date, please provide a integer number.
 #'
-#' @param offsetCohortEndDate (Default = 99999) If you want to offset cohort start date, please provide a integer number.
+#' @param offsetCohortEndDate (Default = 0) If you want to offset cohort start date, please provide a integer number.
+#'
+#' @template NewCohortId
 #'
 #' @template CohortDatabaseSchema
 #'
