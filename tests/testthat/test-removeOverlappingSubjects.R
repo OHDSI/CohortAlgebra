@@ -37,10 +37,14 @@ testthat::test_that("Testing Remove Subjects from cohorts", {
     progressBar = FALSE
   )
 
-  removeSubjectsFromCohorts(
+  removeOverlappingSubjects(
     connection = connection,
     cohortDatabaseSchema = cohortDatabaseSchema,
-    oldToNewCohortId = dplyr::tibble(oldCohortId = 1, newCohortId = 6),
+    offsetCohortStartDate = -99999,
+    offsetCohortEndDate = 99999,
+    tempEmulationSchema = tempEmulationSchema,
+    cohortId = 1,
+    newCohortId = 6,
     cohortsWithSubjectsToRemove = c(3),
     purgeConflicts = FALSE,
     cohortTable = tableName
@@ -76,13 +80,15 @@ testthat::test_that("Testing Remove Subjects from cohorts", {
 
   ####################
 
-  removeSubjectsFromCohorts(
+  removeOverlappingSubjects(
     connection = connection,
     cohortDatabaseSchema = cohortDatabaseSchema,
-    oldToNewCohortId = dplyr::tibble(oldCohortId = 1, newCohortId = 11),
+    cohortId = 1,
+    newCohortId = 11,
     cohortsWithSubjectsToRemove = c(5),
-    startDateOverlapWindow = c(0, 0),
     purgeConflicts = FALSE,
+    offsetCohortStartDate = 0,
+    offsetCohortEndDate = 0,
     cohortTable = tableName
   )
 
@@ -119,20 +125,22 @@ testthat::test_that("Testing Remove Subjects from cohorts", {
 
 
   testthat::expect_error(
-    removeSubjectsFromCohorts(
+    removeOverlappingSubjects(
       connection = connection,
       cohortDatabaseSchema = cohortDatabaseSchema,
-      oldToNewCohortId = dplyr::tibble(oldCohortId = 1, newCohortId = 1),
+      cohortId = 1,
+      newCohortId = 1,
       cohortsWithSubjectsToRemove = c(3),
       purgeConflicts = FALSE,
       cohortTable = tableName
     )
   )
 
-  removeSubjectsFromCohorts(
+  removeOverlappingSubjects(
     connection = connection,
     cohortDatabaseSchema = cohortDatabaseSchema,
-    oldToNewCohortId = dplyr::tibble(oldCohortId = 1, newCohortId = 1),
+    cohortId = 1,
+    newCohortId = 1,
     cohortsWithSubjectsToRemove = c(3),
     purgeConflicts = TRUE,
     cohortTable = tableName
@@ -170,10 +178,11 @@ testthat::test_that("Testing Remove Subjects from cohorts", {
 
 
   #######################################
-  removeSubjectsFromCohorts(
+  removeOverlappingSubjects(
     connectionDetails = connectionDetails,
     cohortDatabaseSchema = cohortDatabaseSchema,
-    oldToNewCohortId = dplyr::tibble(oldCohortId = 5, newCohortId = 7),
+    cohortId = 5,
+    newCohortId = 7,
     cohortsWithSubjectsToRemove = c(3),
     purgeConflicts = TRUE,
     cohortTable = tableName

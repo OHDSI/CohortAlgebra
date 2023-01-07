@@ -136,8 +136,8 @@ follows:</li>
 <pre><code><span><span class="co">#&gt; The following objects are masked from 'package:base':</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;     intersect, setdiff, setequal, union</span></span></code></pre>
-<pre><code><span><span class="co">#&gt; Consider adding `DATABASECONNECTOR_JAR_FOLDER='D:/windows_temp/AppData/Local/Temp/rtemp\RtmpW8XLCv\jdbcDrivers5034f775e3'` to C:/Users/admin_grao9/Documents/.Renviron and restarting R.</span></span>
-<span><span class="co">#&gt; DatabaseConnector postgresql JDBC driver downloaded to 'D:/windows_temp/AppData/Local/Temp/rtemp\RtmpW8XLCv\jdbcDrivers5034f775e3'.</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Consider adding `DATABASECONNECTOR_JAR_FOLDER='D:/windows_temp/AppData/Local/Temp/rtemp\Rtmpue7FS6\jdbcDrivers58c014da1a3b'` to C:/Users/admin_grao9/Documents/.Renviron and restarting R.</span></span>
+<span><span class="co">#&gt; DatabaseConnector postgresql JDBC driver downloaded to 'D:/windows_temp/AppData/Local/Temp/rtemp\Rtmpue7FS6\jdbcDrivers58c014da1a3b'.</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="cohort-union">Cohort UNION<a class="anchor" aria-label="anchor" href="#cohort-union"></a>
@@ -520,14 +520,15 @@ this function.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>                  3         2 1999-01-15      1999-01-25</span></span></code></pre>
 <p>and we decide to remove from cohort id 1, all subjects in cohort id
 3, and create a new cohort with cohort id 6.
-<code>removeSubjectsFromCohorts</code> can do this.We expect the output
+<code>removeOverlappingSubjects</code> can do this.We expect the output
 cohort 6, to not have any subjects with subjectId = 2 because subjectId
 2 is present in cohort id 3.</p>
 <div class="sourceCode" id="cb58"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">CohortAlgebra</span><span class="fu">::</span><span class="fu"><a href="../reference/removeSubjectsFromCohorts.html">removeSubjectsFromCohorts</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="fu">CohortAlgebra</span><span class="fu">::</span><span class="fu"><a href="../reference/removeOverlappingSubjects.html">removeOverlappingSubjects</a></span><span class="op">(</span></span>
 <span>  connection <span class="op">=</span> <span class="va">connection</span>,</span>
 <span>  cohortDatabaseSchema <span class="op">=</span> <span class="va">cohortDatabaseSchema</span>,</span>
-<span>  oldToNewCohortId <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span>oldCohortId <span class="op">=</span> <span class="fl">1</span>, newCohortId <span class="op">=</span> <span class="fl">6</span><span class="op">)</span>,</span>
+<span>  cohortId <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  newCohortId <span class="op">=</span> <span class="fl">6</span>,</span>
 <span>  cohortsWithSubjectsToRemove <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span>,</span>
 <span>  purgeConflicts <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  cohortTable <span class="op">=</span> <span class="va">tableName</span></span>
