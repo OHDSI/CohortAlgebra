@@ -143,9 +143,6 @@ copyCohorts <- function(connectionDetails = NULL,
   if (length(oldToNewCohortId$oldCohortId %>% unique()) != nrow(oldToNewCohortId)) {
     stop("oldCohortId is repeated")
   }
-  if (length(oldToNewCohortId$newCohortId %>% unique()) != nrow(oldToNewCohortId)) {
-    stop("newCohortId is repeated")
-  }
   
   if (is.null(connection)) {
     connection <- DatabaseConnector::connect(connectionDetails)
