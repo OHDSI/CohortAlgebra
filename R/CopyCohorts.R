@@ -67,9 +67,11 @@ copyCohorts <- function(connectionDetails = NULL,
                         purgeConflicts = FALSE,
                         tempEmulationSchema = getOption("sqlRenderTempEmulationSchema")) {
   errorMessages <- checkmate::makeAssertCollection()
-  checkmate::assertDataFrame(x = oldToNewCohortId,
-                             min.rows = 1,
-                             add = errorMessages)
+  checkmate::assertDataFrame(
+    x = oldToNewCohortId,
+    min.rows = 1,
+    add = errorMessages
+  )
   checkmate::assertNames(
     x = colnames(oldToNewCohortId),
     must.include = c("oldCohortId", "newCohortId"),
@@ -122,7 +124,7 @@ copyCohorts <- function(connectionDetails = NULL,
     add = errorMessages
   )
   checkmate::reportAssertions(collection = errorMessages)
-  
+
   if (all(
     (sourceCohortDatabaseSchema == targetCohortDatabaseSchema),
     (sourceCohortTable == targetCohortTable)
@@ -136,19 +138,19 @@ copyCohorts <- function(connectionDetails = NULL,
       )
     }
   }
-  
+
   if (length(oldToNewCohortId$oldCohortId %>% unique()) != length(oldToNewCohortId$newCohortId %>% unique())) {
     stop("Number of oldCohortId is not equal to number of new cohort id")
   }
   if (length(oldToNewCohortId$oldCohortId %>% unique()) != nrow(oldToNewCohortId)) {
     stop("oldCohortId is repeated")
   }
-  
+
   if (is.null(connection)) {
     connection <- DatabaseConnector::connect(connectionDetails)
     on.exit(DatabaseConnector::disconnect(connection))
   }
-  
+
   DatabaseConnector::insertTable(
     connection = connection,
     tableName = "#old_to_new_cohort_id",
@@ -161,9 +163,9 @@ copyCohorts <- function(connectionDetails = NULL,
     camelCaseToSnakeCase = TRUE,
     data = oldToNewCohortId
   )
-  
+
   if (purgeConflicts) {
-    deleteCohortRecords(
+    deleteCohort(
       connection = connection,
       cohortDatabaseSchema = targetCohortDatabaseSchema,
       cohortTable = targetCohortTable,
@@ -178,11 +180,13 @@ copyCohorts <- function(connectionDetails = NULL,
         cohortTable = targetCohortTable,
         tempEmulationSchema = tempEmulationSchema
       )
-    
+
     conflicitingCohortIdsInTargetCohortTable <-
-      intersect(x = oldToNewCohortId$newCohortId %>% unique() %>% sort(),
-                y = cohortIdsInCohortTable %>% unique())
-    
+      intersect(
+        x = oldToNewCohortId$newCohortId %>% unique() %>% sort(),
+        y = cohortIdsInCohortTable %>% unique()
+      )
+
     if (length(conflicitingCohortIdsInTargetCohortTable) > 0) {
       stop(
         paste0(
@@ -192,7 +196,7 @@ copyCohorts <- function(connectionDetails = NULL,
       )
     }
   }
-  
+
   sql <- SqlRender::loadRenderTranslateSql(
     sqlFilename = "CopyCohorts.sql",
     packageName = utils::packageName(),

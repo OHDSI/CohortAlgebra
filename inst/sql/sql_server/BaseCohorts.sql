@@ -38,4 +38,4 @@ FROM @cdm_database_schema.visit_occurrence
 WHERE visit_concept_id = 9203
 ORDER BY person_id, visit_start_date, visit_end_date;
 
-update STATISTICS  @cohort_database_schema.@cohort_table;
+UPDATE STATISTICS  @cohort_database_schema.@cohort_table;

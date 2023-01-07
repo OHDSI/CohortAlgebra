@@ -224,7 +224,9 @@ modifyCohort <- function(connectionDetails = NULL,
   if (is.null(cdmDatabaseSchema)) {
     if (any(
       cohortStartPadDays > 0,
-      cohortEndPadDays > 0, !is.null(filterByAgeRange), !is.null(filterGenderConceptId)
+      cohortEndPadDays > 0,
+      !is.null(filterByAgeRange),
+      !is.null(filterGenderConceptId)
     )) {
       if (any(
         cohortStartPadDays != 0,
@@ -238,7 +240,10 @@ modifyCohort <- function(connectionDetails = NULL,
             The function will then ensure that cohort days are always in observation period."
         )
       }
-      if (any(!is.null(filterByAgeRange), !is.null(filterGenderConceptId))) {
+      if (any(
+        !is.null(filterByAgeRange),
+        !is.null(filterGenderConceptId)
+      )) {
         stop(
           "cdmDatabaseSchema is NULL.
             To filter cohort by age range or by gender, OMOP person table in cdmDatabaseSchema is required."
@@ -693,7 +698,7 @@ modifyCohort <- function(connectionDetails = NULL,
       )
     )
   }
-  deleteCohortRecords(
+  deleteCohort(
     connection = connection,
     cohortDatabaseSchema = cohortDatabaseSchema,
     cohortTable = cohortTable,

@@ -160,12 +160,14 @@ testthat::test_that("Testing cohort union", {
     purgeConflicts = FALSE,
     tempEmulationSchema = tempEmulationSchema
   )
-  
+
   testthat::expect_error(
     copyCohorts(
       connectionDetails = connectionDetails,
-      oldToNewCohortId = dplyr::tibble(oldCohortId = c(1, 2),
-                                       newCohortId = c(1, 1)),
+      oldToNewCohortId = dplyr::tibble(
+        oldCohortId = c(1, 2),
+        newCohortId = c(1, 1)
+      ),
       sourceCohortDatabaseSchema = cohortDatabaseSchema,
       targetCohortDatabaseSchema = cohortDatabaseSchema,
       sourceCohortTable = tableName1$cohortTable,
@@ -174,12 +176,14 @@ testthat::test_that("Testing cohort union", {
       tempEmulationSchema = tempEmulationSchema
     )
   )
-  
+
   testthat::expect_error(
     copyCohorts(
       connectionDetails = connectionDetails,
-      oldToNewCohortId = dplyr::tibble(oldCohortId = c(1, 1),
-                                       newCohortId = c(1, 1)),
+      oldToNewCohortId = dplyr::tibble(
+        oldCohortId = c(1, 1),
+        newCohortId = c(1, 1)
+      ),
       sourceCohortDatabaseSchema = cohortDatabaseSchema,
       targetCohortDatabaseSchema = cohortDatabaseSchema,
       sourceCohortTable = tableName1$cohortTable,
@@ -188,12 +192,14 @@ testthat::test_that("Testing cohort union", {
       tempEmulationSchema = tempEmulationSchema
     )
   )
-  
+
   testthat::expect_error(
     copyCohorts(
       connectionDetails = connectionDetails,
-      oldToNewCohortId = dplyr::tibble(oldCohortId = c(1, 1),
-                                       newCohortId = c(1, 2)),
+      oldToNewCohortId = dplyr::tibble(
+        oldCohortId = c(1, 1),
+        newCohortId = c(1, 2)
+      ),
       sourceCohortDatabaseSchema = cohortDatabaseSchema,
       targetCohortDatabaseSchema = cohortDatabaseSchema,
       sourceCohortTable = tableName1$cohortTable,
@@ -202,12 +208,14 @@ testthat::test_that("Testing cohort union", {
       tempEmulationSchema = tempEmulationSchema
     )
   )
-  
+
   testthat::expect_error(
     copyCohorts(
       connectionDetails = connectionDetails,
-      oldToNewCohortId = dplyr::tibble(oldCohortId = c(1, 2),
-                                       newCohortId = c(1, 2)),
+      oldToNewCohortId = dplyr::tibble(
+        oldCohortId = c(1, 2),
+        newCohortId = c(1, 2)
+      ),
       sourceCohortDatabaseSchema = cohortDatabaseSchema,
       targetCohortDatabaseSchema = cohortDatabaseSchema,
       sourceCohortTable = tableName1$cohortTable,

@@ -173,7 +173,9 @@ removeSubjectsFromCohorts <- function(connectionDetails = NULL,
             ON c.subject_id = r.subject_id
             AND DATEADD(DAY, @first_offset, c.cohort_start_date) <= r.cohort_end_date
             AND DATEADD(DAY, @second_offset, c.cohort_end_date) >= r.cohort_start_date
-            WHERE c.cohort_definition_id IN (@given_cohort_ids);",
+            WHERE c.cohort_definition_id IN (@given_cohort_ids)
+                  AND DATEADD(DAY, @first_offset, c.cohort_start_date) >=
+                        DATEADD(DAY, @second_offset, c.cohort_end_date);",
     profile = FALSE,
     progressBar = FALSE,
     reportOverallTime = FALSE,

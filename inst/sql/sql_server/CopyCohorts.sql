@@ -6,5 +6,6 @@ SELECT target.new_cohort_id cohort_definition_id,
 FROM {@source_database_schema != ''} ? {@source_database_schema.@source_cohort_table} : {@source_cohort_table} source
 INNER JOIN #old_to_new_cohort_id target
 ON source.cohort_definition_id = target.old_cohort_id;
-update STATISTICS  {@target_database_schema != ''} ? {@target_database_schema.@target_cohort_table} : {@target_cohort_table};
+
+UPDATE STATISTICS  {@target_database_schema != ''} ? {@target_database_schema.@target_cohort_table} : {@target_cohort_table};
 

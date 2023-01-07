@@ -194,7 +194,7 @@ intersectCohorts <- function(connectionDetails = NULL,
         paste0(conflicitingCohortIdsInTargetCohortTable, collapse = ",")
       )
     )
-    deleteCohortRecords(
+    deleteCohort(
       connection = connection,
       cohortDatabaseSchema = cohortDatabaseSchema,
       cohortTable = cohortTable,

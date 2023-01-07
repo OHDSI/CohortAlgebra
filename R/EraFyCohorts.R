@@ -198,7 +198,7 @@ eraFyCohorts <- function(connectionDetails = NULL,
         paste0(cohortIdsToDeleteFromSource, collapse = ",")
       )
     )
-    deleteCohortRecords(
+    deleteCohort(
       connection = connection,
       cohortDatabaseSchema = cohortDatabaseSchema,
       cohortTable = cohortTable,
@@ -214,7 +214,7 @@ eraFyCohorts <- function(connectionDetails = NULL,
         paste0(conflicitingCohortIdsInTargetCohortTable, collapse = ",")
       )
     )
-    deleteCohortRecords(
+    deleteCohort(
       connection = connection,
       cohortDatabaseSchema = cohortDatabaseSchema,
       cohortTable = cohortTable,
