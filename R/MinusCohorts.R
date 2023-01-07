@@ -1,4 +1,4 @@
-# Copyright 2022 Observational Health Data Sciences and Informatics
+# Copyright 2023 Observational Health Data Sciences and Informatics
 #
 # This file is part of CohortAlgebra
 #
@@ -239,7 +239,7 @@ minusCohorts <- function(connectionDetails = NULL,
         paste0(conflicitingCohortIdsInTargetCohortTable, collapse = ",")
       )
     )
-    deleteCohortRecords(
+    deleteCohort(
       connection = connection,
       cohortDatabaseSchema = cohortDatabaseSchema,
       cohortTable = cohortTable,
@@ -250,7 +250,8 @@ minusCohorts <- function(connectionDetails = NULL,
     connection = connection,
     sql = " INSERT INTO {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table}
             SELECT cohort_definition_id, subject_id, cohort_start_date, cohort_end_date
-            FROM @temp_table_3;",
+            FROM @temp_table_3;
+            UPDATE STATISTICS  {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table};",
     profile = FALSE,
     progressBar = FALSE,
     reportOverallTime = FALSE,

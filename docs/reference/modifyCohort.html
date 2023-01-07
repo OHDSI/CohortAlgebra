@@ -3,6 +3,7 @@
 Censoring: Provide a date for right, left, both censoring. All cohorts will be truncated to the given date.
 Pad days: Add days to either cohort start or cohort end dates. Maybe negative numbers. Final cohort will not be outside the persons observation period.
 Limit cohort periods: Filter the cohorts to a given date range of cohort start, or cohort end or both.
+cdmDataschema is required when eraConstructorPad is &amp;gt; 0. eraConstructorPad is optional.
 "><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -21,7 +22,7 @@ Limit cohort periods: Filter the cohorts to a given date range of cohort start, 
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">CohortAlgebra</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.0</span>
       </span>
     </div>
 
@@ -70,6 +71,7 @@ Limit cohort periods: Filter the cohorts to a given date range of cohort start, 
 Censoring: Provide a date for right, left, both censoring. All cohorts will be truncated to the given date.
 Pad days: Add days to either cohort start or cohort end dates. Maybe negative numbers. Final cohort will not be outside the persons observation period.
 Limit cohort periods: Filter the cohorts to a given date range of cohort start, or cohort end or both.</p>
+<p>cdmDataschema is required when eraConstructorPad is &gt; 0. eraConstructorPad is optional.</p>
 <p><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="figures/lifecycle-experimental.svg" alt="[Experimental]"></a></p>
     </div>
 
@@ -122,8 +124,7 @@ this should include both the database and schema name, for example
 <dt>cdmDatabaseSchema</dt>
 <dd><p>Schema name where your patient-level data in OMOP CDM format resides.
 Note that for SQL Server, this should include both the database and
-schema name, for example 'cdm_data.dbo'. cdmDataschema is required
-when eraConstructorPad is &gt; 0. eraConstructorPad is optional.</p></dd>
+schema name, for example 'cdm_data.dbo'.</p></dd>
 
 
 <dt>cohortTable</dt>
@@ -207,7 +208,7 @@ with transformed. By default - it will not be replaced, and an error message is 
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span><span class="fu">CohortAlgebra</span><span class="fu">:::</span><span class="fu">modifyCohort</span><span class="op">(</span></span></span>
+<span class="r-in"><span><span class="fu">CohortAlgebra</span><span class="fu">::</span><span class="fu">modifyCohort</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  connection <span class="op">=</span> <span class="va">connection</span>,</span></span>
 <span class="r-in"><span>  cohortDatabaseSchema <span class="op">=</span> <span class="va">cohortDatabaseSchema</span>,</span></span>
 <span class="r-in"><span>  cohortTable <span class="op">=</span> <span class="va">tableName</span>,</span></span>

@@ -1,4 +1,4 @@
-# Copyright 2022 Observational Health Data Sciences and Informatics
+# Copyright 2023 Observational Health Data Sciences and Informatics
 #
 # This file is part of CohortAlgebra
 #
@@ -14,10 +14,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' Delete cohort records.
+#' Delete cohort
 #'
 #' @description
-#' Delete all records from cohort table with the given cohort id. Edit privileges
+#' Delete all records for a given set of cohorts from the cohort table. Edit privileges
 #' to the cohort table is required.
 #'
 #' `r lifecycle::badge("stable")`
@@ -37,12 +37,12 @@
 #' @return
 #' NULL
 #'
-deleteCohortRecords <- function(connectionDetails = NULL,
-                                connection = NULL,
-                                cohortDatabaseSchema,
-                                cohortTable = "cohort",
-                                tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
-                                cohortIds) {
+deleteCohort <- function(connectionDetails = NULL,
+                         connection = NULL,
+                         cohortDatabaseSchema,
+                         cohortTable = "cohort",
+                         tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
+                         cohortIds) {
   errorMessages <- checkmate::makeAssertCollection()
   checkmate::assertIntegerish(
     x = cohortIds,
@@ -75,7 +75,8 @@ deleteCohortRecords <- function(connectionDetails = NULL,
     connection = connection,
     sql = " DELETE
             FROM {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table}
-            WHERE cohort_definition_id IN (@cohort_ids);",
+            WHERE cohort_definition_id IN (@cohort_ids);
+            UPDATE STATISTICS  {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table};",
     profile = FALSE,
     progressBar = FALSE,
     reportOverallTime = FALSE,

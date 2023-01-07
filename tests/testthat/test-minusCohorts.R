@@ -203,15 +203,13 @@ testthat::test_that("Testing cohort intersect", {
     )
   )
 
-  testthat::expect_message(
-    CohortAlgebra::minusCohorts(
-      connection = connection,
-      cohortTable = tempTableName,
-      firstCohortId = 1,
-      secondCohortId = 2,
-      newCohortId = 9,
-      purgeConflicts = TRUE
-    )
+  CohortAlgebra::minusCohorts(
+    connection = connection,
+    cohortTable = tempTableName,
+    firstCohortId = 1,
+    secondCohortId = 2,
+    newCohortId = 9,
+    purgeConflicts = TRUE
   )
 
   DatabaseConnector::renderTranslateExecuteSql(

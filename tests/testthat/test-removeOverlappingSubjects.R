@@ -37,10 +37,14 @@ testthat::test_that("Testing Remove Subjects from cohorts", {
     progressBar = FALSE
   )
 
-  removeSubjectsFromCohorts(
+  removeOverlappingSubjects(
     connection = connection,
     cohortDatabaseSchema = cohortDatabaseSchema,
-    oldToNewCohortId = dplyr::tibble(oldCohortId = 1, newCohortId = 6),
+    offsetCohortStartDate = -99999,
+    offsetCohortEndDate = 99999,
+    tempEmulationSchema = tempEmulationSchema,
+    cohortId = 1,
+    newCohortId = 6,
     cohortsWithSubjectsToRemove = c(3),
     purgeConflicts = FALSE,
     cohortTable = tableName
@@ -76,21 +80,67 @@ testthat::test_that("Testing Remove Subjects from cohorts", {
 
   ####################
 
+  removeOverlappingSubjects(
+    connection = connection,
+    cohortDatabaseSchema = cohortDatabaseSchema,
+    cohortId = 1,
+    newCohortId = 11,
+    cohortsWithSubjectsToRemove = c(5),
+    purgeConflicts = FALSE,
+    offsetCohortStartDate = 0,
+    offsetCohortEndDate = 0,
+    cohortTable = tableName
+  )
+
+  cohortExpected <- cohort %>%
+    dplyr::filter(cohortDefinitionId == 1)
+
+  cohortObserved <-
+    DatabaseConnector::renderTranslateQuerySql(
+      connection = connection,
+      sql = paste0(
+        "SELECT * FROM @cohort_database_schema.@table_name
+        WHERE cohort_definition_id = 11
+        order by cohort_definition_id, subject_id, cohort_start_date;"
+      ),
+      cohort_database_schema = cohortDatabaseSchema,
+      table_name = tableName,
+      snakeCaseToCamelCase = TRUE
+    ) %>%
+    dplyr::tibble()
+
+  testthat::expect_equal(
+    object = cohortObserved %>%
+      nrow(),
+    expected = 2
+  )
+  testthat::expect_true(object = all.equal(
+    target = cohortExpected,
+    current = cohortObserved %>%
+      dplyr::mutate(cohortDefinitionId = 1)
+  ))
+
+
+  ####################
+
+
   testthat::expect_error(
-    removeSubjectsFromCohorts(
+    removeOverlappingSubjects(
       connection = connection,
       cohortDatabaseSchema = cohortDatabaseSchema,
-      oldToNewCohortId = dplyr::tibble(oldCohortId = 1, newCohortId = 1),
+      cohortId = 1,
+      newCohortId = 1,
       cohortsWithSubjectsToRemove = c(3),
       purgeConflicts = FALSE,
       cohortTable = tableName
     )
   )
 
-  removeSubjectsFromCohorts(
+  removeOverlappingSubjects(
     connection = connection,
     cohortDatabaseSchema = cohortDatabaseSchema,
-    oldToNewCohortId = dplyr::tibble(oldCohortId = 1, newCohortId = 1),
+    cohortId = 1,
+    newCohortId = 1,
     cohortsWithSubjectsToRemove = c(3),
     purgeConflicts = TRUE,
     cohortTable = tableName
@@ -128,21 +178,17 @@ testthat::test_that("Testing Remove Subjects from cohorts", {
 
 
   #######################################
-  removeSubjectsFromCohorts(
+  removeOverlappingSubjects(
     connectionDetails = connectionDetails,
     cohortDatabaseSchema = cohortDatabaseSchema,
-    oldToNewCohortId = dplyr::tibble(oldCohortId = 5, newCohortId = 7),
+    cohortId = 5,
+    newCohortId = 7,
     cohortsWithSubjectsToRemove = c(3),
     purgeConflicts = TRUE,
     cohortTable = tableName
   )
 
-  cohortExpected <- dplyr::tibble(
-    cohortDefinitionId = c(1),
-    subjectId = c(1),
-    cohortStartDate = as.Date("1999-01-01"),
-    cohortEndDate = as.Date("1999-01-31")
-  ) %>%
+  cohortExpected <- cohort %>%
     dplyr::slice(0)
 
   cohortObserved <-

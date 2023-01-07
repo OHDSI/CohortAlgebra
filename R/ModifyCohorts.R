@@ -1,4 +1,4 @@
-# Copyright 2022 Observational Health Data Sciences and Informatics
+# Copyright 2023 Observational Health Data Sciences and Informatics
 #
 # This file is part of CohortAlgebra
 #
@@ -22,6 +22,8 @@
 #' Pad days: Add days to either cohort start or cohort end dates. Maybe negative numbers. Final cohort will not be outside the persons observation period.
 #' Limit cohort periods: Filter the cohorts to a given date range of cohort start, or cohort end or both.
 #'
+#' cdmDataschema is required when eraConstructorPad is > 0. eraConstructorPad is optional.
+#'
 #' `r lifecycle::badge("experimental")`
 #'
 #' @template ConnectionDetails
@@ -40,10 +42,7 @@
 #'
 #' @template TempEmulationSchema
 #'
-#' @param cdmDatabaseSchema   Schema name where your patient-level data in OMOP CDM format resides.
-#'                            Note that for SQL Server, this should include both the database and
-#'                            schema name, for example 'cdm_data.dbo'. cdmDataschema is required
-#'                            when eraConstructorPad is > 0. eraConstructorPad is optional.
+#' @template CdmDatabaseSchema
 #'
 #' @param cohortStartCensorDate   the minimum date for the cohort. All rows with cohort start date before this date
 #'                                will be censored to given date.
@@ -86,7 +85,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' CohortAlgebra:::modifyCohort(
+#' CohortAlgebra::modifyCohort(
 #'   connection = connection,
 #'   cohortDatabaseSchema = cohortDatabaseSchema,
 #'   cohortTable = tableName,
@@ -699,7 +698,7 @@ modifyCohort <- function(connectionDetails = NULL,
       )
     )
   }
-  deleteCohortRecords(
+  deleteCohort(
     connection = connection,
     cohortDatabaseSchema = cohortDatabaseSchema,
     cohortTable = cohortTable,
@@ -710,7 +709,8 @@ modifyCohort <- function(connectionDetails = NULL,
     connection = connection,
     sql = " INSERT INTO {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table}
             SELECT cohort_definition_id, subject_id, cohort_start_date, cohort_end_date
-            FROM @temp_table_1;",
+            FROM @temp_table_1;
+            UPDATE STATISTICS  {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table};",
     profile = FALSE,
     progressBar = FALSE,
     reportOverallTime = FALSE,

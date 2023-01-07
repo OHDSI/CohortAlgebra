@@ -62,7 +62,7 @@ testthat::test_that("Testing cohort delete", {
       nrow(),
     expected = 12
   )
-  CohortAlgebra:::deleteCohortRecords(
+  CohortAlgebra:::deleteCohort(
     connection = connection,
     cohortDatabaseSchema = cohortDatabaseSchema,
     cohortTable = tableName,
@@ -90,7 +90,7 @@ testthat::test_that("Testing cohort delete", {
 
 
   # test with new connection
-  CohortAlgebra:::deleteCohortRecords(
+  CohortAlgebra:::deleteCohort(
     connectionDetails = connectionDetails,
     cohortDatabaseSchema = cohortDatabaseSchema,
     cohortTable = tableName,

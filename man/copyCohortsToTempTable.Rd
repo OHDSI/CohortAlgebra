@@ -2,7 +2,7 @@
 % Please edit documentation in R/CopyCohortsToTempTable.R
 \name{copyCohortsToTempTable}
 \alias{copyCohortsToTempTable}
-\title{Get cohort ids in table}
+\title{Copy cohorts to temp table}
 \usage{
 copyCohortsToTempTable(
   connection = NULL,
@@ -37,7 +37,7 @@ temp tables. To emulate temp tables, provide a schema with write
 privileges where temp tables can be created.}
 }
 \description{
-Get cohort ids in table. This function is not exported.
+Copy cohorts to temp table. This function is not exported.
 
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}
 }

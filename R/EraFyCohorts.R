@@ -1,4 +1,4 @@
-# Copyright 2022 Observational Health Data Sciences and Informatics
+# Copyright 2023 Observational Health Data Sciences and Informatics
 #
 # This file is part of CohortAlgebra
 #
@@ -40,10 +40,7 @@
 #'
 #' @param eraconstructorpad   Optional value to pad cohort era construction logic. Default = 0. i.e. no padding.
 #'
-#' @param cdmDatabaseSchema   Schema name where your patient-level data in OMOP CDM format resides.
-#'                            Note that for SQL Server, this should include both the database and
-#'                            schema name, for example 'cdm_data.dbo'. cdmDataschema is required
-#'                            when eraConstructorPad is > 0. eraConstructorPad is optional.
+#' @template CdmDatabaseSchema
 #'
 #' @return
 #' NULL
@@ -201,7 +198,7 @@ eraFyCohorts <- function(connectionDetails = NULL,
         paste0(cohortIdsToDeleteFromSource, collapse = ",")
       )
     )
-    deleteCohortRecords(
+    deleteCohort(
       connection = connection,
       cohortDatabaseSchema = cohortDatabaseSchema,
       cohortTable = cohortTable,
@@ -217,7 +214,7 @@ eraFyCohorts <- function(connectionDetails = NULL,
         paste0(conflicitingCohortIdsInTargetCohortTable, collapse = ",")
       )
     )
-    deleteCohortRecords(
+    deleteCohort(
       connection = connection,
       cohortDatabaseSchema = cohortDatabaseSchema,
       cohortTable = cohortTable,
@@ -228,7 +225,8 @@ eraFyCohorts <- function(connectionDetails = NULL,
     connection = connection,
     sql = " INSERT INTO {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table}
             SELECT cohort_definition_id, subject_id, cohort_start_date, cohort_end_date
-            FROM @temp_table_2;",
+            FROM @temp_table_2;
+            UPDATE STATISTICS  {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table};",
     profile = FALSE,
     progressBar = FALSE,
     reportOverallTime = FALSE,

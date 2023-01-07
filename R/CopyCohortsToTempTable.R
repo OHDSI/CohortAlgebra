@@ -1,4 +1,4 @@
-# Copyright 2022 Observational Health Data Sciences and Informatics
+# Copyright 2023 Observational Health Data Sciences and Informatics
 #
 # This file is part of CohortAlgebra
 #
@@ -14,10 +14,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' Get cohort ids in table
+#' Copy cohorts to temp table
 #'
 #' @description
-#' Get cohort ids in table. This function is not exported.
+#' Copy cohorts to temp table. This function is not exported.
 #'
 #' `r lifecycle::badge("stable")`
 #'
@@ -56,7 +56,7 @@ copyCohortsToTempTable <- function(connection = NULL,
   )
 
   sql <- SqlRender::loadRenderTranslateSql(
-    sqlFilename = "CopyCohorts.sql",
+    sqlFilename = "CopyCohortsTempTable.sql",
     packageName = utils::packageName(),
     dbms = connection@dbms,
     source_database_schema = sourceCohortDatabaseSchema,
