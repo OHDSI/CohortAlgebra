@@ -120,6 +120,10 @@ this should include both the database and schema name, for example
 'scratch.dbo'.</p></dd>
 
 
+<dt>cohortId</dt>
+<dd><p>The cohort id of the cohort whose subjects will be removed.</p></dd>
+
+
 <dt>newCohortId</dt>
 <dd><p>The cohort id of the result cohort.</p></dd>
 
@@ -150,10 +154,6 @@ with transformed. By default - it will not be replaced, and an error message is 
 <dd><p>Some database platforms like Oracle and Impala do not truly support
 temp tables. To emulate temp tables, provide a schema with write
 privileges where temp tables can be created.</p></dd>
-
-
-<dt>CohortId</dt>
-<dd><p>The cohort id of the cohort whose subjects will be removed.</p></dd>
 
 </dl></div>
 

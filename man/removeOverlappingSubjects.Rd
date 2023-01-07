@@ -34,6 +34,8 @@ of the function, and closed when the function finishes.}
 this should include both the database and schema name, for example
 'scratch.dbo'.}
 
+\item{cohortId}{The cohort id of the cohort whose subjects will be removed.}
+
 \item{newCohortId}{The cohort id of the result cohort.}
 
 \item{cohortsWithSubjectsToRemove}{An array of one or more cohorts with subjects to remove from given cohorts.}
@@ -51,8 +53,6 @@ with transformed. By default - it will not be replaced, and an error message is 
 \item{tempEmulationSchema}{Some database platforms like Oracle and Impala do not truly support
 temp tables. To emulate temp tables, provide a schema with write
 privileges where temp tables can be created.}
-
-\item{CohortId}{The cohort id of the cohort whose subjects will be removed.}
 }
 \description{
 Remove subjects in cohort that overlap with another cohort. Given a Cohort A, check if the records of

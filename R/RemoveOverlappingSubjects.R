@@ -34,7 +34,7 @@
 #'
 #' @template CohortTable
 #'
-#' @param CohortId The cohort id of the cohort whose subjects will be removed.
+#' @param cohortId The cohort id of the cohort whose subjects will be removed.
 #'
 #' @param cohortsWithSubjectsToRemove An array of one or more cohorts with subjects to remove from given cohorts.
 #'
