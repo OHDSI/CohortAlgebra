@@ -4,6 +4,7 @@ CohortAlgebra 0.4.0
 Changes:
 - new function to generate 'base' cohorts. These are cohorts that are commonly used to perform cohort algebra e.g. algebra on a cohort of persons with hypertension and inpatient visit. Here inpatient visit is the base cohort
 - new function to copy cohorts from one table to another.
+- new function to keep eras with overlap.
 - update to function removeSubjectsFromCohort to take temporal relationship between dates into account.
 
 Bug fix:
