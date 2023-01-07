@@ -72,7 +72,8 @@ testthat::test_that("Testing cohort era fy", {
     cohortTable = tableName,
     oldToNewCohortId = dplyr::tibble(oldCohortId = 1, newCohortId = 9),
     eraconstructorpad = 0,
-    purgeConflicts = FALSE
+    purgeConflicts = FALSE, 
+    tempEmulationSchema = tempEmulationSchema
   )
 
   # extract the generated output and compare to expected
@@ -138,7 +139,8 @@ testthat::test_that("Testing cohort era fy", {
         cohortTable = tableName,
         oldToNewCohortId = dplyr::tibble(oldCohortId = 1, newCohortId = 9),
         eraconstructorpad = 0,
-        purgeConflicts = TRUE
+        purgeConflicts = TRUE, 
+        tempEmulationSchema = tempEmulationSchema
       )
   )
 
@@ -168,7 +170,8 @@ testthat::test_that("Testing cohort era fy", {
         cohortTable = tempTableName,
         oldToNewCohortId = dplyr::tibble(oldCohortId = 1, newCohortId = 10),
         eraconstructorpad = 30,
-        purgeConflicts = FALSE
+        purgeConflicts = FALSE, 
+        tempEmulationSchema = tempEmulationSchema
       )
   )
 
@@ -192,7 +195,8 @@ testthat::test_that("Testing cohort era fy", {
     oldToNewCohortId = dplyr::tibble(oldCohortId = 1, newCohortId = 10),
     eraconstructorpad = 30,
     purgeConflicts = FALSE,
-    cdmDatabaseSchema = cohortDatabaseSchema
+    cdmDatabaseSchema = cohortDatabaseSchema, 
+    tempEmulationSchema = tempEmulationSchema
   )
 
   dataPostEraFyWithEraPad <-
