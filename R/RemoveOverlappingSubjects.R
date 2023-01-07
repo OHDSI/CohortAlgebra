@@ -42,6 +42,12 @@
 #'
 #' @param offsetCohortEndDate (Default = 0) If you want to offset cohort start date, please provide a integer number.
 #'
+#' @param restrictSecondCohortStartBeforeFirstCohortStart  (Default = FALSE) If TRUE, then the secondCohort's cohort_start_date
+#'                                                          should be < firstCohort's cohort_start_date.
+#'
+#' @param restrictSecondCohortStartAfterFirstCohortStart  (Default = FALSE) If TRUE, then the secondCohort's cohort_start_date
+#'                                                          should be > firstCohort's cohort_start_date.
+#'
 #' @template NewCohortId
 #'
 #' @template CohortDatabaseSchema
@@ -76,6 +82,8 @@ removeOverlappingSubjects <- function(connectionDetails = NULL,
                                       cohortsWithSubjectsToRemove,
                                       offsetCohortStartDate = -99999,
                                       offsetCohortEndDate = 99999,
+                                      restrictSecondCohortStartBeforeFirstCohortStart = FALSE,
+                                      restrictSecondCohortStartAfterFirstCohortStart = FALSE,
                                       cohortTable = "cohort",
                                       purgeConflicts = FALSE,
                                       tempEmulationSchema = getOption("sqlRenderTempEmulationSchema")) {
@@ -122,6 +130,18 @@ removeOverlappingSubjects <- function(connectionDetails = NULL,
     min.chars = 1,
     len = 1,
     null.ok = FALSE,
+    add = errorMessages
+  )
+  checkmate::assertLogical(
+    x = restrictSecondCohortStartBeforeFirstCohortStart,
+    any.missing = FALSE,
+    min.len = 1,
+    add = errorMessages
+  )
+  checkmate::assertLogical(
+    x = restrictSecondCohortStartAfterFirstCohortStart,
+    any.missing = FALSE,
+    min.len = 1,
     add = errorMessages
   )
   checkmate::reportAssertions(collection = errorMessages)
@@ -173,8 +193,10 @@ removeOverlappingSubjects <- function(connectionDetails = NULL,
           		AND DATEADD(DAY, @second_offset, c1.cohort_end_date) >= c2.cohort_start_date
           	WHERE c1.cohort_definition_id IN (@first_cohort_id)
           		AND c2.cohort_definition_id IN (@remove_cohort_ids)
-          		AND DATEADD(DAY, @first_offset, c1.cohort_start_date) <=
-          		      DATEADD(DAY, @second_offset, c2.cohort_end_date);",
+        		{@second_cohort_start_before_first_cohort_start} ? {
+        		    AND c2.cohort_start_date < c1.cohort_start_date}
+        		{@second_cohort_start_after_first_cohort_start} ? {
+        		    AND c2.cohort_start_date > c1.cohort_start_date};",
     profile = FALSE,
     progressBar = FALSE,
     reportOverallTime = FALSE,
@@ -185,7 +207,9 @@ removeOverlappingSubjects <- function(connectionDetails = NULL,
     remove_cohort_ids = cohortsWithSubjectsToRemove,
     temp_table_1 = tempTable1,
     first_offset = offsetCohortStartDate,
-    second_offset = offsetCohortEndDate
+    second_offset = offsetCohortEndDate,
+    second_cohort_start_before_first_cohort_start = restrictSecondCohortStartBeforeFirstCohortStart,
+    second_cohort_start_after_first_cohort_start = restrictSecondCohortStartAfterFirstCohortStart
   )
 
   DatabaseConnector::renderTranslateExecuteSql(

@@ -48,11 +48,17 @@
 #'
 #' @param secondCohortId The cohort id of the cohort that will be used to check for the presence of overlap.
 #'
-#' @param minimumOverlaDays (Default = 1) The minimum number of days of overlap.
+#' @param minimumOverlapDays (Default = 1) The minimum number of days of overlap.
 #'
 #' @param offsetCohortStartDate (Default = 0) If you want to offset cohort start date, please provide a integer number.
 #'
 #' @param offsetCohortEndDate (Default = 0) If you want to offset cohort start date, please provide a integer number.
+#'
+#' @param restrictSecondCohortStartBeforeFirstCohortStart  (Default = FALSE) If TRUE, then the secondCohort's cohort_start_date
+#'                                                          should be < firstCohort's cohort_start_date.
+#'
+#' @param restrictSecondCohortStartAfterFirstCohortStart  (Default = FALSE) If TRUE, then the secondCohort's cohort_start_date
+#'                                                          should be > firstCohort's cohort_start_date.
 #'
 #' @template NewCohortId
 #'
@@ -87,7 +93,9 @@ keepCohortOverlaps <- function(connectionDetails = NULL,
                                newCohortId,
                                offsetCohortStartDate = 0,
                                offsetCohortEndDate = 0,
-                               minimumOverlaDays = 1,
+                               restrictSecondCohortStartBeforeFirstCohortStart = FALSE,
+                               restrictSecondCohortStartAfterFirstCohortStart = FALSE,
+                               minimumOverlapDays = 1,
                                purgeConflicts = FALSE,
                                tempEmulationSchema = getOption("sqlRenderTempEmulationSchema")) {
   errorMessages <- checkmate::makeAssertCollection()
@@ -129,8 +137,20 @@ keepCohortOverlaps <- function(connectionDetails = NULL,
     min.len = 1,
     add = errorMessages
   )
+  checkmate::assertLogical(
+    x = restrictSecondCohortStartBeforeFirstCohortStart,
+    any.missing = FALSE,
+    min.len = 1,
+    add = errorMessages
+  )
+  checkmate::assertLogical(
+    x = restrictSecondCohortStartAfterFirstCohortStart,
+    any.missing = FALSE,
+    min.len = 1,
+    add = errorMessages
+  )
   checkmate::assertDouble(
-    x = minimumOverlaDays,
+    x = minimumOverlapDays,
     len = 1,
     null.ok = FALSE,
     add = errorMessages
@@ -180,30 +200,23 @@ keepCohortOverlaps <- function(connectionDetails = NULL,
   tempTable1 <- paste0("#", tempTableName, "1")
   tempTable2 <- paste0("#", tempTableName, "2")
 
-  copyCohortsToTempTable(
-    connection = connection,
-    oldToNewCohortId = dplyr::tibble(oldCohortId = c(firstCohortId, secondCohortId)) %>%
-      dplyr::mutate(newCohortId = .data$oldCohortId) %>%
-      dplyr::distinct(),
-    sourceCohortDatabaseSchema = cohortDatabaseSchema,
-    sourceCohortTable = cohortTable,
-    targetCohortTable = tempTable1
-  )
-
   sql <- SqlRender::loadRenderTranslateSql(
     sqlFilename = "KeepErasWithOverlap.sql",
     packageName = utils::packageName(),
     dbms = connection@dbms,
     first_cohort_id = firstCohortId,
     temp_table_1 = tempTable1,
-    temp_table_2 = tempTable2,
     first_cohort_id = firstCohortId,
     second_cohort_id = secondCohortId,
     new_cohort_id = newCohortId,
     tempEmulationSchema = tempEmulationSchema,
-    min_days_overlap = minimumOverlaDays,
+    min_days_overlap = minimumOverlapDays,
     first_offset = offsetCohortStartDate,
-    second_offset = offsetCohortEndDate
+    second_offset = offsetCohortEndDate,
+    cohort_database_schema = cohortDatabaseSchema,
+    cohort_table = cohortTable,
+    second_cohort_start_before_first_cohort_start = restrictSecondCohortStartBeforeFirstCohortStart,
+    second_cohort_start_after_first_cohort_start = restrictSecondCohortStartAfterFirstCohortStart
   )
   DatabaseConnector::executeSql(
     connection = connection,
@@ -232,7 +245,7 @@ keepCohortOverlaps <- function(connectionDetails = NULL,
     connection = connection,
     sql = " INSERT INTO {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table}
             SELECT cohort_definition_id, subject_id, cohort_start_date, cohort_end_date
-            FROM @temp_table_2;
+            FROM @temp_table_1;
             UPDATE STATISTICS  {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table};",
     profile = FALSE,
     progressBar = FALSE,
@@ -240,17 +253,15 @@ keepCohortOverlaps <- function(connectionDetails = NULL,
     cohort_database_schema = cohortDatabaseSchema,
     tempEmulationSchema = tempEmulationSchema,
     cohort_table = cohortTable,
-    temp_table_2 = tempTable2
+    temp_table_1 = tempTable1
   )
 
   DatabaseConnector::renderTranslateExecuteSql(
     connection = connection,
-    sql = " DROP TABLE IF EXISTS @temp_table_1;
-            DROP TABLE IF EXISTS @temp_table_2;",
+    sql = " DROP TABLE IF EXISTS @temp_table_1;",
     profile = FALSE,
     progressBar = FALSE,
     reportOverallTime = FALSE,
-    temp_table_1 = tempTable1,
-    temp_table_2 = tempTable2
+    temp_table_1 = tempTable1
   )
 }

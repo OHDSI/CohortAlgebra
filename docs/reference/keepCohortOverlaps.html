@@ -31,7 +31,7 @@ Note the use of +1, i.e. the lowest number of days of overlap is 1 day.
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">CohortAlgebra</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.1</span>
       </span>
     </div>
 
@@ -104,7 +104,9 @@ Note the use of +1, i.e. the lowest number of days of overlap is 1 day.</p>
 <span>  <span class="va">newCohortId</span>,</span>
 <span>  offsetCohortStartDate <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  offsetCohortEndDate <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>  minimumOverlaDays <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  restrictSecondCohortStartBeforeFirstCohortStart <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  restrictSecondCohortStartAfterFirstCohortStart <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  minimumOverlapDays <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  purgeConflicts <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  tempEmulationSchema <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"sqlRenderTempEmulationSchema"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -157,7 +159,17 @@ this should include both the database and schema name, for example
 <dd><p>(Default = 0) If you want to offset cohort start date, please provide a integer number.</p></dd>
 
 
-<dt>minimumOverlaDays</dt>
+<dt>restrictSecondCohortStartBeforeFirstCohortStart</dt>
+<dd><p>(Default = FALSE) If TRUE, then the secondCohort's cohort_start_date
+should be &lt; firstCohort's cohort_start_date.</p></dd>
+
+
+<dt>restrictSecondCohortStartAfterFirstCohortStart</dt>
+<dd><p>(Default = FALSE) If TRUE, then the secondCohort's cohort_start_date
+should be &gt; firstCohort's cohort_start_date.</p></dd>
+
+
+<dt>minimumOverlapDays</dt>
 <dd><p>(Default = 1) The minimum number of days of overlap.</p></dd>
 
 
