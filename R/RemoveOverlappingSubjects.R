@@ -220,12 +220,15 @@ removeOverlappingSubjects <- function(connectionDetails = NULL,
                     c.cohort_start_date,
                     c.cohort_end_date
             INTO @temp_table_2
-            FROM {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table} c
+            FROM (
+                    SELECT *
+                    FROM {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table} 
+                    WHERE cohort_definition_id = @given_cohort_id
+                  ) c
             LEFT JOIN
                 @temp_table_1 r
             ON c.subject_id = r.subject_id
-            WHERE c.cohort_definition_id = @given_cohort_id
-                  AND r.subject_id IS NULL;",
+            WHERE r.subject_id IS NULL;",
     profile = FALSE,
     progressBar = FALSE,
     reportOverallTime = FALSE,
@@ -242,7 +245,7 @@ removeOverlappingSubjects <- function(connectionDetails = NULL,
     DatabaseConnector::renderTranslateExecuteSql(
       connection = connection,
       sql = " DELETE FROM {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table}
-            WHERE cohort_definition_id IN (@new_cohort_id);",
+              WHERE cohort_definition_id IN (@new_cohort_id);",
       profile = FALSE,
       progressBar = FALSE,
       reportOverallTime = FALSE,
