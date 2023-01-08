@@ -168,7 +168,7 @@ minusCohorts <- function(connectionDetails = NULL,
     cohortIds = c(firstCohortId, secondCohortId),
     newCohortId = -999,
     purgeConflicts = FALSE,
-    tempEmulationSchema = getOption("sqlRenderTempEmulationSchema")
+    tempEmulationSchema = tempEmulationSchema
   )
 
   sql <- SqlRender::loadRenderTranslateSql(
