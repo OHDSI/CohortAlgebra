@@ -97,12 +97,12 @@ intersectCohorts <- function(connectionDetails = NULL,
     add = errorMessages
   )
   checkmate::reportAssertions(collection = errorMessages)
-
+  
   if (is.null(connection)) {
     connection <- DatabaseConnector::connect(connectionDetails)
     on.exit(DatabaseConnector::disconnect(connection))
   }
-
+  
   cohortIdsInCohortTable <-
     getCohortIdsInCohortTable(
       connection = connection,
@@ -110,14 +110,12 @@ intersectCohorts <- function(connectionDetails = NULL,
       cohortTable = cohortTable,
       tempEmulationSchema = tempEmulationSchema
     )
-
+  
   conflicitingCohortIdsInTargetCohortTable <-
-    intersect(
-      x = newCohortId %>% unique(),
-      y = cohortIdsInCohortTable %>% unique()
-    )
-
-
+    intersect(x = newCohortId %>% unique(),
+              y = cohortIdsInCohortTable %>% unique())
+  
+  
   performPurgeConflicts <- FALSE
   if (length(conflicitingCohortIdsInTargetCohortTable) > 0) {
     if (purgeConflicts) {
@@ -131,32 +129,13 @@ intersectCohorts <- function(connectionDetails = NULL,
       )
     }
   }
-
+  
   tempTableName <- generateRandomString()
   tempTable1 <- paste0("#", tempTableName, "1")
   tempTable2 <- paste0("#", tempTableName, "2")
-
-  copyCohortsToTempTable(
-    connection = connection,
-    oldToNewCohortId = dplyr::tibble(oldCohortId = cohortIds) %>%
-      dplyr::mutate(newCohortId = .data$oldCohortId) %>%
-      dplyr::distinct(),
-    sourceCohortDatabaseSchema = cohortDatabaseSchema,
-    sourceCohortTable = cohortTable,
-    targetCohortTable = tempTable1
-  )
-
-  eraFyCohorts(
-    connection = connection,
-    oldToNewCohortId = dplyr::tibble(oldCohortId = cohortIds) %>%
-      dplyr::mutate(newCohortId = .data$oldCohortId) %>%
-      dplyr::distinct(),
-    cohortTable = tempTable1,
-    purgeConflicts = TRUE
-  )
-
+  
   numberOfCohorts <- length(cohortIds %>% unique())
-
+  
   sql <- SqlRender::loadRenderTranslateSql(
     sqlFilename = "IntersectCohorts.sql",
     packageName = utils::packageName(),
@@ -165,7 +144,8 @@ intersectCohorts <- function(connectionDetails = NULL,
     new_cohort_id = newCohortId,
     tempEmulationSchema = tempEmulationSchema,
     temp_table_1 = tempTable1,
-    temp_table_2 = tempTable2
+    source_database_schema = cohortDatabaseSchema,
+    source_cohort_table = cohortTable
   )
   DatabaseConnector::executeSql(
     connection = connection,
@@ -174,18 +154,18 @@ intersectCohorts <- function(connectionDetails = NULL,
     progressBar = FALSE,
     reportOverallTime = FALSE
   )
-
+  
   suppressMessages(
     eraFyCohorts(
       connection = connection,
       oldToNewCohortId = dplyr::tibble(oldCohortId = newCohortId) %>%
         dplyr::mutate(newCohortId = .data$oldCohortId) %>%
         dplyr::distinct(),
-      cohortTable = tempTable2,
+      cohortTable = tempTable1,
       purgeConflicts = TRUE
     )
   )
-
+  
   if (performPurgeConflicts) {
     ParallelLogger::logTrace(
       paste0(
@@ -205,7 +185,7 @@ intersectCohorts <- function(connectionDetails = NULL,
     connection = connection,
     sql = " INSERT INTO {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table}
             SELECT cohort_definition_id, subject_id, cohort_start_date, cohort_end_date
-            FROM @temp_table_2;
+            FROM @temp_table_1;
             UPDATE STATISTICS  {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table};",
     profile = FALSE,
     progressBar = FALSE,
@@ -213,17 +193,15 @@ intersectCohorts <- function(connectionDetails = NULL,
     cohort_database_schema = cohortDatabaseSchema,
     tempEmulationSchema = tempEmulationSchema,
     cohort_table = cohortTable,
-    temp_table_2 = tempTable2
+    temp_table_1 = tempTable1
   )
-
+  
   DatabaseConnector::renderTranslateExecuteSql(
     connection = connection,
-    sql = " DROP TABLE IF EXISTS @temp_table_1;
-            DROP TABLE IF EXISTS @temp_table_2;",
+    sql = " DROP TABLE IF EXISTS @temp_table_1;",
     profile = FALSE,
     progressBar = FALSE,
     reportOverallTime = FALSE,
-    temp_table_1 = tempTable1,
-    temp_table_2 = tempTable2
+    temp_table_1 = tempTable1
   )
 }
