@@ -97,12 +97,12 @@ intersectCohorts <- function(connectionDetails = NULL,
     add = errorMessages
   )
   checkmate::reportAssertions(collection = errorMessages)
-  
+
   if (is.null(connection)) {
     connection <- DatabaseConnector::connect(connectionDetails)
     on.exit(DatabaseConnector::disconnect(connection))
   }
-  
+
   cohortIdsInCohortTable <-
     getCohortIdsInCohortTable(
       connection = connection,
@@ -110,17 +110,15 @@ intersectCohorts <- function(connectionDetails = NULL,
       cohortTable = cohortTable,
       tempEmulationSchema = tempEmulationSchema
     )
-  
+
   conflicitingCohortIdsInTargetCohortTable <-
-    intersect(x = newCohortId %>% unique(),
-              y = cohortIdsInCohortTable %>% unique())
-  
-  
-  performPurgeConflicts <- FALSE
+    intersect(
+      x = newCohortId %>% unique(),
+      y = cohortIdsInCohortTable %>% unique()
+    )
+
   if (length(conflicitingCohortIdsInTargetCohortTable) > 0) {
-    if (purgeConflicts) {
-      performPurgeConflicts <- TRUE
-    } else {
+    if (!purgeConflicts) {
       stop(
         paste0(
           "The following cohortIds already exist in the target cohort table, causing conflicts :",
@@ -129,32 +127,34 @@ intersectCohorts <- function(connectionDetails = NULL,
       )
     }
   }
-  
+
   tempTableName <- generateRandomString()
   tempTable1 <- paste0("#", tempTableName, "1")
-  tempTable2 <- paste0("#", tempTableName, "2")
-  
+
   numberOfCohorts <- length(cohortIds %>% unique())
-  
+
   sql <- SqlRender::loadRenderTranslateSql(
     sqlFilename = "IntersectCohorts.sql",
     packageName = utils::packageName(),
     dbms = connection@dbms,
     number_of_cohorts = numberOfCohorts,
+    cohort_ids = cohortIds,
     new_cohort_id = newCohortId,
     tempEmulationSchema = tempEmulationSchema,
     temp_table_1 = tempTable1,
     source_database_schema = cohortDatabaseSchema,
     source_cohort_table = cohortTable
   )
+
+  ParallelLogger::logInfo(" Intersecting cohorts.")
   DatabaseConnector::executeSql(
     connection = connection,
     sql = sql,
     profile = FALSE,
-    progressBar = FALSE,
-    reportOverallTime = FALSE
+    progressBar = TRUE,
+    reportOverallTime = TRUE
   )
-  
+
   suppressMessages(
     eraFyCohorts(
       connection = connection,
@@ -165,37 +165,29 @@ intersectCohorts <- function(connectionDetails = NULL,
       purgeConflicts = TRUE
     )
   )
-  
-  if (performPurgeConflicts) {
-    ParallelLogger::logTrace(
-      paste0(
-        "The following conflicting cohortIds will be deleted from your cohort table \n",
-        " as part resolving conflicts: ",
-        paste0(conflicitingCohortIdsInTargetCohortTable, collapse = ",")
-      )
-    )
-    deleteCohort(
-      connection = connection,
-      cohortDatabaseSchema = cohortDatabaseSchema,
-      cohortTable = cohortTable,
-      cohortIds = conflicitingCohortIdsInTargetCohortTable
-    )
-  }
+
+  ParallelLogger::logInfo(" Saving cohort intersects ")
   DatabaseConnector::renderTranslateExecuteSql(
     connection = connection,
-    sql = " INSERT INTO {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table}
+    sql = " DELETE FROM {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table}
+            WHERE cohort_definition_id IN (
+                SELECT DISTINCT cohort_definition_id
+                FROM @temp_table_1
+            );
+
+            INSERT INTO {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table}
             SELECT cohort_definition_id, subject_id, cohort_start_date, cohort_end_date
             FROM @temp_table_1;
             UPDATE STATISTICS  {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table};",
     profile = FALSE,
-    progressBar = FALSE,
+    progressBar = TRUE,
     reportOverallTime = FALSE,
     cohort_database_schema = cohortDatabaseSchema,
     tempEmulationSchema = tempEmulationSchema,
     cohort_table = cohortTable,
     temp_table_1 = tempTable1
   )
-  
+
   DatabaseConnector::renderTranslateExecuteSql(
     connection = connection,
     sql = " DROP TABLE IF EXISTS @temp_table_1;",

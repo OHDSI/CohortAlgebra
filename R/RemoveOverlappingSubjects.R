@@ -222,7 +222,7 @@ removeOverlappingSubjects <- function(connectionDetails = NULL,
             INTO @temp_table_2
             FROM (
                     SELECT *
-                    FROM {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table} 
+                    FROM {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table}
                     WHERE cohort_definition_id = @given_cohort_id
                   ) c
             LEFT JOIN

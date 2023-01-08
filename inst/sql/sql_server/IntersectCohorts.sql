@@ -8,15 +8,19 @@ SELECT subject_id,
 INTO #cohort_dates
 FROM (
 	SELECT subject_id,
-		cohort_start_date cohort_date
+		      cohort_start_date cohort_date
 	FROM {@source_database_schema != ''} ? {@source_database_schema.@source_cohort_table} : {@source_cohort_table}
+	WHERE cohort_definition_id IN (@cohort_ids)
 
 	UNION ALL -- we need all dates, even if duplicates
 
 	SELECT subject_id,
-		cohort_end_date cohort_date
+		      cohort_end_date cohort_date
 	FROM {@source_database_schema != ''} ? {@source_database_schema.@source_cohort_table} : {@source_cohort_table}
+	WHERE cohort_definition_id IN (@cohort_ids)
 	) all_dates;
+	
+	
 
 SELECT
 	subject_id,
@@ -39,7 +43,10 @@ INTO #can_chrt_dte
 FROM {@source_database_schema != ''} ? {@source_database_schema.@source_cohort_table} : {@source_cohort_table} cohort
 INNER JOIN #candidate_periods candidate ON cohort.subject_id = candidate.subject_id
 	AND candidate_start_date >= cohort_start_date
-	AND candidate_end_date <= cohort_end_date;
+	AND candidate_end_date <= cohort_end_date
+WHERE cohort.cohort_definition_id IN (@cohort_ids);
+	
+	
 		
 SELECT @new_cohort_id cohort_definition_id,
 	subject_id,

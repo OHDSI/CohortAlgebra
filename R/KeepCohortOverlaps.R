@@ -182,11 +182,8 @@ keepCohortOverlaps <- function(connectionDetails = NULL,
       y = cohortIdsInCohortTable %>% unique()
     )
 
-  performPurgeConflicts <- FALSE
   if (length(conflicitingCohortIdsInTargetCohortTable) > 0) {
-    if (purgeConflicts) {
-      performPurgeConflicts <- TRUE
-    } else {
+    if (!purgeConflicts) {
       stop(
         paste0(
           "The following cohortIds already exist in the target cohort table, causing conflicts :",
@@ -198,7 +195,6 @@ keepCohortOverlaps <- function(connectionDetails = NULL,
 
   tempTableName <- generateRandomString()
   tempTable1 <- paste0("#", tempTableName, "1")
-  tempTable2 <- paste0("#", tempTableName, "2")
 
   sql <- SqlRender::loadRenderTranslateSql(
     sqlFilename = "KeepErasWithOverlap.sql",
@@ -218,32 +214,22 @@ keepCohortOverlaps <- function(connectionDetails = NULL,
     second_cohort_start_before_first_cohort_start = restrictSecondCohortStartBeforeFirstCohortStart,
     second_cohort_start_after_first_cohort_start = restrictSecondCohortStartAfterFirstCohortStart
   )
+  ParallelLogger::logInfo("Looking for overlaps.")
   DatabaseConnector::executeSql(
     connection = connection,
     sql = sql,
     profile = FALSE,
-    progressBar = FALSE,
-    reportOverallTime = FALSE
+    progressBar = TRUE,
+    reportOverallTime = TRUE
   )
 
-  if (performPurgeConflicts) {
-    ParallelLogger::logTrace(
-      paste0(
-        "The following conflicting cohortIds will be deleted from your cohort table \n",
-        " as part resolving conflicts: ",
-        paste0(conflicitingCohortIdsInTargetCohortTable, collapse = ",")
-      )
-    )
-    deleteCohort(
-      connection = connection,
-      cohortDatabaseSchema = cohortDatabaseSchema,
-      cohortTable = cohortTable,
-      cohortIds = conflicitingCohortIdsInTargetCohortTable
-    )
-  }
+  ParallelLogger::logInfo("Saving overlaps.")
   DatabaseConnector::renderTranslateExecuteSql(
     connection = connection,
-    sql = " INSERT INTO {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table}
+    sql = " DELETE FROM {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table}
+            WHERE cohort_definition_id IN (SELECT DISTINCT cohort_definition_id FROM @temp_table_1);
+
+            INSERT INTO {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table}
             SELECT cohort_definition_id, subject_id, cohort_start_date, cohort_end_date
             FROM @temp_table_1;
             UPDATE STATISTICS  {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table};",

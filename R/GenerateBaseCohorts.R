@@ -215,7 +215,6 @@ generateBaseCohorts <- function(connectionDetails = NULL,
       )
     }
   }
-  ParallelLogger::logTrace(" Generating base cohorts.")
   sql <- SqlRender::loadRenderTranslateSql(
     sqlFilename = "BaseCohorts.sql",
     packageName = utils::packageName(),
@@ -225,6 +224,7 @@ generateBaseCohorts <- function(connectionDetails = NULL,
     cdm_database_schema = cdmDatabaseSchema,
     cohort_table = baseCohortTableNames$cohortTable
   )
+  ParallelLogger::logTrace(" Generating base cohorts.")
   DatabaseConnector::executeSql(
     connection = connection,
     sql = sql,

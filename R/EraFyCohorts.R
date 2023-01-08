@@ -142,11 +142,8 @@ eraFyCohorts <- function(connectionDetails = NULL,
       y = cohortIdsInCohortTable %>% unique()
     )
 
-  performPurgeConflicts <- FALSE
   if (length(conflicitingCohortIdsInTargetCohortTable) > 0) {
-    if (purgeConflicts) {
-      performPurgeConflicts <- TRUE
-    } else {
+    if (!purgeConflicts) {
       stop(
         paste0(
           "The following cohortIds already exist in the target cohort table, causing conflicts :",
@@ -158,14 +155,18 @@ eraFyCohorts <- function(connectionDetails = NULL,
 
   tempTableName <- generateRandomString()
   tempTable1 <- paste0("#", tempTableName, "1")
-  tempTable2 <- paste0("#", tempTableName, "2")
 
-  copyCohortsToTempTable(
+  DatabaseConnector::insertTable(
     connection = connection,
-    oldToNewCohortId = oldToNewCohortId,
-    sourceCohortDatabaseSchema = cohortDatabaseSchema,
-    sourceCohortTable = cohortTable,
-    targetCohortTable = tempTable1
+    tableName = "#old_to_new_cohort_id",
+    createTable = TRUE,
+    dropTableIfExists = TRUE,
+    tempTable = TRUE,
+    tempEmulationSchema = tempEmulationSchema,
+    progressBar = FALSE,
+    bulkLoad = (Sys.getenv("bulkLoad") == TRUE),
+    camelCaseToSnakeCase = TRUE,
+    data = oldToNewCohortId
   )
 
   sql <- SqlRender::loadRenderTranslateSql(
@@ -175,76 +176,49 @@ eraFyCohorts <- function(connectionDetails = NULL,
     tempEmulationSchema = tempEmulationSchema,
     eraconstructorpad = eraconstructorpad,
     cdm_database_schema = cdmDatabaseSchema,
-    temp_table_1 = tempTable1,
-    temp_table_2 = tempTable2
+    source_database_schema = cohortDatabaseSchema,
+    source_cohort_table = cohortTable,
+    temp_table_1 = tempTable1
   )
+
+  ParallelLogger::logInfo(" Creating cohort eras. ")
   DatabaseConnector::executeSql(
     connection = connection,
     sql = sql,
     profile = FALSE,
-    progressBar = FALSE,
-    reportOverallTime = FALSE
+    progressBar = TRUE,
+    reportOverallTime = TRUE
   )
 
-  cohortIdsToDeleteFromSource <- oldToNewCohortId %>%
-    dplyr::filter(.data$oldCohortId == .data$newCohortId) %>%
-    dplyr::pull(.data$oldCohortId)
-
-  if (length(cohortIdsToDeleteFromSource) > 0) {
-    ParallelLogger::logTrace(
-      paste0(
-        "The following cohortIds will be deleted from your cohort table and \n",
-        " replaced with ear fy'd version of those cohorts using the same original cohort id: ",
-        paste0(cohortIdsToDeleteFromSource, collapse = ",")
-      )
-    )
-    deleteCohort(
-      connection = connection,
-      cohortDatabaseSchema = cohortDatabaseSchema,
-      cohortTable = cohortTable,
-      cohortIds = cohortIdsToDeleteFromSource
-    )
-  }
-
-  if (performPurgeConflicts) {
-    ParallelLogger::logTrace(
-      paste0(
-        "The following conflicting cohortIds will be deleted from your cohort table \n",
-        " as part resolving conflicts: ",
-        paste0(conflicitingCohortIdsInTargetCohortTable, collapse = ",")
-      )
-    )
-    deleteCohort(
-      connection = connection,
-      cohortDatabaseSchema = cohortDatabaseSchema,
-      cohortTable = cohortTable,
-      cohortIds = conflicitingCohortIdsInTargetCohortTable
-    )
-  }
+  ParallelLogger::logInfo(" Saving cohort eras. ")
   DatabaseConnector::renderTranslateExecuteSql(
     connection = connection,
-    sql = " INSERT INTO {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table}
+    sql = " DELETE FROM {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table}
+            WHERE cohort_definition_id IN
+                (SELECT DISTINCT cohort_definition_id
+                  FROM @temp_table_1
+                );
+            INSERT INTO {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table}
             SELECT cohort_definition_id, subject_id, cohort_start_date, cohort_end_date
-            FROM @temp_table_2;
+            FROM @temp_table_1;
+
             UPDATE STATISTICS  {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table};",
     profile = FALSE,
-    progressBar = FALSE,
+    progressBar = TRUE,
     reportOverallTime = FALSE,
     cohort_database_schema = cohortDatabaseSchema,
     tempEmulationSchema = tempEmulationSchema,
     cohort_table = cohortTable,
-    temp_table_2 = tempTable2
+    temp_table_1 = tempTable1
   )
 
   DatabaseConnector::renderTranslateExecuteSql(
     connection = connection,
     sql = " DROP TABLE IF EXISTS @temp_table_1;
-            DROP TABLE IF EXISTS @temp_table_2;
             DROP TABLE IF EXISTS #old_to_new_cohort_id;",
     profile = FALSE,
     progressBar = FALSE,
     reportOverallTime = FALSE,
-    temp_table_1 = tempTable1,
-    temp_table_2 = tempTable2
+    temp_table_1 = tempTable1
   )
 }

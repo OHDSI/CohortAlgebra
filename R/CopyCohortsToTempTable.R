@@ -42,6 +42,13 @@ copyCohortsToTempTable <- function(connection = NULL,
                                    sourceCohortTable,
                                    targetCohortTable = "#cohort_rows",
                                    tempEmulationSchema = getOption("sqlRenderTempEmulationSchema")) {
+  if (length(oldToNewCohortId$oldCohortId %>% unique()) != length(oldToNewCohortId$newCohortId %>% unique())) {
+    stop("Number of oldCohortId is not equal to number of new cohort id")
+  }
+  if (length(oldToNewCohortId$oldCohortId %>% unique()) != nrow(oldToNewCohortId)) {
+    stop("oldCohortId is repeated")
+  }
+
   DatabaseConnector::insertTable(
     connection = connection,
     tableName = "#old_to_new_cohort_id",
@@ -64,6 +71,7 @@ copyCohortsToTempTable <- function(connection = NULL,
     target_cohort_table = targetCohortTable,
     tempEmulationSchema = tempEmulationSchema
   )
+
   DatabaseConnector::executeSql(
     connection = connection,
     sql = sql,

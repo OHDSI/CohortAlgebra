@@ -3,8 +3,11 @@ CohortAlgebra 0.4.1
 
 Changes:
 - update to keep eras with overlap function.
+- optimization by removing redundant steps
+
 
 Bug fix:
+- minor bug fix
 
 CohortAlgebra 0.4.0
 ======================
