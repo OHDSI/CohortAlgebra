@@ -14,7 +14,9 @@ keepCohortOverlaps(
   newCohortId,
   offsetCohortStartDate = 0,
   offsetCohortEndDate = 0,
-  minimumOverlaDays = 1,
+  restrictSecondCohortStartBeforeFirstCohortStart = FALSE,
+  restrictSecondCohortStartAfterFirstCohortStart = FALSE,
+  minimumOverlapDays = 1,
   purgeConflicts = FALSE,
   tempEmulationSchema = getOption("sqlRenderTempEmulationSchema")
 )
@@ -47,7 +49,13 @@ this should include both the database and schema name, for example
 
 \item{offsetCohortEndDate}{(Default = 0) If you want to offset cohort start date, please provide a integer number.}
 
-\item{minimumOverlaDays}{(Default = 1) The minimum number of days of overlap.}
+\item{restrictSecondCohortStartBeforeFirstCohortStart}{(Default = FALSE) If TRUE, then the secondCohort's cohort_start_date
+should be < firstCohort's cohort_start_date.}
+
+\item{restrictSecondCohortStartAfterFirstCohortStart}{(Default = FALSE) If TRUE, then the secondCohort's cohort_start_date
+should be > firstCohort's cohort_start_date.}
+
+\item{minimumOverlapDays}{(Default = 1) The minimum number of days of overlap.}
 
 \item{purgeConflicts}{If there are conflicts in the target cohort table i.e. the target cohort table
 already has records with newCohortId, do you want to purge and replace them

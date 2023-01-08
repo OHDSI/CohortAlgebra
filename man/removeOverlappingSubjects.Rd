@@ -13,6 +13,8 @@ removeOverlappingSubjects(
   cohortsWithSubjectsToRemove,
   offsetCohortStartDate = -99999,
   offsetCohortEndDate = 99999,
+  restrictSecondCohortStartBeforeFirstCohortStart = FALSE,
+  restrictSecondCohortStartAfterFirstCohortStart = FALSE,
   cohortTable = "cohort",
   purgeConflicts = FALSE,
   tempEmulationSchema = getOption("sqlRenderTempEmulationSchema")
@@ -43,6 +45,12 @@ this should include both the database and schema name, for example
 \item{offsetCohortStartDate}{(Default = 0) If you want to offset cohort start date, please provide a integer number.}
 
 \item{offsetCohortEndDate}{(Default = 0) If you want to offset cohort start date, please provide a integer number.}
+
+\item{restrictSecondCohortStartBeforeFirstCohortStart}{(Default = FALSE) If TRUE, then the secondCohort's cohort_start_date
+should be < firstCohort's cohort_start_date.}
+
+\item{restrictSecondCohortStartAfterFirstCohortStart}{(Default = FALSE) If TRUE, then the secondCohort's cohort_start_date
+should be > firstCohort's cohort_start_date.}
 
 \item{cohortTable}{The name of the cohort table.}
 

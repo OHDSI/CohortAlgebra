@@ -1,7 +1,7 @@
 Package: CohortAlgebra
 Type: Package
 Title: Cohort Algebra to create new cohort(s) from existing cohorts
-Version: 0.4.0
+Version: 0.4.1
 Date: 2023-01-06
 Authors@R: c(
     person("Gowtham", "Rao", email = "rao@ohdsi.org", role = c("aut", "cre")),

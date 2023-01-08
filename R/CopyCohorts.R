@@ -132,18 +132,11 @@ copyCohorts <- function(connectionDetails = NULL,
     if (length(intersect(
       oldToNewCohortId$oldCohortId,
       oldToNewCohortId$newCohortId
-    ))) {
+    )) > 0) {
       stop(
-        " Source and target cohort tables are the same. \n In this case, oldCohortId and newCohortId have to be different with no overlap."
+        " Cannot copy same cohort to same table."
       )
     }
-  }
-
-  if (length(oldToNewCohortId$oldCohortId %>% unique()) != length(oldToNewCohortId$newCohortId %>% unique())) {
-    stop("Number of oldCohortId is not equal to number of new cohort id")
-  }
-  if (length(oldToNewCohortId$oldCohortId %>% unique()) != nrow(oldToNewCohortId)) {
-    stop("oldCohortId is repeated")
   }
 
   if (is.null(connection)) {
@@ -164,15 +157,7 @@ copyCohorts <- function(connectionDetails = NULL,
     data = oldToNewCohortId
   )
 
-  if (purgeConflicts) {
-    deleteCohort(
-      connection = connection,
-      cohortDatabaseSchema = targetCohortDatabaseSchema,
-      cohortTable = targetCohortTable,
-      tempEmulationSchema = tempEmulationSchema,
-      cohortIds = oldToNewCohortId$newCohortId %>% unique() %>% sort()
-    )
-  } else {
+  if (!purgeConflicts) {
     cohortIdsInCohortTable <-
       getCohortIdsInCohortTable(
         connection = connection,
@@ -207,6 +192,24 @@ copyCohorts <- function(connectionDetails = NULL,
     target_cohort_table = targetCohortTable,
     tempEmulationSchema = tempEmulationSchema
   )
+  ParallelLogger::logInfo(
+    paste0(
+      " Copying cohorts from ",
+      sourceCohortDatabaseSchema,
+      ".",
+      sourceCohortTable,
+      " (",
+      paste0(oldToNewCohortId$oldCohortId, collapse = ", "),
+      ") to ",
+      targetCohortDatabaseSchema,
+      ".",
+      targetCohortTable,
+      " (",
+      paste0(oldToNewCohortId$newCohortId, collapse = ", "),
+      ")"
+    )
+  )
+
   DatabaseConnector::executeSql(
     connection = connection,
     sql = sql,

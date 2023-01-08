@@ -117,12 +117,8 @@ intersectCohorts <- function(connectionDetails = NULL,
       y = cohortIdsInCohortTable %>% unique()
     )
 
-
-  performPurgeConflicts <- FALSE
   if (length(conflicitingCohortIdsInTargetCohortTable) > 0) {
-    if (purgeConflicts) {
-      performPurgeConflicts <- TRUE
-    } else {
+    if (!purgeConflicts) {
       stop(
         paste0(
           "The following cohortIds already exist in the target cohort table, causing conflicts :",
@@ -134,26 +130,6 @@ intersectCohorts <- function(connectionDetails = NULL,
 
   tempTableName <- generateRandomString()
   tempTable1 <- paste0("#", tempTableName, "1")
-  tempTable2 <- paste0("#", tempTableName, "2")
-
-  copyCohortsToTempTable(
-    connection = connection,
-    oldToNewCohortId = dplyr::tibble(oldCohortId = cohortIds) %>%
-      dplyr::mutate(newCohortId = .data$oldCohortId) %>%
-      dplyr::distinct(),
-    sourceCohortDatabaseSchema = cohortDatabaseSchema,
-    sourceCohortTable = cohortTable,
-    targetCohortTable = tempTable1
-  )
-
-  eraFyCohorts(
-    connection = connection,
-    oldToNewCohortId = dplyr::tibble(oldCohortId = cohortIds) %>%
-      dplyr::mutate(newCohortId = .data$oldCohortId) %>%
-      dplyr::distinct(),
-    cohortTable = tempTable1,
-    purgeConflicts = TRUE
-  )
 
   numberOfCohorts <- length(cohortIds %>% unique())
 
@@ -162,17 +138,21 @@ intersectCohorts <- function(connectionDetails = NULL,
     packageName = utils::packageName(),
     dbms = connection@dbms,
     number_of_cohorts = numberOfCohorts,
+    cohort_ids = cohortIds,
     new_cohort_id = newCohortId,
     tempEmulationSchema = tempEmulationSchema,
     temp_table_1 = tempTable1,
-    temp_table_2 = tempTable2
+    source_database_schema = cohortDatabaseSchema,
+    source_cohort_table = cohortTable
   )
+
+  ParallelLogger::logInfo(" Intersecting cohorts.")
   DatabaseConnector::executeSql(
     connection = connection,
     sql = sql,
     profile = FALSE,
-    progressBar = FALSE,
-    reportOverallTime = FALSE
+    progressBar = TRUE,
+    reportOverallTime = TRUE
   )
 
   suppressMessages(
@@ -181,49 +161,39 @@ intersectCohorts <- function(connectionDetails = NULL,
       oldToNewCohortId = dplyr::tibble(oldCohortId = newCohortId) %>%
         dplyr::mutate(newCohortId = .data$oldCohortId) %>%
         dplyr::distinct(),
-      cohortTable = tempTable2,
+      cohortTable = tempTable1,
       purgeConflicts = TRUE
     )
   )
 
-  if (performPurgeConflicts) {
-    ParallelLogger::logTrace(
-      paste0(
-        "The following conflicting cohortIds will be deleted from your cohort table \n",
-        " as part resolving conflicts: ",
-        paste0(conflicitingCohortIdsInTargetCohortTable, collapse = ",")
-      )
-    )
-    deleteCohort(
-      connection = connection,
-      cohortDatabaseSchema = cohortDatabaseSchema,
-      cohortTable = cohortTable,
-      cohortIds = conflicitingCohortIdsInTargetCohortTable
-    )
-  }
+  ParallelLogger::logInfo(" Saving cohort intersects ")
   DatabaseConnector::renderTranslateExecuteSql(
     connection = connection,
-    sql = " INSERT INTO {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table}
+    sql = " DELETE FROM {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table}
+            WHERE cohort_definition_id IN (
+                SELECT DISTINCT cohort_definition_id
+                FROM @temp_table_1
+            );
+
+            INSERT INTO {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table}
             SELECT cohort_definition_id, subject_id, cohort_start_date, cohort_end_date
-            FROM @temp_table_2;
+            FROM @temp_table_1;
             UPDATE STATISTICS  {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table};",
     profile = FALSE,
-    progressBar = FALSE,
+    progressBar = TRUE,
     reportOverallTime = FALSE,
     cohort_database_schema = cohortDatabaseSchema,
     tempEmulationSchema = tempEmulationSchema,
     cohort_table = cohortTable,
-    temp_table_2 = tempTable2
+    temp_table_1 = tempTable1
   )
 
   DatabaseConnector::renderTranslateExecuteSql(
     connection = connection,
-    sql = " DROP TABLE IF EXISTS @temp_table_1;
-            DROP TABLE IF EXISTS @temp_table_2;",
+    sql = " DROP TABLE IF EXISTS @temp_table_1;",
     profile = FALSE,
     progressBar = FALSE,
     reportOverallTime = FALSE,
-    temp_table_1 = tempTable1,
-    temp_table_2 = tempTable2
+    temp_table_1 = tempTable1
   )
 }

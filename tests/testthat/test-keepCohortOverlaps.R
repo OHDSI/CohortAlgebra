@@ -51,7 +51,7 @@ testthat::test_that("Testing keep cohort overlaps", {
     secondCohortId = 3,
     newCohortId = 9,
     purgeConflicts = FALSE,
-    minimumOverlaDays = 1,
+    minimumOverlapDays = 1,
     offsetCohortStartDate = 0,
     offsetCohortEndDate = 0,
     tempEmulationSchema = tempEmulationSchema
@@ -96,7 +96,7 @@ testthat::test_that("Testing keep cohort overlaps", {
       secondCohortId = 3,
       newCohortId = 9,
       purgeConflicts = FALSE,
-      minimumOverlaDays = 1,
+      minimumOverlapDays = 1,
       offsetCohortStartDate = 0,
       offsetCohortEndDate = 0,
       tempEmulationSchema = tempEmulationSchema
@@ -112,7 +112,7 @@ testthat::test_that("Testing keep cohort overlaps", {
     secondCohortId = 3,
     newCohortId = 9,
     purgeConflicts = TRUE,
-    minimumOverlaDays = 1,
+    minimumOverlapDays = 1,
     offsetCohortStartDate = 0,
     offsetCohortEndDate = 0,
     tempEmulationSchema = tempEmulationSchema
@@ -158,7 +158,7 @@ testthat::test_that("Testing keep cohort overlaps", {
       secondCohortId = 1,
       newCohortId = 10,
       purgeConflicts = TRUE,
-      minimumOverlaDays = 1,
+      minimumOverlapDays = 1,
       offsetCohortStartDate = 0,
       offsetCohortEndDate = 0,
       tempEmulationSchema = tempEmulationSchema
@@ -174,7 +174,7 @@ testthat::test_that("Testing keep cohort overlaps", {
     secondCohortId = 2,
     newCohortId = 11,
     purgeConflicts = TRUE,
-    minimumOverlaDays = 1,
+    minimumOverlapDays = 1,
     offsetCohortStartDate = -600,
     offsetCohortEndDate = 0,
     tempEmulationSchema = tempEmulationSchema
@@ -220,7 +220,7 @@ testthat::test_that("Testing keep cohort overlaps", {
     secondCohortId = 2,
     newCohortId = 12,
     purgeConflicts = TRUE,
-    minimumOverlaDays = 1,
+    minimumOverlapDays = 1,
     offsetCohortStartDate = 0,
     offsetCohortEndDate = 0,
     tempEmulationSchema = tempEmulationSchema
@@ -263,7 +263,7 @@ testthat::test_that("Testing keep cohort overlaps", {
     secondCohortId = 3,
     newCohortId = 16,
     purgeConflicts = FALSE,
-    minimumOverlaDays = 20,
+    minimumOverlapDays = 20,
     # the cohort has 20 days, 21 days should give 0 records
     offsetCohortStartDate = 0,
     offsetCohortEndDate = 0,
@@ -311,7 +311,7 @@ testthat::test_that("Testing keep cohort overlaps", {
     secondCohortId = 3,
     newCohortId = 17,
     purgeConflicts = FALSE,
-    minimumOverlaDays = 21,
+    minimumOverlapDays = 21,
     # the cohort has 20 days, 21 days should give 0 records
     offsetCohortStartDate = 0,
     offsetCohortEndDate = 0,

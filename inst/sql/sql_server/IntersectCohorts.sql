@@ -1,55 +1,65 @@
-DROP TABLE IF EXISTS @temp_table_2;
+DROP TABLE IF EXISTS @temp_table_1;
 
-WITH cohort_dates
-AS (
+SELECT subject_id,
+	cohort_date,
+	-- LEAD will ignore values that are same (e.g. if cohort_start_date = cohort_end_date)
+	ROW_NUMBER() OVER(PARTITION BY subject_id
+	                  ORDER BY cohort_date ASC) cohort_date_seq
+INTO #cohort_dates
+FROM (
 	SELECT subject_id,
-		cohort_date,
-		-- LEAD will ignore values that are same (e.g. if cohort_start_date = cohort_end_date)
-		ROW_NUMBER() OVER(PARTITION BY subject_id
-		                  ORDER BY cohort_date ASC) cohort_date_seq
-	FROM (
-		SELECT subject_id,
-			cohort_start_date cohort_date
-		FROM @temp_table_1
+		      cohort_start_date cohort_date
+	FROM {@source_database_schema != ''} ? {@source_database_schema.@source_cohort_table} : {@source_cohort_table}
+	WHERE cohort_definition_id IN (@cohort_ids)
 
-		UNION ALL -- we need all dates, even if duplicates
+	UNION ALL -- we need all dates, even if duplicates
 
-		SELECT subject_id,
-			cohort_end_date cohort_date
-		FROM @temp_table_1
-		) all_dates
-	),
-candidate_periods
-AS (
-	SELECT
-		subject_id,
-		cohort_date candidate_start_date,
-		cohort_date_seq,
-		LEAD(cohort_date, 1) OVER (
-			PARTITION BY subject_id ORDER BY cohort_date, cohort_date_seq ASC
-			) candidate_end_date
-	FROM cohort_dates
-	GROUP BY subject_id,
-		cohort_date,
-		cohort_date_seq
-	),
-candidate_cohort_date
-AS (
-	SELECT DISTINCT cohort.*,
-		candidate_start_date,
-		candidate_end_date
-	FROM @temp_table_1 cohort
-	INNER JOIN candidate_periods candidate ON cohort.subject_id = candidate.subject_id
-		AND candidate_start_date >= cohort_start_date
-		AND candidate_end_date <= cohort_end_date
-	)
+	SELECT subject_id,
+		      cohort_end_date cohort_date
+	FROM {@source_database_schema != ''} ? {@source_database_schema.@source_cohort_table} : {@source_cohort_table}
+	WHERE cohort_definition_id IN (@cohort_ids)
+	) all_dates;
+	
+	
+
+SELECT
+	subject_id,
+	cohort_date candidate_start_date,
+	cohort_date_seq,
+	LEAD(cohort_date, 1) OVER (
+		PARTITION BY subject_id ORDER BY cohort_date, cohort_date_seq ASC
+		) candidate_end_date
+INTO #candidate_periods
+FROM #cohort_dates
+GROUP BY subject_id,
+	cohort_date,
+	cohort_date_seq;
+
+
+SELECT DISTINCT cohort.*,
+	candidate_start_date,
+	candidate_end_date
+INTO #can_chrt_dte
+FROM {@source_database_schema != ''} ? {@source_database_schema.@source_cohort_table} : {@source_cohort_table} cohort
+INNER JOIN #candidate_periods candidate ON cohort.subject_id = candidate.subject_id
+	AND candidate_start_date >= cohort_start_date
+	AND candidate_end_date <= cohort_end_date
+WHERE cohort.cohort_definition_id IN (@cohort_ids);
+	
+	
+		
 SELECT @new_cohort_id cohort_definition_id,
 	subject_id,
 	candidate_start_date cohort_start_date,
 	candidate_end_date cohort_end_date
-INTO @temp_table_2
-FROM candidate_cohort_date
+INTO @temp_table_1
+FROM #can_chrt_dte
 GROUP BY subject_id,
 	candidate_start_date,
 	candidate_end_date
 HAVING COUNT(*) = @number_of_cohorts;
+
+
+DROP TABLE IF EXISTS #cohort_dates;
+DROP TABLE IF EXISTS #candidate_periods;
+DROP TABLE IF EXISTS #can_chrt_dte;

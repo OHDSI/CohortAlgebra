@@ -1,3 +1,6 @@
+DELETE FROM {@target_database_schema != ''} ? {@target_database_schema.@target_cohort_table} : {@target_cohort_table}
+WHERE cohort_definition_id IN (SELECT DISTINCT new_cohort_id FROM #old_to_new_cohort_id);
+
 INSERT INTO {@target_database_schema != ''} ? {@target_database_schema.@target_cohort_table} : {@target_cohort_table}
 SELECT target.new_cohort_id cohort_definition_id,
         source.subject_id,

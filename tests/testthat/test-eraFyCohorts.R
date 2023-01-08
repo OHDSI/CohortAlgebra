@@ -66,7 +66,7 @@ testthat::test_that("Testing cohort era fy", {
   DatabaseConnector::disconnect(connection)
 
   # should not throw error
-  eraFyCohorts(
+  CohortAlgebra:::eraFyCohorts(
     connectionDetails = connectionDetails,
     cohortDatabaseSchema = cohortDatabaseSchema,
     cohortTable = tableName,

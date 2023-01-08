@@ -133,11 +133,9 @@ minusCohorts <- function(connectionDetails = NULL,
       y = cohortIdsInCohortTable %>% unique()
     )
 
-  performPurgeConflicts <- FALSE
+
   if (length(conflicitingCohortIdsInTargetCohortTable) > 0) {
-    if (purgeConflicts) {
-      performPurgeConflicts <- TRUE
-    } else {
+    if (!purgeConflicts) {
       stop(
         paste0(
           "The following cohortIds already exist in the target cohort table, causing conflicts :",
@@ -152,6 +150,7 @@ minusCohorts <- function(connectionDetails = NULL,
   tempTable2 <- paste0("#", tempTableName, "2")
   tempTable3 <- paste0("#", tempTableName, "3")
 
+  ParallelLogger::logInfo("Performing minus operation.")
   copyCohortsToTempTable(
     connection = connection,
     oldToNewCohortId = dplyr::tibble(oldCohortId = c(firstCohortId, secondCohortId)) %>%
@@ -168,7 +167,7 @@ minusCohorts <- function(connectionDetails = NULL,
     cohortIds = c(firstCohortId, secondCohortId),
     newCohortId = -999,
     purgeConflicts = FALSE,
-    tempEmulationSchema = getOption("sqlRenderTempEmulationSchema")
+    tempEmulationSchema = tempEmulationSchema
   )
 
   sql <- SqlRender::loadRenderTranslateSql(
@@ -184,8 +183,8 @@ minusCohorts <- function(connectionDetails = NULL,
     connection = connection,
     sql = sql,
     profile = FALSE,
-    progressBar = FALSE,
-    reportOverallTime = FALSE
+    progressBar = TRUE,
+    reportOverallTime = TRUE
   )
 
   # date corrections
@@ -231,30 +230,20 @@ minusCohorts <- function(connectionDetails = NULL,
     tempEmulationSchema = tempEmulationSchema
   )
 
-  if (performPurgeConflicts) {
-    ParallelLogger::logTrace(
-      paste0(
-        "The following conflicting cohortIds will be deleted from your cohort table \n",
-        " as part resolving conflicts: ",
-        paste0(conflicitingCohortIdsInTargetCohortTable, collapse = ",")
-      )
-    )
-    deleteCohort(
-      connection = connection,
-      cohortDatabaseSchema = cohortDatabaseSchema,
-      cohortTable = cohortTable,
-      cohortIds = conflicitingCohortIdsInTargetCohortTable
-    )
-  }
+  ParallelLogger::logInfo("Saving output.")
   DatabaseConnector::renderTranslateExecuteSql(
     connection = connection,
-    sql = " INSERT INTO {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table}
+    sql = " DELETE FROM {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table}
+            WHERE cohort_definition_id IN (SELECT DISTINCT cohort_definition_id FROM @temp_table_3);
+
+            INSERT INTO {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table}
             SELECT cohort_definition_id, subject_id, cohort_start_date, cohort_end_date
             FROM @temp_table_3;
+
             UPDATE STATISTICS  {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table};",
     profile = FALSE,
-    progressBar = FALSE,
-    reportOverallTime = FALSE,
+    progressBar = TRUE,
+    reportOverallTime = TRUE,
     cohort_database_schema = cohortDatabaseSchema,
     tempEmulationSchema = tempEmulationSchema,
     cohort_table = cohortTable,
