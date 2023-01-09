@@ -22,7 +22,8 @@
 #' Pad days: Add days to either cohort start or cohort end dates. Maybe negative numbers. Final cohort will not be outside the persons observation period.
 #' Limit cohort periods: Filter the cohorts to a given date range of cohort start, or cohort end or both.
 #'
-#' cdmDataschema is required when eraConstructorPad is > 0. eraConstructorPad is optional.
+#' cdmDataschema is required when eraConstructorPad is > 0. eraConstructorPad is optional. It is also required when checking
+#' for minimum continuous prior or post observation period.
 #'
 #' `r lifecycle::badge("experimental")`
 #'
@@ -79,6 +80,13 @@
 #'
 #' @param firstOccurrence         Do you want to restrict the cohort to the first occurrence per person?
 #'
+#' @param filterByMinimumCohortPeriod Do you want to filter cohort records by minimum cohort period, i.e. cohort period is calculated
+#'                                    as DATEDIFF(cohort_start_date, cohort_start_date). if cohort_start_date = cohort_end_date then days = 0
+#'
+#' @param filterByMinimumPriorObservationPeriod  Do you want to filter cohort records by minimum Prior continuous Observation period
+#'
+#' @param filterByMinimumPostObservationPeriod  Do you want to filter cohort records by minimum Post continous Observation period
+#'
 #' @return
 #' NULL
 #'
@@ -113,6 +121,9 @@ modifyCohort <- function(connectionDetails = NULL,
                          filterGenderConceptId = NULL,
                          filterByAgeRange = NULL,
                          firstOccurrence = FALSE,
+                         filterByMinimumCohortPeriod = NULL,
+                         filterByMinimumPriorObservationPeriod = NULL,
+                         filterByMinimumPostObservationPeriod = NULL,
                          tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
                          purgeConflicts = TRUE) {
   errorMessages <- checkmate::makeAssertCollection()
@@ -177,6 +188,41 @@ modifyCohort <- function(connectionDetails = NULL,
     null.ok = TRUE,
     add = errorMessages
   )
+  checkmate::assertDouble(
+    x = filterByMinimumCohortPeriod,
+    len = 1,
+    null.ok = TRUE,
+    lower = 0,
+    add = errorMessages
+  )
+  checkmate::assertDouble(
+    x = filterByMinimumPriorObservationPeriod,
+    len = 1,
+    null.ok = TRUE,
+    lower = 0,
+    add = errorMessages
+  )
+  checkmate::assertDouble(
+    x = filterByMinimumPostObservationPeriod,
+    len = 1,
+    null.ok = TRUE,
+    lower = 0,
+    add = errorMessages
+  )
+
+  if (any(
+    !is.null(filterByMinimumPriorObservationPeriod),
+    !is.null(filterByMinimumPostObservationPeriod)
+  )) {
+    checkmate::assertCharacter(
+      x = cdmDatabaseSchema,
+      min.chars = 1,
+      len = 1,
+      null.ok = FALSE,
+      add = errorMessages
+    )
+  }
+
   if (!is.null(cohortStartFilterRange)) {
     checkmate::assert_true(x = cohortStartFilterRange[1] <= cohortStartFilterRange[2])
   }
@@ -224,9 +270,7 @@ modifyCohort <- function(connectionDetails = NULL,
   if (is.null(cdmDatabaseSchema)) {
     if (any(
       cohortStartPadDays > 0,
-      cohortEndPadDays > 0,
-      !is.null(filterByAgeRange),
-      !is.null(filterGenderConceptId)
+      cohortEndPadDays > 0, !is.null(filterByAgeRange), !is.null(filterGenderConceptId)
     )) {
       if (any(
         cohortStartPadDays != 0,
@@ -240,10 +284,7 @@ modifyCohort <- function(connectionDetails = NULL,
             The function will then ensure that cohort days are always in observation period."
         )
       }
-      if (any(
-        !is.null(filterByAgeRange),
-        !is.null(filterGenderConceptId)
-      )) {
+      if (any(!is.null(filterByAgeRange), !is.null(filterGenderConceptId))) {
         stop(
           "cdmDatabaseSchema is NULL.
             To filter cohort by age range or by gender, OMOP person table in cdmDatabaseSchema is required."
@@ -686,6 +727,121 @@ modifyCohort <- function(connectionDetails = NULL,
       tempEmulationSchema = tempEmulationSchema,
       temp_table_1 = tempTable1,
       temp_table_2 = tempTable2
+    )
+  }
+
+
+  ## Filter cohorts by minimum cohort period -----
+  if (!is.null(filterByMinimumCohortPeriod)) {
+    sql <- "  DROP TABLE IF EXISTS @temp_table_2;
+
+            SELECT cohort_definition_id,
+                   subject_id,
+                   cohort_start_date,
+                   cohort_end_date
+          	INTO @temp_table_2
+          	FROM @temp_table_1
+          	WHERE DATEDIFF(day, cohort_start_date, cohort_end_date) >= @min_period;
+
+          	DROP TABLE IF EXISTS @temp_table_1;
+
+          SELECT *
+          INTO @temp_table_1
+          FROM @temp_table_2;
+
+          DROP TABLE IF EXISTS @temp_table_2;
+  "
+
+    DatabaseConnector::renderTranslateExecuteSql(
+      connection = connection,
+      sql = sql,
+      profile = FALSE,
+      progressBar = FALSE,
+      reportOverallTime = FALSE,
+      tempEmulationSchema = tempEmulationSchema,
+      temp_table_1 = tempTable1,
+      temp_table_2 = tempTable2,
+      min_period = filterByMinimumCohortPeriod
+    )
+  }
+
+
+  ## Filter by minimum prior continuous observation period -----
+  if (!is.null(filterByMinimumPriorObservationPeriod)) {
+    sql <- "  DROP TABLE IF EXISTS @temp_table_2;
+
+            SELECT cohort_definition_id,
+                   subject_id,
+                   cohort_start_date,
+                   cohort_end_date
+          	INTO @temp_table_2
+          	FROM @temp_table_1 t
+          	INNER JOIN @cdm_database_schema.observation_period op
+          	ON t.subject_id = op.person_id
+          	    AND observation_period_start_date <= cohort_start_date
+		            AND observation_period_end_date >= cohort_start_date
+          	WHERE DATEDIFF(DAY, observation_period_start_date, cohort_start_date) >= @min_period;
+
+          	DROP TABLE IF EXISTS @temp_table_1;
+
+          SELECT *
+          INTO @temp_table_1
+          FROM @temp_table_2;
+
+          DROP TABLE IF EXISTS @temp_table_2;
+  "
+
+    DatabaseConnector::renderTranslateExecuteSql(
+      connection = connection,
+      sql = sql,
+      profile = FALSE,
+      progressBar = FALSE,
+      reportOverallTime = FALSE,
+      tempEmulationSchema = tempEmulationSchema,
+      temp_table_1 = tempTable1,
+      temp_table_2 = tempTable2,
+      cdm_database_schema = cdmDatabaseSchema,
+      min_period = filterByMinimumPriorObservationPeriod
+    )
+  }
+
+
+  ## Filter by minimum post continuous observation period -----
+  if (!is.null(filterByMinimumPostObservationPeriod)) {
+    sql <- "  DROP TABLE IF EXISTS @temp_table_2;
+
+            SELECT cohort_definition_id,
+                   subject_id,
+                   cohort_start_date,
+                   cohort_end_date
+          	INTO @temp_table_2
+          	FROM @temp_table_1 t
+          	INNER JOIN @cdm_database_schema.observation_period op
+          	ON t.subject_id = op.person_id
+          	    AND observation_period_start_date <= cohort_start_date
+		            AND observation_period_end_date >= cohort_start_date
+          	WHERE DATEDIFF(DAY, cohort_start_date, observation_period_end_date) >= @min_period;
+
+          	DROP TABLE IF EXISTS @temp_table_1;
+
+          SELECT *
+          INTO @temp_table_1
+          FROM @temp_table_2;
+
+          DROP TABLE IF EXISTS @temp_table_2;
+  "
+
+    DatabaseConnector::renderTranslateExecuteSql(
+      connection = connection,
+      sql = sql,
+      profile = FALSE,
+      progressBar = FALSE,
+      reportOverallTime = FALSE,
+      tempEmulationSchema = tempEmulationSchema,
+      temp_table_1 = tempTable1,
+      temp_table_2 = tempTable2,
+      cdm_database_schema = cdmDatabaseSchema,
+      min_period = filterByMinimumPostObservationPeriod
     )
   }
 
