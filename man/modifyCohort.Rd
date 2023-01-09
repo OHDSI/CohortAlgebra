@@ -21,6 +21,9 @@ modifyCohort(
   filterGenderConceptId = NULL,
   filterByAgeRange = NULL,
   firstOccurrence = FALSE,
+  filterByMinimumCohortPeriod = NULL,
+  filterByMinimumPriorObservationPeriod = NULL,
+  filterByMinimumPostObservationPeriod = NULL,
   tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
   purgeConflicts = TRUE
 )
@@ -86,6 +89,13 @@ Age is calculated as YEAR(cohort_start_date) - person.year_of_birth}
 
 \item{firstOccurrence}{Do you want to restrict the cohort to the first occurrence per person?}
 
+\item{filterByMinimumCohortPeriod}{Do you want to filter cohort records by minimum cohort period, i.e. cohort period is calculated
+as DATEDIFF(cohort_start_date, cohort_start_date). if cohort_start_date = cohort_end_date then days = 0}
+
+\item{filterByMinimumPriorObservationPeriod}{Do you want to filter cohort records by minimum Prior continuous Observation period}
+
+\item{filterByMinimumPostObservationPeriod}{Do you want to filter cohort records by minimum Post continous Observation period}
+
 \item{tempEmulationSchema}{Some database platforms like Oracle and Impala do not truly support
 temp tables. To emulate temp tables, provide a schema with write
 privileges where temp tables can be created.}
@@ -100,7 +110,8 @@ Censoring: Provide a date for right, left, both censoring. All cohorts will be t
 Pad days: Add days to either cohort start or cohort end dates. Maybe negative numbers. Final cohort will not be outside the persons observation period.
 Limit cohort periods: Filter the cohorts to a given date range of cohort start, or cohort end or both.
 
-cdmDataschema is required when eraConstructorPad is > 0. eraConstructorPad is optional.
+cdmDataschema is required when eraConstructorPad is > 0. eraConstructorPad is optional. It is also required when checking
+for minimum continuous prior or post observation period.
 
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 }
