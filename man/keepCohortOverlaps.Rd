@@ -43,7 +43,7 @@ this should include both the database and schema name, for example
 
 \item{secondCohortId}{The cohort id of the cohort that will be used to check for the presence of overlap.}
 
-\item{newCohortId}{The cohort id of the result cohort.}
+\item{newCohortId}{The cohort id of the output cohort.}
 
 \item{offsetCohortStartDate}{(Default = 0) If you want to offset cohort start date, please provide a integer number.}
 

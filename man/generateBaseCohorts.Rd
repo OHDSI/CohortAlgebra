@@ -11,7 +11,6 @@ generateBaseCohorts(
   cohortTable = "cohorts_base",
   incremental,
   incrementalFolder = NULL,
-  ensureCohortEra = TRUE,
   tempEmulationSchema = getOption("sqlRenderTempEmulationSchema")
 )
 }
@@ -35,8 +34,6 @@ schema name, for example 'cdm_data.dbo'.}
 
 \item{incrementalFolder}{If \code{incremental = TRUE}, specify a folder where records are
 kept of which definition has been executed.}
-
-\item{ensureCohortEra}{Apply cohort era function on generated cohorts?}
 
 \item{tempEmulationSchema}{Some database platforms like Oracle and Impala do not truly support
 temp tables. To emulate temp tables, provide a schema with write

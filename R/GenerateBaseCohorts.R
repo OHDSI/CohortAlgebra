@@ -96,8 +96,6 @@ getBaseCohortDefinitionSet <- function() {
 #'
 #' @template TempEmulationSchema
 #'
-#' @param ensureCohortEra             Apply cohort era function on generated cohorts?
-#'
 #' @param incremental                 Create only cohorts that haven't been created before?
 #'
 #' @param incrementalFolder           If \code{incremental = TRUE}, specify a folder where records are
@@ -126,7 +124,6 @@ generateBaseCohorts <- function(connectionDetails = NULL,
                                 cohortTable = "cohorts_base",
                                 incremental,
                                 incrementalFolder = NULL,
-                                ensureCohortEra = TRUE,
                                 tempEmulationSchema = getOption("sqlRenderTempEmulationSchema")) {
   errorMessages <- checkmate::makeAssertCollection()
   checkmate::assertCharacter(
@@ -218,24 +215,20 @@ generateBaseCohorts <- function(connectionDetails = NULL,
     cohortTableNames = baseCohortTableNames
   )
 
-  if (ensureCohortEra) {
-    ParallelLogger::logTrace(" Era fy base cohorts.")
-    for (i in (1:nrow(cohortDefinitionSet))) {
-      cohortId <- cohortDefinitionSet[i, ]$cohortId
-
-      ParallelLogger::logInfo(paste0("  Working on ", cohortDefinitionSet[i, ]$cohortName))
-      eraFyCohorts(
-        connectionDetails = connectionDetails,
-        cohortDatabaseSchema = cohortDatabaseSchema,
-        cohortTable = baseCohortTableNames$cohortTable,
-        oldToNewCohortId = dplyr::tibble(
-          oldCohortId = cohortId,
-          newCohortId = cohortId
-        ),
-        eraconstructorpad = 0,
-        cdmDatabaseSchema = cdmDatabaseSchema,
-        purgeConflicts = TRUE
-      )
-    }
+  ParallelLogger::logTrace(" Era fy base cohorts.")
+  for (i in (1:nrow(cohortDefinitionSet))) {
+    ParallelLogger::logInfo(paste0("  Working on ", cohortDefinitionSet[i, ]$cohortName))
+    eraFyCohorts(
+      connectionDetails = connectionDetails,
+      sourceCohortDatabaseSchema = cohortDatabaseSchema,
+      sourceCohortTable = baseCohortTableNames$cohortTable,
+      targetCohortDatabaseSchema = cohortDatabaseSchema,
+      targetCohortTable = baseCohortTableNames$cohortTable,
+      oldCohortIds = cohortDefinitionSet[i, ]$cohortId,
+      newCohortId = cohortDefinitionSet[i, ]$cohortId,
+      eraconstructorpad = 0,
+      cdmDatabaseSchema = cdmDatabaseSchema,
+      purgeConflicts = TRUE
+    )
   }
 }

@@ -40,12 +40,14 @@ testthat::test_that("Testing cohort union", {
   # should not throw error
   CohortAlgebra::unionCohorts(
     connectionDetails = connectionDetails,
-    cohortDatabaseSchema = cohortDatabaseSchema,
-    cohortTable = tableName,
+    sourceCohortDatabaseSchema = cohortDatabaseSchema,
+    sourceCohortTable = tableName,
     oldToNewCohortId = dplyr::tibble(
       oldCohortId = c(1, 2, 2),
       newCohortId = c(3, 3, 3)
     ),
+    targetCohortDatabaseSchema = cohortDatabaseSchema,
+    targetCohortTable = tableName,
     purgeConflicts = FALSE
   )
 
@@ -87,6 +89,8 @@ testthat::test_that("Testing cohort union", {
            DROP TABLE IF EXISTS @cdm_database_schema.observation_period;",
     table_temp = tableName,
     cohort_database_schema = cohortDatabaseSchema,
-    cdm_database_schema = cohortDatabaseSchema
+    cdm_database_schema = cohortDatabaseSchema,
+    progressBar = FALSE,
+    reportOverallTime = FALSE
   )
 })

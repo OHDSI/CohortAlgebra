@@ -68,9 +68,11 @@ testthat::test_that("Testing cohort era fy", {
   # should not throw error
   CohortAlgebra:::eraFyCohorts(
     connectionDetails = connectionDetails,
-    cohortDatabaseSchema = cohortDatabaseSchema,
-    cohortTable = tableName,
-    oldToNewCohortId = dplyr::tibble(oldCohortId = 1, newCohortId = 9),
+    sourceCohortDatabaseSchema = cohortDatabaseSchema,
+    sourceCohortTable = tableName,
+    targetCohortTable = tableName,
+    oldCohortIds = 1,
+    newCohortId = 9,
     eraconstructorpad = 0,
     purgeConflicts = FALSE,
     tempEmulationSchema = tempEmulationSchema
@@ -125,7 +127,8 @@ testthat::test_that("Testing cohort era fy", {
       connectionDetails = connectionDetails,
       cohortDatabaseSchema = cohortDatabaseSchema,
       cohortTable = tableName,
-      oldToNewCohortId = dplyr::tibble(oldCohortId = 1, newCohortId = 9),
+      oldCohortIds = 1,
+      newCohortId = 9,
       eraconstructorpad = 0,
       purgeConflicts = FALSE
     )
@@ -135,9 +138,11 @@ testthat::test_that("Testing cohort era fy", {
     object =
       eraFyCohorts(
         connectionDetails = connectionDetails,
-        cohortDatabaseSchema = cohortDatabaseSchema,
-        cohortTable = tableName,
-        oldToNewCohortId = dplyr::tibble(oldCohortId = 1, newCohortId = 9),
+        sourceCohortDatabaseSchema = cohortDatabaseSchema,
+        sourceCohortTable = tableName,
+        targetCohortTable = tableName,
+        oldCohortIds = 1,
+        newCohortId = 9,
         eraconstructorpad = 0,
         purgeConflicts = TRUE,
         tempEmulationSchema = tempEmulationSchema
@@ -167,8 +172,9 @@ testthat::test_that("Testing cohort era fy", {
     object = # throw error because cdmDatabaseSchema is not provide
       eraFyCohorts(
         connection = connection,
-        cohortTable = tempTableName,
-        oldToNewCohortId = dplyr::tibble(oldCohortId = 1, newCohortId = 10),
+        sourceCohortTable = tempTableName,
+        oldCohortId = 1,
+        newCohortId = 10,
         eraconstructorpad = 30,
         purgeConflicts = FALSE,
         tempEmulationSchema = tempEmulationSchema
@@ -191,8 +197,10 @@ testthat::test_that("Testing cohort era fy", {
 
   eraFyCohorts(
     connection = connection,
-    cohortTable = tempTableName,
-    oldToNewCohortId = dplyr::tibble(oldCohortId = 1, newCohortId = 10),
+    sourceCohortTable = tempTableName,
+    targetCohortTable = tempTableName,
+    oldCohortIds = 1,
+    newCohortId = 10,
     eraconstructorpad = 30,
     purgeConflicts = FALSE,
     cdmDatabaseSchema = cohortDatabaseSchema,
@@ -228,8 +236,10 @@ testthat::test_that("Testing cohort era fy", {
   testthat::expect_error(
     eraFyCohorts(
       connectionDetails = connectionDetails,
-      cohortTable = tempTableName,
-      oldToNewCohortId = dplyr::tibble(oldCohortId = 1, newCohortId = 10),
+      sourceCohortTable = tempTableName,
+      targetCohortTable = targetCohortTable,
+      oldCohortIds = 1,
+      newCohortId = 10,
       eraconstructorpad = 30,
       purgeConflicts = FALSE
     )

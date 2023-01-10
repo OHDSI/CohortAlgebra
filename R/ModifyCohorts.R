@@ -685,14 +685,12 @@ modifyCohort <- function(connectionDetails = NULL,
 
     eraFyCohorts(
       connection = connection,
-      oldToNewCohortId = dplyr::tibble(
-        oldCohortId = newCohortId,
-        newCohortId = newCohortId
-      ),
+      sourceCohortTable = tempTable1,
+      targetCohortTable = tempTable1,
+      oldCohortIds = newCohortId,
+      newCohortId = newCohortId,
       cdmDatabaseSchema = cdmDatabaseSchema,
       tempEmulationSchema = tempEmulationSchema,
-      cohortTable = tempTable1,
-      cohortDatabaseSchema = NULL,
       purgeConflicts = TRUE
     )
   }

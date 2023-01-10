@@ -1,3 +1,12 @@
+CohortAlgebra 0.5
+======================
+
+Changes:
+- Changes to allow output to go to different table and schema
+
+
+Bug fix:
+
 CohortAlgebra 0.4.1
 ======================
 

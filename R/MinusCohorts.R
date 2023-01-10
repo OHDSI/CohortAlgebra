@@ -26,13 +26,17 @@
 #'
 #' @template Connection
 #'
-#' @template CohortTable
+#' @template SourceCohortDatabaseSchema
 #'
-#' @template CohortDatabaseSchema
+#' @template SourceCohortTable
 #'
-#' @param firstCohortId The cohort id of the cohort from which to substract.
+#' @template TargetCohortDatabaseSchema
 #'
-#' @param secondCohortId The cohort id of the cohort that is used to substract.
+#' @template TargetCohortTable
+#'
+#' @param firstCohortId The cohort id of the cohort from which to subtract.
+#'
+#' @param secondCohortId The cohort id of the cohort that is used to subtract.
 #'
 #' @template NewCohortId
 #'
@@ -48,8 +52,8 @@
 #' \dontrun{
 #' minusCohorts(
 #'   connectionDetails = Eunomia::getEunomiaConnectionDetails(),
-#'   cohortDatabaseSchema = "main",
-#'   cohortTable = "cohort",
+#'   sourceCohortDatabaseSchema = "main",
+#'   sourceCohortTable = "cohort",
 #'   firstCohortId = 1,
 #'   secondCohortId = 2,
 #'   newCohortId = 9,
@@ -60,8 +64,10 @@
 #' @export
 minusCohorts <- function(connectionDetails = NULL,
                          connection = NULL,
-                         cohortDatabaseSchema = NULL,
-                         cohortTable = "cohort",
+                         sourceCohortDatabaseSchema = NULL,
+                         sourceCohortTable = "cohort",
+                         targetCohortDatabaseSchema = sourceCohortDatabaseSchema,
+                         targetCohortTable = sourceCohortTable,
                          firstCohortId,
                          secondCohortId,
                          newCohortId,
@@ -87,14 +93,28 @@ minusCohorts <- function(connectionDetails = NULL,
     add = errorMessages
   )
   checkmate::assertCharacter(
-    x = cohortDatabaseSchema,
+    x = sourceCohortDatabaseSchema,
     min.chars = 1,
     len = 1,
     null.ok = TRUE,
     add = errorMessages
   )
   checkmate::assertCharacter(
-    x = cohortTable,
+    x = sourceCohortTable,
+    min.chars = 1,
+    len = 1,
+    null.ok = FALSE,
+    add = errorMessages
+  )
+  checkmate::assertCharacter(
+    x = targetCohortDatabaseSchema,
+    min.chars = 1,
+    len = 1,
+    null.ok = TRUE,
+    add = errorMessages
+  )
+  checkmate::assertCharacter(
+    x = targetCohortTable,
     min.chars = 1,
     len = 1,
     null.ok = FALSE,
@@ -119,52 +139,63 @@ minusCohorts <- function(connectionDetails = NULL,
     on.exit(DatabaseConnector::disconnect(connection))
   }
 
-  cohortIdsInCohortTable <-
-    getCohortIdsInCohortTable(
-      connection = connection,
-      cohortDatabaseSchema = cohortDatabaseSchema,
-      cohortTable = cohortTable,
-      tempEmulationSchema = tempEmulationSchema
-    )
-
-  conflicitingCohortIdsInTargetCohortTable <-
-    intersect(
-      x = newCohortId %>% unique(),
-      y = cohortIdsInCohortTable %>% unique()
-    )
-
-
-  if (length(conflicitingCohortIdsInTargetCohortTable) > 0) {
-    if (!purgeConflicts) {
-      stop(
-        paste0(
-          "The following cohortIds already exist in the target cohort table, causing conflicts :",
-          paste0(conflicitingCohortIdsInTargetCohortTable, collapse = ",")
-        )
+  if (!purgeConflicts) {
+    cohortIdsInCohortTable <-
+      getCohortIdsInCohortTable(
+        connection = connection,
+        cohortDatabaseSchema = targetCohortDatabaseSchema,
+        cohortTable = targetCohortTable,
+        tempEmulationSchema = tempEmulationSchema
       )
+
+    conflicitingCohortIdsInTargetCohortTable <-
+      intersect(
+        x = newCohortId,
+        y = cohortIdsInCohortTable %>% unique()
+      )
+    if (length(conflicitingCohortIdsInTargetCohortTable) > 0) {
+      stop("Target cohort id already in use in target cohort table")
     }
   }
 
   tempTableName <- generateRandomString()
   tempTable1 <- paste0("#", tempTableName, "1")
   tempTable2 <- paste0("#", tempTableName, "2")
-  tempTable3 <- paste0("#", tempTableName, "3")
 
-  ParallelLogger::logInfo("Performing minus operation.")
-  copyCohortsToTempTable(
+  DatabaseConnector::renderTranslateExecuteSql(
     connection = connection,
-    oldToNewCohortId = dplyr::tibble(oldCohortId = c(firstCohortId, secondCohortId)) %>%
-      dplyr::mutate(newCohortId = .data$oldCohortId) %>%
-      dplyr::distinct(),
-    sourceCohortDatabaseSchema = cohortDatabaseSchema,
-    sourceCohortTable = cohortTable,
-    targetCohortTable = tempTable1
+    sql = "
+      DROP TABLE IF EXISTS @target_cohort_table;
+      CREATE TABLE @target_cohort_table (
+                    	cohort_definition_id BIGINT,
+                    	subject_id BIGINT,
+                    	cohort_start_date DATE,
+                    	cohort_end_date DATE
+  );",
+    target_cohort_table = tempTable1
   )
 
+  DatabaseConnector::renderTranslateExecuteSql(
+    connection = connection,
+    sql = "
+      DROP TABLE IF EXISTS @target_cohort_table;
+      CREATE TABLE @target_cohort_table (
+                    	cohort_definition_id BIGINT,
+                    	subject_id BIGINT,
+                    	cohort_start_date DATE,
+                    	cohort_end_date DATE
+  );",
+    target_cohort_table = tempTable2
+  )
+
+  ParallelLogger::logInfo("Performing minus operation.")
   intersectCohorts(
     connection = connection,
-    cohortTable = tempTable1,
+    sourceCohortDatabaseSchema = sourceCohortDatabaseSchema,
+    sourceCohortTable = sourceCohortTable,
     cohortIds = c(firstCohortId, secondCohortId),
+    targetCohortDatabaseSchema = NULL,
+    targetCohortTable = tempTable1,
     newCohortId = -999,
     purgeConflicts = FALSE,
     tempEmulationSchema = tempEmulationSchema
@@ -177,89 +208,18 @@ minusCohorts <- function(connectionDetails = NULL,
     first_cohort_id = firstCohortId,
     temp_table_1 = tempTable1,
     temp_table_2 = tempTable2,
-    tempEmulationSchema = tempEmulationSchema
+    tempEmulationSchema = tempEmulationSchema,
+    source_cohort_database_schema = sourceCohortDatabaseSchema,
+    source_cohort_table = sourceCohortTable,
+    target_cohort_database_schema = targetCohortDatabaseSchema,
+    target_cohort_table = targetCohortTable,
+    new_cohort_id = newCohortId
   )
   DatabaseConnector::executeSql(
     connection = connection,
     sql = sql,
     profile = FALSE,
-    progressBar = TRUE,
-    reportOverallTime = TRUE
-  )
-
-  # date corrections
-  dateCorrectionSql <- "
-          DROP TABLE IF EXISTS @temp_table_3;
-          WITH intersect_cohort
-          AS (
-          	SELECT subject_id,
-          		cohort_start_date,
-          		cohort_end_date
-          	FROM @temp_table_1
-          	WHERE cohort_definition_id IN (- 999)
-          	)
-          SELECT @new_cohort_id cohort_definition_id,
-          	mc.subject_id,
-          	CASE
-          		WHEN cs.cohort_end_date IS NULL
-          			THEN mc.candidate_start_date
-          		ELSE DATEADD(DAY, 1, mc.candidate_start_date)
-          		END AS cohort_start_date,
-          	CASE
-          		WHEN ce.cohort_end_date IS NULL
-          			THEN mc.candidate_end_date
-          		ELSE DATEADD(DAY, - 1, mc.candidate_end_date)
-          		END AS cohort_end_date
-          INTO @temp_table_3
-          FROM @temp_table_2 mc
-          LEFT JOIN intersect_cohort cs ON mc.subject_id = cs.subject_id
-          	AND mc.candidate_start_date = cs.cohort_end_date
-          LEFT JOIN intersect_cohort ce ON mc.subject_id = ce.subject_id
-          	AND mc.candidate_end_date = ce.cohort_start_date;"
-
-  DatabaseConnector::renderTranslateExecuteSql(
-    connection = connection,
-    sql = dateCorrectionSql,
-    profile = FALSE,
     progressBar = FALSE,
-    reportOverallTime = FALSE,
-    temp_table_1 = tempTable1,
-    temp_table_2 = tempTable2,
-    temp_table_3 = tempTable3,
-    new_cohort_id = newCohortId,
-    tempEmulationSchema = tempEmulationSchema
-  )
-
-  ParallelLogger::logInfo("Saving output.")
-  DatabaseConnector::renderTranslateExecuteSql(
-    connection = connection,
-    sql = " DELETE FROM {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table}
-            WHERE cohort_definition_id IN (SELECT DISTINCT cohort_definition_id FROM @temp_table_3);
-
-            INSERT INTO {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table}
-            SELECT cohort_definition_id, subject_id, cohort_start_date, cohort_end_date
-            FROM @temp_table_3;
-
-            UPDATE STATISTICS  {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table};",
-    profile = FALSE,
-    progressBar = TRUE,
-    reportOverallTime = TRUE,
-    cohort_database_schema = cohortDatabaseSchema,
-    tempEmulationSchema = tempEmulationSchema,
-    cohort_table = cohortTable,
-    temp_table_3 = tempTable3
-  )
-
-  DatabaseConnector::renderTranslateExecuteSql(
-    connection = connection,
-    sql = " DROP TABLE IF EXISTS @temp_table_1;
-            DROP TABLE IF EXISTS @temp_table_2;
-            DROP TABLE IF EXISTS @temp_table_3;",
-    profile = FALSE,
-    progressBar = FALSE,
-    reportOverallTime = FALSE,
-    temp_table_1 = tempTable1,
-    temp_table_2 = tempTable2,
-    temp_table_3 = tempTable3
+    reportOverallTime = FALSE
   )
 }

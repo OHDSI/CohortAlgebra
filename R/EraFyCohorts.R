@@ -28,11 +28,17 @@
 #'
 #' @template Connection
 #'
-#' @template CohortTable
+#' @template sourceCohortTable
 #'
-#' @template CohortDatabaseSchema
+#' @template sourceCohortDatabaseSchema
 #'
-#' @template OldToNewCohortId
+#' @template targetCohortTable
+#'
+#' @template targetCohortDatabaseSchema
+#'
+#' @template OldCohortIds
+#'
+#' @template NewCohortId
 #'
 #' @template PurgeConflicts
 #'
@@ -47,41 +53,55 @@
 #'
 eraFyCohorts <- function(connectionDetails = NULL,
                          connection = NULL,
-                         cohortDatabaseSchema = NULL,
-                         cohortTable = "cohort",
-                         oldToNewCohortId,
+                         sourceCohortDatabaseSchema = NULL,
+                         sourceCohortTable = "cohort",
+                         targetCohortDatabaseSchema = NULL,
+                         targetCohortTable,
+                         oldCohortIds,
+                         newCohortId,
                          eraconstructorpad = 0,
                          cdmDatabaseSchema = NULL,
-                         tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
-                         purgeConflicts = FALSE) {
+                         purgeConflicts = FALSE,
+                         tempEmulationSchema = getOption("sqlRenderTempEmulationSchema")) {
   errorMessages <- checkmate::makeAssertCollection()
-  checkmate::assertDataFrame(
-    x = oldToNewCohortId,
-    min.rows = 1,
-    add = errorMessages
-  )
-  checkmate::assertNames(
-    x = colnames(oldToNewCohortId),
-    must.include = c("oldCohortId", "newCohortId"),
-    add = errorMessages
-  )
   checkmate::assertIntegerish(
-    x = oldToNewCohortId$oldCohortId,
-    min.len = 1,
+    x = newCohortId,
+    len = 1,
     null.ok = FALSE,
     add = errorMessages
   )
   checkmate::assertIntegerish(
-    x = oldToNewCohortId$newCohortId,
+    x = oldCohortIds,
     min.len = 1,
     null.ok = FALSE,
     add = errorMessages
   )
   checkmate::assertCharacter(
-    x = cohortDatabaseSchema,
+    x = sourceCohortDatabaseSchema,
     min.chars = 1,
     len = 1,
     null.ok = TRUE,
+    add = errorMessages
+  )
+  checkmate::assertCharacter(
+    x = sourceCohortTable,
+    min.chars = 1,
+    len = 1,
+    null.ok = FALSE,
+    add = errorMessages
+  )
+  checkmate::assertCharacter(
+    x = targetCohortDatabaseSchema,
+    min.chars = 1,
+    len = 1,
+    null.ok = TRUE,
+    add = errorMessages
+  )
+  checkmate::assertCharacter(
+    x = targetCohortTable,
+    min.chars = 1,
+    len = 1,
+    null.ok = FALSE,
     add = errorMessages
   )
   checkmate::assertCharacter(
@@ -89,13 +109,6 @@ eraFyCohorts <- function(connectionDetails = NULL,
     min.chars = 1,
     len = 1,
     null.ok = TRUE,
-    add = errorMessages
-  )
-  checkmate::assertCharacter(
-    x = cohortTable,
-    min.chars = 1,
-    len = 1,
-    null.ok = FALSE,
     add = errorMessages
   )
   checkmate::assertLogical(
@@ -115,10 +128,7 @@ eraFyCohorts <- function(connectionDetails = NULL,
   if (is.null(cdmDatabaseSchema)) {
     if (eraconstructorpad > 0) {
       stop(
-        "cdmDatabaseSchema is NULL but eraconstructorpad > 0. This may result in cohorts that
-            that are outside a persons observation period - ie. the resultant cohort is not valid.
-            To avoid this - please always provide cdmDatabaseSchema with eraConstructorPad.
-            The function will then ensure that cohort days are always in observation period."
+        "eraconstructorpad > 0 when cdmDatabaseSchema is NULL is not allowed. cdm table observation_period needed."
       )
     }
   }
@@ -128,97 +138,44 @@ eraFyCohorts <- function(connectionDetails = NULL,
     on.exit(DatabaseConnector::disconnect(connection))
   }
 
-  cohortIdsInCohortTable <-
-    getCohortIdsInCohortTable(
-      connection = connection,
-      cohortDatabaseSchema = cohortDatabaseSchema,
-      cohortTable = cohortTable,
-      tempEmulationSchema = tempEmulationSchema
-    )
-
-  conflicitingCohortIdsInTargetCohortTable <-
-    intersect(
-      x = oldToNewCohortId$newCohortId %>% unique(),
-      y = cohortIdsInCohortTable %>% unique()
-    )
-
-  if (length(conflicitingCohortIdsInTargetCohortTable) > 0) {
-    if (!purgeConflicts) {
-      stop(
-        paste0(
-          "The following cohortIds already exist in the target cohort table, causing conflicts :",
-          paste0(conflicitingCohortIdsInTargetCohortTable, collapse = ",")
-        )
+  if (!purgeConflicts) {
+    cohortIdsInCohortTable <-
+      getCohortIdsInCohortTable(
+        connection = connection,
+        cohortDatabaseSchema = targetCohortDatabaseSchema,
+        cohortTable = targetCohortTable,
+        tempEmulationSchema = tempEmulationSchema
       )
+
+    conflicitingCohortIdsInTargetCohortTable <-
+      intersect(
+        x = newCohortId,
+        y = cohortIdsInCohortTable %>% unique()
+      )
+    if (length(conflicitingCohortIdsInTargetCohortTable) > 0) {
+      stop("Target cohort id already in use in target cohort table")
     }
   }
-
-  tempTableName <- generateRandomString()
-  tempTable1 <- paste0("#", tempTableName, "1")
-
-  DatabaseConnector::insertTable(
-    connection = connection,
-    tableName = "#old_to_new_cohort_id",
-    createTable = TRUE,
-    dropTableIfExists = TRUE,
-    tempTable = TRUE,
-    tempEmulationSchema = tempEmulationSchema,
-    progressBar = FALSE,
-    bulkLoad = (Sys.getenv("bulkLoad") == TRUE),
-    camelCaseToSnakeCase = TRUE,
-    data = oldToNewCohortId
-  )
 
   sql <- SqlRender::loadRenderTranslateSql(
     sqlFilename = "EraFyCohorts.sql",
     packageName = utils::packageName(),
     dbms = connection@dbms,
     tempEmulationSchema = tempEmulationSchema,
-    eraconstructorpad = eraconstructorpad,
+    era_constructor_pad = eraconstructorpad,
     cdm_database_schema = cdmDatabaseSchema,
-    source_database_schema = cohortDatabaseSchema,
-    source_cohort_table = cohortTable,
-    temp_table_1 = tempTable1
+    source_cohort_database_schema = sourceCohortDatabaseSchema,
+    source_cohort_table = sourceCohortTable,
+    target_cohort_database_schema = targetCohortDatabaseSchema,
+    target_cohort_table = targetCohortTable,
+    old_cohort_ids = oldCohortIds,
+    new_cohort_id = newCohortId
   )
-
-  ParallelLogger::logInfo(" Creating cohort eras. ")
   DatabaseConnector::executeSql(
     connection = connection,
     sql = sql,
     profile = FALSE,
-    progressBar = TRUE,
-    reportOverallTime = TRUE
-  )
-
-  ParallelLogger::logInfo(" Saving cohort eras. ")
-  DatabaseConnector::renderTranslateExecuteSql(
-    connection = connection,
-    sql = " DELETE FROM {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table}
-            WHERE cohort_definition_id IN
-                (SELECT DISTINCT cohort_definition_id
-                  FROM @temp_table_1
-                );
-            INSERT INTO {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table}
-            SELECT cohort_definition_id, subject_id, cohort_start_date, cohort_end_date
-            FROM @temp_table_1;
-
-            UPDATE STATISTICS  {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table};",
-    profile = FALSE,
-    progressBar = TRUE,
-    reportOverallTime = FALSE,
-    cohort_database_schema = cohortDatabaseSchema,
-    tempEmulationSchema = tempEmulationSchema,
-    cohort_table = cohortTable,
-    temp_table_1 = tempTable1
-  )
-
-  DatabaseConnector::renderTranslateExecuteSql(
-    connection = connection,
-    sql = " DROP TABLE IF EXISTS @temp_table_1;
-            DROP TABLE IF EXISTS #old_to_new_cohort_id;",
-    profile = FALSE,
     progressBar = FALSE,
-    reportOverallTime = FALSE,
-    temp_table_1 = tempTable1
+    reportOverallTime = FALSE
   )
 }

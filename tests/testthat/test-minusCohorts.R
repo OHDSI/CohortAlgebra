@@ -55,8 +55,10 @@ testthat::test_that("Testing cohort intersect", {
   # should not throw error
   CohortAlgebra::minusCohorts(
     connectionDetails = connectionDetails,
-    cohortDatabaseSchema = cohortDatabaseSchema,
-    cohortTable = tableName,
+    sourceCohortDatabaseSchema = cohortDatabaseSchema,
+    sourceCohortTable = tableName,
+    targetCohortDatabaseSchema = cohortDatabaseSchema,
+    targetCohortTable = tableName,
     firstCohortId = 1,
     secondCohortId = 2,
     newCohortId = 9,
@@ -112,8 +114,10 @@ testthat::test_that("Testing cohort intersect", {
   testthat::expect_message(
     CohortAlgebra::minusCohorts(
       connectionDetails = connectionDetails,
-      cohortDatabaseSchema = cohortDatabaseSchema,
-      cohortTable = tableName,
+      sourceCohortDatabaseSchema = cohortDatabaseSchema,
+      sourceCohortTable = tableName,
+      targetCohortDatabaseSchema = cohortDatabaseSchema,
+      targetCohortTable = tableName,
       firstCohortId = 1,
       secondCohortId = 2,
       newCohortId = 9,
@@ -126,8 +130,10 @@ testthat::test_that("Testing cohort intersect", {
   testthat::expect_warning(
     CohortAlgebra::minusCohorts(
       connectionDetails = connectionDetails,
-      cohortDatabaseSchema = cohortDatabaseSchema,
-      cohortTable = tableName,
+      sourceCohortDatabaseSchema = cohortDatabaseSchema,
+      sourceCohortTable = tableName,
+      targetCohortDatabaseSchema = cohortDatabaseSchema,
+      targetCohortTable = tableName,
       firstCohortId = 1,
       secondCohortId = 1,
       newCohortId = 10,
@@ -170,7 +176,8 @@ testthat::test_that("Testing cohort intersect", {
 
   CohortAlgebra::minusCohorts(
     connection = connection,
-    cohortTable = tempTableName,
+    sourceCohortTable = tempTableName,
+    targetCohortTable = tempTableName,
     firstCohortId = 1,
     secondCohortId = 2,
     newCohortId = 9,
@@ -205,7 +212,8 @@ testthat::test_that("Testing cohort intersect", {
 
   CohortAlgebra::minusCohorts(
     connection = connection,
-    cohortTable = tempTableName,
+    sourceCohortTable = tempTableName,
+    targetCohortTable = tempTableName,
     firstCohortId = 1,
     secondCohortId = 2,
     newCohortId = 9,
@@ -236,6 +244,8 @@ testthat::test_that("Testing cohort intersect", {
            DROP TABLE IF EXISTS @cdm_database_schema.observation_period;",
     table_temp = tableName,
     cohort_database_schema = cohortDatabaseSchema,
-    cdm_database_schema = cohortDatabaseSchema
+    cdm_database_schema = cohortDatabaseSchema,
+    progressBar = FALSE,
+    reportOverallTime = FALSE
   )
 })

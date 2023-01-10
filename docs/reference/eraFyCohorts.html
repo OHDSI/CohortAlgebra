@@ -21,7 +21,7 @@ to the cohort table is required.
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">CohortAlgebra</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.0</span>
       </span>
     </div>
 
@@ -77,13 +77,16 @@ to the cohort table is required.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">eraFyCohorts</span><span class="op">(</span></span>
 <span>  connectionDetails <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  connection <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  cohortDatabaseSchema <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  cohortTable <span class="op">=</span> <span class="st">"cohort"</span>,</span>
-<span>  <span class="va">oldToNewCohortId</span>,</span>
+<span>  sourceCohortDatabaseSchema <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  sourceCohortTable <span class="op">=</span> <span class="st">"cohort"</span>,</span>
+<span>  targetCohortDatabaseSchema <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">targetCohortTable</span>,</span>
+<span>  <span class="va">oldCohortIds</span>,</span>
+<span>  <span class="va">newCohortId</span>,</span>
 <span>  eraconstructorpad <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  cdmDatabaseSchema <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  tempEmulationSchema <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"sqlRenderTempEmulationSchema"</span><span class="op">)</span>,</span>
-<span>  purgeConflicts <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  purgeConflicts <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  tempEmulationSchema <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"sqlRenderTempEmulationSchema"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -104,22 +107,33 @@ is provided, in which case a new connection will be opened at the start
 of the function, and closed when the function finishes.</p></dd>
 
 
-<dt>cohortDatabaseSchema</dt>
-<dd><p>Schema name where your cohort tables reside. Note that for SQL Server,
+<dt>sourceCohortDatabaseSchema</dt>
+<dd><p>Schema name where your source cohort tables reside. Note that for SQL Server,
 this should include both the database and schema name, for example
 'scratch.dbo'.</p></dd>
 
 
-<dt>cohortTable</dt>
-<dd><p>The name of the cohort table.</p></dd>
+<dt>sourceCohortTable</dt>
+<dd><p>The name of the source cohort table.</p></dd>
 
 
-<dt>oldToNewCohortId</dt>
-<dd><p>A data.frame object with two columns. oldCohortId and newCohortId. Both should be integers.
-The oldCohortId are the cohorts that are the input cohorts that need to be transformed.
-The newCohortId are the cohortIds of the corresponding output after transformation.
-If the oldCohortId = newCohortId then the data corresponding to oldCohortId
-will be replaced by the data from the newCohortId.</p></dd>
+<dt>targetCohortDatabaseSchema</dt>
+<dd><p>Schema name where your target cohort tables reside. Note that for SQL Server,
+this should include both the database and schema name, for example
+'scratch.dbo'.</p></dd>
+
+
+<dt>targetCohortTable</dt>
+<dd><p>The name of the target cohort table.</p></dd>
+
+
+<dt>oldCohortIds</dt>
+<dd><p>An array of 1 or more integer id representing the cohort id of the cohort
+on which the function will be applied.</p></dd>
+
+
+<dt>newCohortId</dt>
+<dd><p>The cohort id of the output cohort.</p></dd>
 
 
 <dt>eraconstructorpad</dt>
@@ -132,16 +146,16 @@ Note that for SQL Server, this should include both the database and
 schema name, for example 'cdm_data.dbo'.</p></dd>
 
 
-<dt>tempEmulationSchema</dt>
-<dd><p>Some database platforms like Oracle and Impala do not truly support
-temp tables. To emulate temp tables, provide a schema with write
-privileges where temp tables can be created.</p></dd>
-
-
 <dt>purgeConflicts</dt>
 <dd><p>If there are conflicts in the target cohort table i.e. the target cohort table
 already has records with newCohortId, do you want to purge and replace them
 with transformed. By default - it will not be replaced, and an error message is thrown.</p></dd>
+
+
+<dt>tempEmulationSchema</dt>
+<dd><p>Some database platforms like Oracle and Impala do not truly support
+temp tables. To emulate temp tables, provide a schema with write
+privileges where temp tables can be created.</p></dd>
 
 </dl></div>
 

@@ -50,11 +50,13 @@ testthat::test_that("Testing cohort intersect", {
   # should not throw error
   CohortAlgebra::intersectCohorts(
     connectionDetails = connectionDetails,
-    cohortDatabaseSchema = cohortDatabaseSchema,
-    cohortTable = tableName,
+    sourceCohortDatabaseSchema = cohortDatabaseSchema,
+    sourceCohortTable = tableName,
     cohortIds = c(1, 2, 3),
+    targetCohortDatabaseSchema = cohortDatabaseSchema,
+    targetCohortTable = tableName,
     newCohortId = 9,
-    purgeConflicts = FALSE
+    purgeConflicts = TRUE
   )
 
   # extract the generated output and compare to expected
@@ -93,8 +95,8 @@ testthat::test_that("Testing cohort intersect", {
   testthat::expect_error(
     CohortAlgebra::intersectCohorts(
       connectionDetails = connectionDetails,
-      cohortDatabaseSchema = cohortDatabaseSchema,
-      cohortTable = tableName,
+      sourceCohortDatabaseSchema = cohortDatabaseSchema,
+      sourceCohortTable = tableName,
       cohortIds = c(1, 2, 3),
       newCohortId = 9,
       purgeConflicts = FALSE
@@ -107,8 +109,10 @@ testthat::test_that("Testing cohort intersect", {
     object =
       CohortAlgebra::intersectCohorts(
         connectionDetails = connectionDetails,
-        cohortDatabaseSchema = cohortDatabaseSchema,
-        cohortTable = tableName,
+        sourceCohortDatabaseSchema = cohortDatabaseSchema,
+        sourceCohortTable = tableName,
+        targetCohortDatabaseSchema = cohortDatabaseSchema,
+        targetCohortTable = tableName,
         cohortIds = c(1, 2, 3),
         newCohortId = 9,
         purgeConflicts = TRUE
@@ -136,7 +140,8 @@ testthat::test_that("Testing cohort intersect", {
 
   CohortAlgebra::intersectCohorts(
     connection = connection,
-    cohortTable = tempTableName,
+    sourceCohortTable = tempTableName,
+    targetCohortTable = tempTableName,
     cohortIds = c(1, 2, 3),
     newCohortId = 9,
     purgeConflicts = FALSE
@@ -159,7 +164,8 @@ testthat::test_that("Testing cohort intersect", {
   testthat::expect_error(
     CohortAlgebra::intersectCohorts(
       connection = connection,
-      cohortTable = tempTableName,
+      sourceCohortTable = tempTableName,
+      targetCohortTable = tempTableName,
       cohortIds = c(1, 2, 3),
       newCohortId = 9,
       purgeConflicts = FALSE
@@ -168,7 +174,8 @@ testthat::test_that("Testing cohort intersect", {
 
   CohortAlgebra::intersectCohorts(
     connection = connection,
-    cohortTable = tempTableName,
+    sourceCohortTable = tempTableName,
+    targetCohortTable = tempTableName,
     cohortIds = c(1, 2, 3),
     newCohortId = 9,
     purgeConflicts = TRUE
@@ -198,6 +205,8 @@ testthat::test_that("Testing cohort intersect", {
            DROP TABLE IF EXISTS @cdm_database_schema.observation_period;",
     table_temp = tableName,
     cohort_database_schema = cohortDatabaseSchema,
-    cdm_database_schema = cohortDatabaseSchema
+    cdm_database_schema = cohortDatabaseSchema,
+    progressBar = FALSE,
+    reportOverallTime = FALSE
   )
 })

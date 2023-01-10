@@ -7,13 +7,16 @@
 eraFyCohorts(
   connectionDetails = NULL,
   connection = NULL,
-  cohortDatabaseSchema = NULL,
-  cohortTable = "cohort",
-  oldToNewCohortId,
+  sourceCohortDatabaseSchema = NULL,
+  sourceCohortTable = "cohort",
+  targetCohortDatabaseSchema = NULL,
+  targetCohortTable,
+  oldCohortIds,
+  newCohortId,
   eraconstructorpad = 0,
   cdmDatabaseSchema = NULL,
-  tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
-  purgeConflicts = FALSE
+  purgeConflicts = FALSE,
+  tempEmulationSchema = getOption("sqlRenderTempEmulationSchema")
 )
 }
 \arguments{
@@ -28,17 +31,22 @@ DatabaseConnector package. Can be left NULL if \code{connectionDetails}
 is provided, in which case a new connection will be opened at the start
 of the function, and closed when the function finishes.}
 
-\item{cohortDatabaseSchema}{Schema name where your cohort tables reside. Note that for SQL Server,
+\item{sourceCohortDatabaseSchema}{Schema name where your source cohort tables reside. Note that for SQL Server,
 this should include both the database and schema name, for example
 'scratch.dbo'.}
 
-\item{cohortTable}{The name of the cohort table.}
+\item{sourceCohortTable}{The name of the source cohort table.}
 
-\item{oldToNewCohortId}{A data.frame object with two columns. oldCohortId and newCohortId. Both should be integers.
-The oldCohortId are the cohorts that are the input cohorts that need to be transformed.
-The newCohortId are the cohortIds of the corresponding output after transformation.
-If the oldCohortId = newCohortId then the data corresponding to oldCohortId
-will be replaced by the data from the newCohortId.}
+\item{targetCohortDatabaseSchema}{Schema name where your target cohort tables reside. Note that for SQL Server,
+this should include both the database and schema name, for example
+'scratch.dbo'.}
+
+\item{targetCohortTable}{The name of the target cohort table.}
+
+\item{oldCohortIds}{An array of 1 or more integer id representing the cohort id of the cohort
+on which the function will be applied.}
+
+\item{newCohortId}{The cohort id of the output cohort.}
 
 \item{eraconstructorpad}{Optional value to pad cohort era construction logic. Default = 0. i.e. no padding.}
 
@@ -46,13 +54,13 @@ will be replaced by the data from the newCohortId.}
 Note that for SQL Server, this should include both the database and
 schema name, for example 'cdm_data.dbo'.}
 
-\item{tempEmulationSchema}{Some database platforms like Oracle and Impala do not truly support
-temp tables. To emulate temp tables, provide a schema with write
-privileges where temp tables can be created.}
-
 \item{purgeConflicts}{If there are conflicts in the target cohort table i.e. the target cohort table
 already has records with newCohortId, do you want to purge and replace them
 with transformed. By default - it will not be replaced, and an error message is thrown.}
+
+\item{tempEmulationSchema}{Some database platforms like Oracle and Impala do not truly support
+temp tables. To emulate temp tables, provide a schema with write
+privileges where temp tables can be created.}
 }
 \description{
 Given a table with cohort_definition_id, subject_id, cohort_start_date,

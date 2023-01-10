@@ -7,8 +7,10 @@
 unionCohorts(
   connectionDetails = NULL,
   connection = NULL,
-  cohortDatabaseSchema = NULL,
-  cohortTable = "cohort",
+  sourceCohortDatabaseSchema = NULL,
+  sourceCohortTable,
+  targetCohortDatabaseSchema = NULL,
+  targetCohortTable,
   oldToNewCohortId,
   tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
   purgeConflicts = FALSE
@@ -26,11 +28,17 @@ DatabaseConnector package. Can be left NULL if \code{connectionDetails}
 is provided, in which case a new connection will be opened at the start
 of the function, and closed when the function finishes.}
 
-\item{cohortDatabaseSchema}{Schema name where your cohort tables reside. Note that for SQL Server,
+\item{sourceCohortDatabaseSchema}{Schema name where your source cohort tables reside. Note that for SQL Server,
 this should include both the database and schema name, for example
 'scratch.dbo'.}
 
-\item{cohortTable}{The name of the cohort table.}
+\item{sourceCohortTable}{The name of the source cohort table.}
+
+\item{targetCohortDatabaseSchema}{Schema name where your target cohort tables reside. Note that for SQL Server,
+this should include both the database and schema name, for example
+'scratch.dbo'.}
+
+\item{targetCohortTable}{The name of the target cohort table.}
 
 \item{oldToNewCohortId}{A data.frame object with two columns. oldCohortId and newCohortId. Both should be integers.
 The oldCohortId are the cohorts that are the input cohorts that need to be transformed.
@@ -56,12 +64,9 @@ cohort union operator to create new cohorts.
 \dontrun{
 unionCohorts(
   connectionDetails = Eunomia::getEunomiaConnectionDetails(),
-  cohortDatabaseSchema = "main",
-  cohortTable = "cohort",
-  oldToNewCohortId = dplyr::tibble(
-    oldCohortId = c(1, 2, 3),
-    newCohortId = c(9, 9, 9)
-  ),
+  sourceDatabaseSchema = "main",
+  sourceCohortTable = "cohort",
+  oldToNewCohortId = dplyr::tibble(oldCohortId = c(1, 2), newCohortId = 4),
   purgeConflicts = TRUE
 )
 }

@@ -19,7 +19,7 @@ cohort union operator to create new cohorts.
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">CohortAlgebra</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.0</span>
       </span>
     </div>
 
@@ -73,8 +73,10 @@ cohort union operator to create new cohorts.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">unionCohorts</span><span class="op">(</span></span>
 <span>  connectionDetails <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  connection <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  cohortDatabaseSchema <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  cohortTable <span class="op">=</span> <span class="st">"cohort"</span>,</span>
+<span>  sourceCohortDatabaseSchema <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">sourceCohortTable</span>,</span>
+<span>  targetCohortDatabaseSchema <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">targetCohortTable</span>,</span>
 <span>  <span class="va">oldToNewCohortId</span>,</span>
 <span>  tempEmulationSchema <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"sqlRenderTempEmulationSchema"</span><span class="op">)</span>,</span>
 <span>  purgeConflicts <span class="op">=</span> <span class="cn">FALSE</span></span>
@@ -98,14 +100,24 @@ is provided, in which case a new connection will be opened at the start
 of the function, and closed when the function finishes.</p></dd>
 
 
-<dt>cohortDatabaseSchema</dt>
-<dd><p>Schema name where your cohort tables reside. Note that for SQL Server,
+<dt>sourceCohortDatabaseSchema</dt>
+<dd><p>Schema name where your source cohort tables reside. Note that for SQL Server,
 this should include both the database and schema name, for example
 'scratch.dbo'.</p></dd>
 
 
-<dt>cohortTable</dt>
-<dd><p>The name of the cohort table.</p></dd>
+<dt>sourceCohortTable</dt>
+<dd><p>The name of the source cohort table.</p></dd>
+
+
+<dt>targetCohortDatabaseSchema</dt>
+<dd><p>Schema name where your target cohort tables reside. Note that for SQL Server,
+this should include both the database and schema name, for example
+'scratch.dbo'.</p></dd>
+
+
+<dt>targetCohortTable</dt>
+<dd><p>The name of the target cohort table.</p></dd>
 
 
 <dt>oldToNewCohortId</dt>
@@ -134,12 +146,9 @@ with transformed. By default - it will not be replaced, and an error message is 
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span><span class="fu">unionCohorts</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  connectionDetails <span class="op">=</span> <span class="fu">Eunomia</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Eunomia/man/getEunomiaConnectionDetails.html" class="external-link">getEunomiaConnectionDetails</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,</span></span>
-<span class="r-in"><span>  cohortTable <span class="op">=</span> <span class="st">"cohort"</span>,</span></span>
-<span class="r-in"><span>  oldToNewCohortId <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    oldCohortId <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    newCohortId <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">9</span>, <span class="fl">9</span>, <span class="fl">9</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span>,</span></span>
+<span class="r-in"><span>  sourceDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,</span></span>
+<span class="r-in"><span>  sourceCohortTable <span class="op">=</span> <span class="st">"cohort"</span>,</span></span>
+<span class="r-in"><span>  oldToNewCohortId <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span>oldCohortId <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>, newCohortId <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  purgeConflicts <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>

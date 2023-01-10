@@ -138,8 +138,10 @@ oldToNewCohortId <-
 
 CohortAlgebra::unionCohorts(
   connection = connection,
-  cohortDatabaseSchema = cohortDatabaseSchema,
-  cohortTable = tableName,
+  sourceCohortDatabaseSchema = cohortDatabaseSchema,
+  sourceCohortTable = tableName,
+  targetCohortDatabaseSchema = cohortDatabaseSchema,
+  targetCohortTable = tableName,
   oldToNewCohortId = oldToNewCohortId
 )
 ```
@@ -215,8 +217,10 @@ DatabaseConnector::insertTable(
 ```{r tidy=FALSE,eval=TRUE, echo=TRUE}
 CohortAlgebra::intersectCohorts(
   connection = connection,
-  cohortDatabaseSchema = cohortDatabaseSchema,
-  cohortTable = tableName,
+  sourceCohortDatabaseSchema = cohortDatabaseSchema,
+  sourceCohortTable = tableName,
+  targetCohortDatabaseSchema = cohortDatabaseSchema,
+  targetCohortTable = tableName,
   cohortIds = c(1, 2),
   newCohortId = 3
 )
@@ -293,8 +297,10 @@ DatabaseConnector::insertTable(
 ```{r tidy=FALSE,eval=TRUE, echo=TRUE}
 CohortAlgebra::intersectCohorts(
   connection = connection,
-  cohortDatabaseSchema = cohortDatabaseSchema,
-  cohortTable = tableName,
+  sourceCohortDatabaseSchema = cohortDatabaseSchema,
+  sourceCohortTable = tableName,
+  targetCohortDatabaseSchema = cohortDatabaseSchema,
+  targetCohortTable = tableName,
   cohortIds = c(1, 2),
   newCohortId = 3
 )
@@ -371,8 +377,10 @@ DatabaseConnector::insertTable(
 ```{r tidy=FALSE,eval=TRUE, echo=TRUE}
 CohortAlgebra::intersectCohorts(
   connection = connection,
-  cohortDatabaseSchema = cohortDatabaseSchema,
-  cohortTable = tableName,
+  sourceCohortDatabaseSchema = cohortDatabaseSchema,
+  sourceCohortTable = tableName,
+  targetCohortDatabaseSchema = cohortDatabaseSchema,
+  targetCohortTable = tableName,
   cohortIds = c(1, 2, 3),
   newCohortId = 4
 )
@@ -450,8 +458,10 @@ DatabaseConnector::insertTable(
 ```{r tidy=FALSE,eval=TRUE, echo=TRUE}
 CohortAlgebra::intersectCohorts(
   connection = connection,
-  cohortDatabaseSchema = cohortDatabaseSchema,
-  cohortTable = tableName,
+  sourceCohortDatabaseSchema = cohortDatabaseSchema,
+  sourceCohortTable = tableName,
+  targetCohortDatabaseSchema = cohortDatabaseSchema,
+  targetCohortTable = tableName,
   cohortIds = c(1, 2, 3),
   newCohortId = 4
 )
@@ -528,8 +538,10 @@ DatabaseConnector::insertTable(
 ```{r tidy=FALSE,eval=TRUE, echo=TRUE}
 CohortAlgebra::intersectCohorts(
   connection = connection,
-  cohortDatabaseSchema = cohortDatabaseSchema,
-  cohortTable = tableName,
+  sourceCohortDatabaseSchema = cohortDatabaseSchema,
+  sourceCohortTable = tableName,
+  targetCohortDatabaseSchema = cohortDatabaseSchema,
+  targetCohortTable = tableName,
   cohortIds = c(1, 2),
   newCohortId = 3
 )
@@ -607,8 +619,10 @@ DatabaseConnector::insertTable(
 ```{r tidy=FALSE,eval=TRUE, echo=TRUE}
 CohortAlgebra::minusCohorts(
   connection = connection,
-  cohortDatabaseSchema = cohortDatabaseSchema,
-  cohortTable = tableName,
+  sourceCohortDatabaseSchema = cohortDatabaseSchema,
+  sourceCohortTable = tableName,
+  targetCohortDatabaseSchema = cohortDatabaseSchema,
+  targetCohortTable = tableName,
   firstCohortId = 1,
   secondCohortId = 2,
   newCohortId = 3
@@ -647,8 +661,10 @@ But if the cohorts are switched, i.e. minus cohort 1 from Cohort 2
 ```{r tidy=FALSE,eval=TRUE, echo=TRUE}
 CohortAlgebra::minusCohorts(
   connection = connection,
-  cohortDatabaseSchema = cohortDatabaseSchema,
-  cohortTable = tableName,
+  sourceCohortDatabaseSchema = cohortDatabaseSchema,
+  sourceCohortTable = tableName,
+  targetCohortDatabaseSchema = cohortDatabaseSchema,
+  targetCohortTable = tableName,
   firstCohortId = 2,
   secondCohortId = 1,
   newCohortId = 4
