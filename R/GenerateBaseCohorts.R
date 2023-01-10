@@ -25,7 +25,7 @@
 #'
 getBaseCohortDefinitionSet <- function() {
   specifications <- dplyr::tibble(
-    cohortId = c(-1,-2,-3,-4,-5,-6,-7,-8,-9,-10),
+    cohortId = c(-1, -2, -3, -4, -5, -6, -7, -8, -9, -10),
     cohortName = c(
       "01 Observation Period",
       "02 Visits all",
@@ -39,29 +39,31 @@ getBaseCohortDefinitionSet <- function() {
       "10 Visits Emergency Room with 365 days prior continuous observation days"
     )
   )
-  
+
   cohorts <- c()
   for (i in (1:nrow(specifications))) {
     cohorts[[i]] <- specifications[i, ] %>%
       dplyr::mutate(sqlFileName = paste0(paste(
         "BaseCohort", formatC(
-          abs(specifications[i,]$cohortId),
+          abs(specifications[i, ]$cohortId),
           width =
             2,
           flag = "0"
-        ), sep = ""
+        ),
+        sep = ""
       ), ".sql"))
-    
-    dbms = "sql_server"
+
+    dbms <- "sql_server"
     sqlFileName <- cohorts[[i]]$sqlFileName
     pathToSql <-
       system.file(file.path("sql", dbms, sqlFileName),
-                  package = utils::packageName())
+        package = utils::packageName()
+      )
     cohorts[[i]]$sql <- SqlRender::readSql(sourceFile = pathToSql)
   }
-  
+
   cohortDefinitionSet <- dplyr::bind_rows(cohorts) %>%
-    dplyr::arrange(cohortId)
+    dplyr::arrange(dplyr::select("cohortId"))
   cohortDefinitionSet$checksum <-
     CohortGenerator::computeChecksum(
       paste0(
@@ -70,10 +72,10 @@ getBaseCohortDefinitionSet <- function() {
         cohortDefinitionSet$sql
       )
     )
-  
+
   cohortDefinitionSet %>%
     dplyr::tibble() %>%
-    dplyr::arrange(dplyr::desc(cohortId))
+    dplyr::arrange(dplyr::desc(dplyr::select("cohortId")))
 }
 
 
@@ -154,9 +156,9 @@ generateBaseCohorts <- function(connectionDetails = NULL,
     add = errorMessages
   )
   checkmate::reportAssertions(collection = errorMessages)
-  
+
   cohortDefinitionSet <- getBaseCohortDefinitionSet()
-  
+
   if (incremental) {
     if (is.null(incrementalFolder)) {
       stop("Must specify incrementalFolder when incremental = TRUE")
@@ -165,12 +167,12 @@ generateBaseCohorts <- function(connectionDetails = NULL,
       dir.create(incrementalFolder, recursive = TRUE)
     }
   }
-  
+
   taskRequired <- TRUE
   if (incremental) {
     recordKeepingFile <-
       file.path(incrementalFolder, "GeneratedCohorts.csv")
-    
+
     if (file.exists(recordKeepingFile)) {
       taskRequired <-
         CohortGenerator::isTaskRequired(
@@ -180,24 +182,24 @@ generateBaseCohorts <- function(connectionDetails = NULL,
         )
     }
   }
-  
+
   if (!taskRequired) {
     ParallelLogger::logTrace(
       "Skipping Base Cohort generation as it has already been generated according to incremental log"
     )
     return(NULL)
   }
-  
+
   baseCohortTableNames <-
     CohortGenerator::getCohortTableNames(cohortTable = cohortTable)
-  
+
   CohortGenerator::createCohortTables(
     connectionDetails = connectionDetails,
     cohortTableNames = baseCohortTableNames,
     cohortDatabaseSchema = cohortDatabaseSchema,
     incremental = incremental
   )
-  
+
   CohortGenerator::generateCohortSet(
     connectionDetails = connectionDetails,
     cdmDatabaseSchema = cdmDatabaseSchema,
@@ -208,13 +210,13 @@ generateBaseCohorts <- function(connectionDetails = NULL,
     incrementalFolder = incrementalFolder,
     tempEmulationSchema = tempEmulationSchema
   )
-  
+
   CohortGenerator::dropCohortStatsTables(
     connectionDetails = connectionDetails,
     cohortDatabaseSchema = cohortDatabaseSchema,
     cohortTableNames = baseCohortTableNames
   )
-  
+
   ParallelLogger::logTrace(" Era fy base cohorts.")
   eraFyCohorts(
     connectionDetails = connectionDetails,

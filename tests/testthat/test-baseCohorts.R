@@ -5,7 +5,7 @@ testthat::test_that("Testing base cohorts", {
   eunomiaConnectionDetails <- Eunomia::getEunomiaConnectionDetails()
 
   incrementalFolder <- file.path(tempfile())
-  
+
   generateBaseCohorts(
     connectionDetails = eunomiaConnectionDetails,
     cohortDatabaseSchema = "main",

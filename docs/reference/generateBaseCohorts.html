@@ -19,7 +19,7 @@ with the cohort_definition_id of 0, -1, -2, -3 for Observation Period, Visits al
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">CohortAlgebra</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3</span>
       </span>
     </div>
 
@@ -72,13 +72,11 @@ with the cohort_definition_id of 0, -1, -2, -3 for Observation Period, Visits al
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">generateBaseCohorts</span><span class="op">(</span></span>
 <span>  connectionDetails <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  connection <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">cohortDatabaseSchema</span>,</span>
 <span>  <span class="va">cdmDatabaseSchema</span>,</span>
 <span>  cohortTable <span class="op">=</span> <span class="st">"CohortsBase"</span>,</span>
 <span>  <span class="va">incremental</span>,</span>
 <span>  incrementalFolder <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  <span class="va">purgeConflicts</span>,</span>
 <span>  tempEmulationSchema <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"sqlRenderTempEmulationSchema"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -90,14 +88,6 @@ with the cohort_definition_id of 0, -1, -2, -3 for Observation Period, Visits al
 <code><a href="https://ohdsi.github.io/DatabaseConnector/reference/createConnectionDetails.html" class="external-link">createConnectionDetails</a></code> function in the
 DatabaseConnector package. Can be left NULL if <code>connection</code> is
 provided.</p></dd>
-
-
-<dt>connection</dt>
-<dd><p>An object of type <code>connection</code> as created using the
-<code><a href="https://ohdsi.github.io/DatabaseConnector/reference/connect.html" class="external-link">connect</a></code> function in the
-DatabaseConnector package. Can be left NULL if <code>connectionDetails</code>
-is provided, in which case a new connection will be opened at the start
-of the function, and closed when the function finishes.</p></dd>
 
 
 <dt>cohortDatabaseSchema</dt>
@@ -125,12 +115,6 @@ schema name, for example 'cdm_data.dbo'.</p></dd>
 kept of which definition has been executed.</p></dd>
 
 
-<dt>purgeConflicts</dt>
-<dd><p>If there are conflicts in the target cohort table i.e. the target cohort table
-already has records with newCohortId, do you want to purge and replace them
-with transformed. By default - it will not be replaced, and an error message is thrown.</p></dd>
-
-
 <dt>tempEmulationSchema</dt>
 <dd><p>Some database platforms like Oracle and Impala do not truly support
 temp tables. To emulate temp tables, provide a schema with write
@@ -147,8 +131,7 @@ privileges where temp tables can be created.</p></dd>
 <span class="r-in"><span>  cdmDatabaseSchema <span class="op">=</span> <span class="va">cdmDatabaseSchema</span>,</span></span>
 <span class="r-in"><span>  cohortTable <span class="op">=</span> <span class="va">tableName</span>,</span></span>
 <span class="r-in"><span>  incremental <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>  incrementalFolder <span class="op">=</span> <span class="va">incrementalFolder</span>,</span></span>
-<span class="r-in"><span>  purgeConflicts <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span>  incrementalFolder <span class="op">=</span> <span class="va">incrementalFolder</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span></span></span>
