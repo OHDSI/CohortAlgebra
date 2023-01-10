@@ -62,8 +62,7 @@ getBaseCohortDefinitionSet <- function() {
     cohorts[[i]]$sql <- SqlRender::readSql(sourceFile = pathToSql)
   }
 
-  cohortDefinitionSet <- dplyr::bind_rows(cohorts) %>%
-    dplyr::arrange(dplyr::select("cohortId"))
+  cohortDefinitionSet <- dplyr::bind_rows(cohorts)
   cohortDefinitionSet$checksum <-
     CohortGenerator::computeChecksum(
       paste0(
@@ -73,9 +72,9 @@ getBaseCohortDefinitionSet <- function() {
       )
     )
 
-  cohortDefinitionSet %>%
+  return(cohortDefinitionSet %>%
     dplyr::tibble() %>%
-    dplyr::arrange(dplyr::desc(dplyr::select("cohortId")))
+    dplyr::arrange(dplyr::desc(cohortId)))
 }
 
 
