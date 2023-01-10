@@ -5,34 +5,33 @@ DROP TABLE IF EXISTS #cte_ends;
 DROP TABLE IF EXISTS #cte_end_dates;
 DROP TABLE IF EXISTS #raw_data;
 
-SELECT x.*
+--HINT DISTRIBUTE ON KEY (subject_id)
+SELECT target.new_cohort_id cohort_definition_id,
+	source.subject_id,
+	source.cohort_start_date AS event_date,
+	- 1 AS event_type,
+	ROW_NUMBER() OVER (
+		PARTITION BY target.new_cohort_id,
+		source.subject_id ORDER BY cohort_start_date
+		) AS start_ordinal
 INTO #raw_data
-FROM (
-	SELECT target.new_cohort_id cohort_definition_id,
-		source.subject_id,
-		source.cohort_start_date AS event_date,
-		- 1 AS event_type,
-		ROW_NUMBER() OVER (
-			PARTITION BY target.new_cohort_id,
-			source.subject_id ORDER BY cohort_start_date
-			) AS start_ordinal
-	FROM {@source_database_schema != ''} ? {@source_database_schema.@source_cohort_table} : {@source_cohort_table} source
-  INNER JOIN #old_to_new_cohort_id target
-  ON source.cohort_definition_id = target.old_cohort_id
-	
-	UNION ALL
-	
-	SELECT target.new_cohort_id cohort_definition_id,
-		source.subject_id,
-		DATEADD(day, @eraconstructorpad, source.cohort_end_date) AS cohort_end_date,
-		1 AS event_type,
-		NULL
-	FROM {@source_database_schema != ''} ? {@source_database_schema.@source_cohort_table} : {@source_cohort_table} source
-  INNER JOIN #old_to_new_cohort_id target
-  ON source.cohort_definition_id = target.old_cohort_id
-	) x;
+FROM {@source_database_schema != ''} ? {@source_database_schema.@source_cohort_table} : {@source_cohort_table} source
+INNER JOIN #old_to_new_cohort_id target
+ON source.cohort_definition_id = target.old_cohort_id;
 
--- the magic
+
+INSERT INTO #raw_data
+SELECT target.new_cohort_id cohort_definition_id,
+	source.subject_id,
+	DATEADD(day, @eraconstructorpad, source.cohort_end_date) AS cohort_end_date,
+	1 AS event_type
+FROM {@source_database_schema != ''} ? {@source_database_schema.@source_cohort_table} : {@source_cohort_table} source
+INNER JOIN #old_to_new_cohort_id target
+ON source.cohort_definition_id = target.old_cohort_id;
+  
+
+
+--HINT DISTRIBUTE ON KEY (subject_id)
 SELECT cohort_definition_id,
 	subject_id,
 	DATEADD(day, - 1 * @eraconstructorpad, event_date) AS cohort_end_date
@@ -57,7 +56,9 @@ FROM (
 	FROM #raw_data
 	) e
 WHERE (2 * e.start_ordinal) - e.overall_ord = 0;
+DROP TABLE IF EXISTS #raw_data;
 
+--HINT DISTRIBUTE ON KEY (subject_id)
 SELECT target.new_cohort_id cohort_definition_id,
 	source.subject_id,
 	source.cohort_start_date,
@@ -74,6 +75,7 @@ GROUP BY target.new_cohort_id,
 	source.subject_id,
 	source.cohort_start_date;
 
+--HINT DISTRIBUTE ON KEY (subject_id)
 SELECT cohort_definition_id,
 	subject_id,
 	min(cohort_start_date) AS cohort_start_date,
@@ -84,8 +86,9 @@ GROUP BY cohort_definition_id,
 	subject_id,
 	cohort_end_date;
 	
+DROP TABLE IF EXISTS #cte_ends;
 	
-	
+--HINT DISTRIBUTE ON KEY (subject_id)	
 {@cdm_database_schema != ''} ?
 {
 
@@ -120,6 +123,4 @@ GROUP BY cohort_definition_id,
 ;
  
 DROP TABLE IF EXISTS #cohort_era;
-DROP TABLE IF EXISTS #cte_ends;
 DROP TABLE IF EXISTS #cte_end_dates;
-DROP TABLE IF EXISTS #raw_data;
