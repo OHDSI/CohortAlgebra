@@ -6,13 +6,11 @@
 \usage{
 generateBaseCohorts(
   connectionDetails = NULL,
-  connection = NULL,
   cohortDatabaseSchema,
   cdmDatabaseSchema,
   cohortTable = "CohortsBase",
   incremental,
   incrementalFolder = NULL,
-  purgeConflicts,
   tempEmulationSchema = getOption("sqlRenderTempEmulationSchema")
 )
 }
@@ -21,12 +19,6 @@ generateBaseCohorts(
 \code{\link[DatabaseConnector]{createConnectionDetails}} function in the
 DatabaseConnector package. Can be left NULL if \code{connection} is
 provided.}
-
-\item{connection}{An object of type \code{connection} as created using the
-\code{\link[DatabaseConnector]{connect}} function in the
-DatabaseConnector package. Can be left NULL if \code{connectionDetails}
-is provided, in which case a new connection will be opened at the start
-of the function, and closed when the function finishes.}
 
 \item{cohortDatabaseSchema}{Schema name where your cohort tables reside. Note that for SQL Server,
 this should include both the database and schema name, for example
@@ -42,10 +34,6 @@ schema name, for example 'cdm_data.dbo'.}
 
 \item{incrementalFolder}{If \code{incremental = TRUE}, specify a folder where records are
 kept of which definition has been executed.}
-
-\item{purgeConflicts}{If there are conflicts in the target cohort table i.e. the target cohort table
-already has records with newCohortId, do you want to purge and replace them
-with transformed. By default - it will not be replaced, and an error message is thrown.}
 
 \item{tempEmulationSchema}{Some database platforms like Oracle and Impala do not truly support
 temp tables. To emulate temp tables, provide a schema with write
@@ -65,8 +53,7 @@ CohortAlgebra::generateBaseCohorts(
   cdmDatabaseSchema = cdmDatabaseSchema,
   cohortTable = tableName,
   incremental = TRUE,
-  incrementalFolder = incrementalFolder,
-  purgeConflicts = TRUE
+  incrementalFolder = incrementalFolder
 )
 }
 
