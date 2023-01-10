@@ -69,6 +69,7 @@ testthat::test_that("Testing cohort era fy", {
   CohortAlgebra:::eraFyCohorts(
     connectionDetails = connectionDetails,
     sourceCohortDatabaseSchema = cohortDatabaseSchema,
+    targetCohortDatabaseSchema = cohortDatabaseSchema,
     sourceCohortTable = tableName,
     targetCohortTable = tableName,
     oldCohortIds = 1,
@@ -125,8 +126,10 @@ testthat::test_that("Testing cohort era fy", {
   testthat::expect_error(
     eraFyCohorts(
       connectionDetails = connectionDetails,
-      cohortDatabaseSchema = cohortDatabaseSchema,
-      cohortTable = tableName,
+      sourceCohortDatabaseSchema = cohortDatabaseSchema,
+      sourceCohortTable = tableName,
+      targetCohortDatabaseSchema = cohortDatabaseSchema,
+      targetCohortTable = tableName,
       oldCohortIds = 1,
       newCohortId = 9,
       eraconstructorpad = 0,
@@ -140,6 +143,7 @@ testthat::test_that("Testing cohort era fy", {
         connectionDetails = connectionDetails,
         sourceCohortDatabaseSchema = cohortDatabaseSchema,
         sourceCohortTable = tableName,
+        targetCohortDatabaseSchema = cohortDatabaseSchema,
         targetCohortTable = tableName,
         oldCohortIds = 1,
         newCohortId = 9,
@@ -173,6 +177,7 @@ testthat::test_that("Testing cohort era fy", {
       eraFyCohorts(
         connection = connection,
         sourceCohortTable = tempTableName,
+        targetCohortTable = tempTableName,
         oldCohortId = 1,
         newCohortId = 10,
         eraconstructorpad = 30,
