@@ -12,9 +12,9 @@ INNER JOIN
 ON descendant_concept_id = visit_concept_id
 INNER JOIN @cdm_database_schema.observation_period op
 ON v.person_id = op.person_id
-    AND observation_period_start_date <= cohort_start_date
-    AND observation_period_end_date >= cohort_start_date
-WHERE DATEDIFF(DAY, observation_period_start_date, cohort_start_date) >= @min_period
+    AND observation_period_start_date <= visit_start_date
+    AND observation_period_end_date >= visit_start_date
+WHERE DATEDIFF(DAY, observation_period_start_date, visit_start_date) >= 365
     AND ancestor_concept_id IN (9203)
 ORDER BY v.person_id, v.visit_start_date, v.visit_end_date;
 
