@@ -7,8 +7,10 @@
 intersectCohorts(
   connectionDetails = NULL,
   connection = NULL,
-  cohortDatabaseSchema = NULL,
-  cohortTable = "cohort",
+  sourceCohortDatabaseSchema = NULL,
+  sourceCohortTable,
+  targetCohortDatabaseSchema = NULL,
+  targetCohortTable,
   cohortIds,
   newCohortId,
   purgeConflicts = FALSE,
@@ -27,15 +29,21 @@ DatabaseConnector package. Can be left NULL if \code{connectionDetails}
 is provided, in which case a new connection will be opened at the start
 of the function, and closed when the function finishes.}
 
-\item{cohortDatabaseSchema}{Schema name where your cohort tables reside. Note that for SQL Server,
+\item{sourceCohortDatabaseSchema}{Schema name where your source cohort tables reside. Note that for SQL Server,
 this should include both the database and schema name, for example
 'scratch.dbo'.}
 
-\item{cohortTable}{The name of the cohort table.}
+\item{sourceCohortTable}{The name of the source cohort table.}
+
+\item{targetCohortDatabaseSchema}{Schema name where your target cohort tables reside. Note that for SQL Server,
+this should include both the database and schema name, for example
+'scratch.dbo'.}
+
+\item{targetCohortTable}{The name of the target cohort table.}
 
 \item{cohortIds}{A vector of one or more Cohort Ids.}
 
-\item{newCohortId}{The cohort id of the result cohort.}
+\item{newCohortId}{The cohort id of the output cohort.}
 
 \item{purgeConflicts}{If there are conflicts in the target cohort table i.e. the target cohort table
 already has records with newCohortId, do you want to purge and replace them
@@ -56,8 +64,8 @@ be in the final cohort.
 \dontrun{
 intersectCohorts(
   connectionDetails = Eunomia::getEunomiaConnectionDetails(),
-  cohortDatabaseSchema = "main",
-  cohortTable = "cohort",
+  sourceCohortDatabaseSchema = "main",
+  sourceCohortTable = "cohort",
   cohortIds = c(1, 2, 3),
   newCohortId = 9,
   purgeConflicts = TRUE

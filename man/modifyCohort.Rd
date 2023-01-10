@@ -52,7 +52,7 @@ schema name, for example 'cdm_data.dbo'.}
 
 \item{oldCohortId}{The cohort id of the cohort that needs to be modified.}
 
-\item{newCohortId}{The cohort id of the result cohort.}
+\item{newCohortId}{The cohort id of the output cohort.}
 
 \item{cohortStartCensorDate}{the minimum date for the cohort. All rows with cohort start date before this date
 will be censored to given date.}

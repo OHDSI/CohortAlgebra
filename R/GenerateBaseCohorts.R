@@ -24,15 +24,56 @@
 #' @export
 #'
 getBaseCohortDefinitionSet <- function() {
-  dplyr::tibble(
-    cohortId = c(0, -1, -2, -3),
+  specifications <- dplyr::tibble(
+    cohortId = c(-1, -2, -3, -4, -5, -6, -7, -8, -9, -10),
     cohortName = c(
-      "Observation Period",
-      "Visits all",
-      "Visits Inpatient",
-      "Visits Emergency Room"
+      "01 Observation Period",
+      "02 Visits all",
+      "03 Visits Inpatient or Inpatient Emergency",
+      "04 Visits Emergency Room",
+      "05 Visits with 365 days post continuous observation days",
+      "06 Visits Inpatient or Inpatient Emergency with 365 days post continuous observation days",
+      "07 Visits Emergency Room with 365 days post continuous observation days",
+      "08 Visits with 365 days prior continuous observation days",
+      "09 Visits Inpatient or Inpatient Emergency with 365 days prior continuous observation days",
+      "10 Visits Emergency Room with 365 days prior continuous observation days"
     )
   )
+
+  cohorts <- c()
+  for (i in (1:nrow(specifications))) {
+    cohorts[[i]] <- specifications[i, ] %>%
+      dplyr::mutate(sqlFileName = paste0(paste(
+        "BaseCohort", formatC(
+          abs(specifications[i, ]$cohortId),
+          width =
+            2,
+          flag = "0"
+        ),
+        sep = ""
+      ), ".sql"))
+
+    dbms <- "sql_server"
+    sqlFileName <- cohorts[[i]]$sqlFileName
+    pathToSql <-
+      system.file(file.path("sql", dbms, sqlFileName),
+        package = utils::packageName()
+      )
+    cohorts[[i]]$sql <- SqlRender::readSql(sourceFile = pathToSql)
+  }
+
+  cohortDefinitionSet <- dplyr::bind_rows(cohorts)
+  cohortDefinitionSet$checksum <-
+    CohortGenerator::computeChecksum(
+      paste0(
+        cohortDefinitionSet$cohortName,
+        cohortDefinitionSet$cohortId,
+        cohortDefinitionSet$sql
+      )
+    )
+
+  return(cohortDefinitionSet %>%
+    dplyr::tibble())
 }
 
 
@@ -47,8 +88,6 @@ getBaseCohortDefinitionSet <- function() {
 #'
 #' @template ConnectionDetails
 #'
-#' @template Connection
-#'
 #' @template CohortTable
 #'
 #' @template CohortDatabaseSchema
@@ -62,8 +101,6 @@ getBaseCohortDefinitionSet <- function() {
 #' @param incrementalFolder           If \code{incremental = TRUE}, specify a folder where records are
 #'                                    kept of which definition has been executed.
 #'
-#' @template PurgeConflicts
-#'
 #' @return
 #' NULL
 #'
@@ -75,21 +112,18 @@ getBaseCohortDefinitionSet <- function() {
 #'   cdmDatabaseSchema = cdmDatabaseSchema,
 #'   cohortTable = tableName,
 #'   incremental = TRUE,
-#'   incrementalFolder = incrementalFolder,
-#'   purgeConflicts = TRUE
+#'   incrementalFolder = incrementalFolder
 #' )
 #' }
 #'
 #' @export
 #'
 generateBaseCohorts <- function(connectionDetails = NULL,
-                                connection = NULL,
                                 cohortDatabaseSchema,
                                 cdmDatabaseSchema,
-                                cohortTable = "CohortsBase",
+                                cohortTable = "cohorts_base",
                                 incremental,
                                 incrementalFolder = NULL,
-                                purgeConflicts,
                                 tempEmulationSchema = getOption("sqlRenderTempEmulationSchema")) {
   errorMessages <- checkmate::makeAssertCollection()
   checkmate::assertCharacter(
@@ -114,12 +148,6 @@ generateBaseCohorts <- function(connectionDetails = NULL,
     add = errorMessages
   )
   checkmate::assertLogical(
-    x = purgeConflicts,
-    any.missing = FALSE,
-    min.len = 1,
-    add = errorMessages
-  )
-  checkmate::assertLogical(
     x = incremental,
     len = 1,
     null.ok = FALSE,
@@ -127,10 +155,7 @@ generateBaseCohorts <- function(connectionDetails = NULL,
   )
   checkmate::reportAssertions(collection = errorMessages)
 
-  cohortDefinitionSet <- dplyr::tibble(
-    cohortId = 0,
-    cohortName = "Base Cohort"
-  )
+  cohortDefinitionSet <- getBaseCohortDefinitionSet()
 
   if (incremental) {
     if (is.null(incrementalFolder)) {
@@ -143,14 +168,6 @@ generateBaseCohorts <- function(connectionDetails = NULL,
 
   taskRequired <- TRUE
   if (incremental) {
-    cohortDefinitionSet$checksum <-
-      CohortGenerator::computeChecksum(
-        paste0(
-          cohortDefinitionSet$cohortName,
-          cohortDefinitionSet$cohortId,
-          cohortTable
-        )
-      )
     recordKeepingFile <-
       file.path(incrementalFolder, "GeneratedCohorts.csv")
 
@@ -171,87 +188,47 @@ generateBaseCohorts <- function(connectionDetails = NULL,
     return(NULL)
   }
 
-  if (is.null(connection)) {
-    connection <- DatabaseConnector::connect(connectionDetails)
-    on.exit(DatabaseConnector::disconnect(connection))
-  }
-
   baseCohortTableNames <-
     CohortGenerator::getCohortTableNames(cohortTable = cohortTable)
 
   CohortGenerator::createCohortTables(
-    connection = connection,
+    connectionDetails = connectionDetails,
     cohortTableNames = baseCohortTableNames,
     cohortDatabaseSchema = cohortDatabaseSchema,
     incremental = incremental
   )
+
+  CohortGenerator::generateCohortSet(
+    connectionDetails = connectionDetails,
+    cdmDatabaseSchema = cdmDatabaseSchema,
+    cohortDatabaseSchema = cohortDatabaseSchema,
+    cohortTableNames = baseCohortTableNames,
+    cohortDefinitionSet = cohortDefinitionSet,
+    incremental = incremental,
+    incrementalFolder = incrementalFolder,
+    tempEmulationSchema = tempEmulationSchema
+  )
+
   CohortGenerator::dropCohortStatsTables(
-    connection = connection,
+    connectionDetails = connectionDetails,
     cohortDatabaseSchema = cohortDatabaseSchema,
     cohortTableNames = baseCohortTableNames
   )
 
-  cohortIdsInCohortTable <-
-    getCohortIdsInCohortTable(
-      connection = connection,
-      cohortDatabaseSchema = cohortDatabaseSchema,
-      cohortTable = cohortTable,
-      tempEmulationSchema = tempEmulationSchema
-    )
-
-  conflicitingCohortIdsInTargetCohortTable <-
-    intersect(
-      x = cohortDefinitionSet$cohortId %>% unique(),
-      y = cohortIdsInCohortTable %>% unique()
-    )
-
-  if (length(conflicitingCohortIdsInTargetCohortTable) > 0) {
-    if (!purgeConflicts) {
-      stop(
-        paste0(
-          "The following cohortIds already exist in the target cohort table, causing conflicts :",
-          paste0(conflicitingCohortIdsInTargetCohortTable, collapse = ",")
-        )
-      )
-    }
-  }
-  sql <- SqlRender::loadRenderTranslateSql(
-    sqlFilename = "BaseCohorts.sql",
-    packageName = utils::packageName(),
-    dbms = connection@dbms,
-    tempEmulationSchema = tempEmulationSchema,
-    cohort_database_schema = cohortDatabaseSchema,
-    cdm_database_schema = cdmDatabaseSchema,
-    cohort_table = baseCohortTableNames$cohortTable
-  )
-  ParallelLogger::logTrace(" Generating base cohorts.")
-  DatabaseConnector::executeSql(
-    connection = connection,
-    sql = sql,
-    profile = FALSE,
-    progressBar = TRUE,
-    reportOverallTime = TRUE
-  )
-
   ParallelLogger::logTrace(" Era fy base cohorts.")
-
-  eraFyCohorts(
-    connection = connection,
-    cohortDatabaseSchema = cohortDatabaseSchema,
-    cohortTable = baseCohortTableNames$cohortTable,
-    oldToNewCohortId = dplyr::tibble(
-      oldCohortId = cohortDefinitionSet$cohortId,
-      newCohortId = cohortDefinitionSet$cohortId
-    ),
-    eraconstructorpad = 0,
-    cdmDatabaseSchema = cdmDatabaseSchema,
-    purgeConflicts = TRUE
-  )
-
-  CohortGenerator::recordTasksDone(
-    cohortId = 0,
-    checksum = cohortDefinitionSet %>% dplyr::select("checksum") %>% dplyr::pull("checksum") %>% as.character(),
-    recordKeepingFile = recordKeepingFile,
-    incremental = incremental
-  )
+  for (i in (1:nrow(cohortDefinitionSet))) {
+    ParallelLogger::logInfo(paste0("  Working on ", cohortDefinitionSet[i, ]$cohortName))
+    eraFyCohorts(
+      connectionDetails = connectionDetails,
+      sourceCohortDatabaseSchema = cohortDatabaseSchema,
+      sourceCohortTable = baseCohortTableNames$cohortTable,
+      targetCohortDatabaseSchema = cohortDatabaseSchema,
+      targetCohortTable = baseCohortTableNames$cohortTable,
+      oldCohortIds = cohortDefinitionSet[i, ]$cohortId,
+      newCohortId = cohortDefinitionSet[i, ]$cohortId,
+      eraconstructorpad = 0,
+      cdmDatabaseSchema = cdmDatabaseSchema,
+      purgeConflicts = TRUE
+    )
+  }
 }

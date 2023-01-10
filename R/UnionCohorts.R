@@ -26,9 +26,13 @@
 #'
 #' @template Connection
 #'
-#' @template CohortTable
+#' @template sourceCohortTable
 #'
-#' @template CohortDatabaseSchema
+#' @template sourceCohortDatabaseSchema
+#'
+#' @template targetCohortTable
+#'
+#' @template targetCohortDatabaseSchema
 #'
 #' @template OldToNewCohortId
 #'
@@ -43,12 +47,9 @@
 #' \dontrun{
 #' unionCohorts(
 #'   connectionDetails = Eunomia::getEunomiaConnectionDetails(),
-#'   cohortDatabaseSchema = "main",
-#'   cohortTable = "cohort",
-#'   oldToNewCohortId = dplyr::tibble(
-#'     oldCohortId = c(1, 2, 3),
-#'     newCohortId = c(9, 9, 9)
-#'   ),
+#'   sourceDatabaseSchema = "main",
+#'   sourceCohortTable = "cohort",
+#'   oldToNewCohortId = dplyr::tibble(oldCohortId = c(1, 2), newCohortId = 4),
 #'   purgeConflicts = TRUE
 #' )
 #' }
@@ -56,20 +57,90 @@
 #' @export
 unionCohorts <- function(connectionDetails = NULL,
                          connection = NULL,
-                         cohortDatabaseSchema = NULL,
-                         cohortTable = "cohort",
+                         sourceCohortDatabaseSchema = NULL,
+                         sourceCohortTable,
+                         targetCohortDatabaseSchema = NULL,
+                         targetCohortTable,
                          oldToNewCohortId,
                          tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
                          purgeConflicts = FALSE) {
-  eraFyCohorts(
-    connectionDetails = connectionDetails,
-    connection = connection,
-    cohortDatabaseSchema = cohortDatabaseSchema,
-    cohortTable = cohortTable,
-    oldToNewCohortId = oldToNewCohortId,
-    eraconstructorpad = 0,
-    cdmDatabaseSchema = NULL,
-    tempEmulationSchema = tempEmulationSchema,
-    purgeConflicts = purgeConflicts
+  errorMessages <- checkmate::makeAssertCollection()
+  checkmate::assertDataFrame(
+    x = oldToNewCohortId,
+    min.rows = 1,
+    add = errorMessages
   )
+  checkmate::assertNames(
+    x = colnames(oldToNewCohortId),
+    must.include = c("oldCohortId", "newCohortId"),
+    add = errorMessages
+  )
+  checkmate::assertIntegerish(
+    x = oldToNewCohortId$oldCohortId,
+    min.len = 1,
+    null.ok = FALSE,
+    add = errorMessages
+  )
+  checkmate::assertIntegerish(
+    x = oldToNewCohortId$newCohortId,
+    min.len = 1,
+    null.ok = FALSE,
+    add = errorMessages
+  )
+  checkmate::assertCharacter(
+    x = sourceCohortDatabaseSchema,
+    min.chars = 1,
+    len = 1,
+    null.ok = TRUE,
+    add = errorMessages
+  )
+  checkmate::assertCharacter(
+    x = targetCohortDatabaseSchema,
+    min.chars = 1,
+    len = 1,
+    null.ok = TRUE,
+    add = errorMessages
+  )
+  checkmate::assertCharacter(
+    x = sourceCohortTable,
+    min.chars = 1,
+    len = 1,
+    null.ok = FALSE,
+    add = errorMessages
+  )
+  checkmate::assertCharacter(
+    x = targetCohortTable,
+    min.chars = 1,
+    len = 1,
+    null.ok = FALSE,
+    add = errorMessages
+  )
+  checkmate::assertLogical(
+    x = purgeConflicts,
+    any.missing = FALSE,
+    min.len = 1,
+    add = errorMessages
+  )
+  checkmate::reportAssertions(collection = errorMessages)
+  newCohortIds <- oldToNewCohortId$newCohortId %>% unique()
+
+  for (i in (1:length(newCohortIds))) {
+    eraFyCohorts(
+      connectionDetails = connectionDetails,
+      connection = connection,
+      sourceCohortDatabaseSchema = sourceCohortDatabaseSchema,
+      sourceCohortTable = sourceCohortTable,
+      targetCohortDatabaseSchema = targetCohortDatabaseSchema,
+      targetCohortTable = targetCohortTable,
+      oldCohortIds = oldToNewCohortId %>%
+        dplyr::filter(.data$newCohortId == newCohortIds[[i]]) %>%
+        dplyr::pull("oldCohortId") %>%
+        unique(),
+      newCohortId = newCohortIds[[i]],
+      eraconstructorpad = 0,
+      cdmDatabaseSchema = NULL,
+      tempEmulationSchema = tempEmulationSchema,
+      purgeConflicts = purgeConflicts
+    )
+  }
 }

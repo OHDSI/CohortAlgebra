@@ -38,7 +38,7 @@ this should include both the database and schema name, for example
 
 \item{cohortId}{The cohort id of the cohort whose subjects will be removed.}
 
-\item{newCohortId}{The cohort id of the result cohort.}
+\item{newCohortId}{The cohort id of the output cohort.}
 
 \item{cohortsWithSubjectsToRemove}{An array of one or more cohorts with subjects to remove from given cohorts.}
 

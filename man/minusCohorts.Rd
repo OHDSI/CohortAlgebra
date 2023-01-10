@@ -7,8 +7,10 @@
 minusCohorts(
   connectionDetails = NULL,
   connection = NULL,
-  cohortDatabaseSchema = NULL,
-  cohortTable = "cohort",
+  sourceCohortDatabaseSchema = NULL,
+  sourceCohortTable = "cohort",
+  targetCohortDatabaseSchema = sourceCohortDatabaseSchema,
+  targetCohortTable = sourceCohortTable,
   firstCohortId,
   secondCohortId,
   newCohortId,
@@ -28,17 +30,23 @@ DatabaseConnector package. Can be left NULL if \code{connectionDetails}
 is provided, in which case a new connection will be opened at the start
 of the function, and closed when the function finishes.}
 
-\item{cohortDatabaseSchema}{Schema name where your cohort tables reside. Note that for SQL Server,
+\item{sourceCohortDatabaseSchema}{Schema name where your source cohort tables reside. Note that for SQL Server,
 this should include both the database and schema name, for example
 'scratch.dbo'.}
 
-\item{cohortTable}{The name of the cohort table.}
+\item{sourceCohortTable}{The name of the source cohort table.}
 
-\item{firstCohortId}{The cohort id of the cohort from which to substract.}
+\item{targetCohortDatabaseSchema}{Schema name where your target cohort tables reside. Note that for SQL Server,
+this should include both the database and schema name, for example
+'scratch.dbo'.}
 
-\item{secondCohortId}{The cohort id of the cohort that is used to substract.}
+\item{targetCohortTable}{The name of the target cohort table.}
 
-\item{newCohortId}{The cohort id of the result cohort.}
+\item{firstCohortId}{The cohort id of the cohort from which to subtract.}
+
+\item{secondCohortId}{The cohort id of the cohort that is used to subtract.}
+
+\item{newCohortId}{The cohort id of the output cohort.}
 
 \item{purgeConflicts}{If there are conflicts in the target cohort table i.e. the target cohort table
 already has records with newCohortId, do you want to purge and replace them
@@ -58,8 +66,8 @@ dates the subject also had on the second cohort.
 \dontrun{
 minusCohorts(
   connectionDetails = Eunomia::getEunomiaConnectionDetails(),
-  cohortDatabaseSchema = "main",
-  cohortTable = "cohort",
+  sourceCohortDatabaseSchema = "main",
+  sourceCohortTable = "cohort",
   firstCohortId = 1,
   secondCohortId = 2,
   newCohortId = 9,
