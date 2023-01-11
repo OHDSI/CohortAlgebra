@@ -274,6 +274,8 @@ testthat::test_that("Testing cohort era fy", {
            DROP TABLE IF EXISTS @cdm_database_schema.observation_period;",
     table_temp = tableName,
     cohort_database_schema = cohortDatabaseSchema,
-    cdm_database_schema = cohortDatabaseSchema
+    cdm_database_schema = cohortDatabaseSchema,
+    progressBar = FALSE,
+    reportOverallTime = FALSE
   )
 })

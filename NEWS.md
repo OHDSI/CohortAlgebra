@@ -1,3 +1,11 @@
+CohortAlgebra 0.5.1
+======================
+
+Changes:
+- Split modify function into many functions.
+
+Bug fix:
+
 CohortAlgebra 0.5
 ======================
 
