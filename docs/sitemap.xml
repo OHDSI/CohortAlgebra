@@ -19,7 +19,13 @@
     <loc>/news/index.html</loc>
   </url>
   <url>
+    <loc>/reference/applyCohortPeriodCriteria.html</loc>
+  </url>
+  <url>
     <loc>/reference/applyCohortPersistenceCriteria.html</loc>
+  </url>
+  <url>
+    <loc>/reference/applyDemographicCriteria.html</loc>
   </url>
   <url>
     <loc>/reference/censorCohortDates.html</loc>
@@ -46,6 +52,9 @@
     <loc>/reference/eraFyCohorts.html</loc>
   </url>
   <url>
+    <loc>/reference/filterCohortByCalendarDate.html</loc>
+  </url>
+  <url>
     <loc>/reference/generateBaseCohorts.html</loc>
   </url>
   <url>
@@ -65,6 +74,9 @@
   </url>
   <url>
     <loc>/reference/keepCohortOverlaps.html</loc>
+  </url>
+  <url>
+    <loc>/reference/limitCohortOccurrence.html</loc>
   </url>
   <url>
     <loc>/reference/listPhenotypes.html</loc>

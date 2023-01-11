@@ -104,7 +104,7 @@ testthat::test_that("Testing cohort persistence", {
     object = dataPost,
     expected = expected
   )
-  
+
   # repeat for temp table
   applyCohortPersistenceCriteria(
     connection = connection,
@@ -131,7 +131,7 @@ testthat::test_that("Testing cohort persistence", {
       snakeCaseToCamelCase = TRUE
     ) %>%
     dplyr::tibble()
-  
+
   testthat::expect_equal(
     object = nrow(dataPost),
     expected = 1

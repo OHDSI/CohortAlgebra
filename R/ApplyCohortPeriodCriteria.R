@@ -163,7 +163,7 @@ applyCohortPeriodCriteria <- function(connectionDetails = NULL,
     null.ok = TRUE,
     add = errorMessages
   )
-  
+
   if (any(
     !is.null(filterByMinimumPriorObservationPeriod),
     !is.null(filterByMinimumPostObservationPeriod)
@@ -176,10 +176,10 @@ applyCohortPeriodCriteria <- function(connectionDetails = NULL,
       add = errorMessages
     )
   }
-  
+
   checkmate::reportAssertions(collection = errorMessages)
-  
-  
+
+
   if (sum(
     !is.null(filterByMinimumCohortPeriod),
     !is.null(filterByMinimumPriorObservationPeriod),
@@ -187,7 +187,7 @@ applyCohortPeriodCriteria <- function(connectionDetails = NULL,
   ) > 1) {
     stop("Multiple period criteria specified.")
   }
-  
+
   if (sum(
     !is.null(filterByMinimumCohortPeriod),
     !is.null(filterByMinimumPriorObservationPeriod),
@@ -195,12 +195,12 @@ applyCohortPeriodCriteria <- function(connectionDetails = NULL,
   ) == 0) {
     stop("No period criteria specified.")
   }
-  
+
   if (is.null(connection)) {
     connection <- DatabaseConnector::connect(connectionDetails)
     on.exit(DatabaseConnector::disconnect(connection))
   }
-  
+
   if (!purgeConflicts) {
     cohortIdsInCohortTable <-
       getCohortIdsInCohortTable(
@@ -210,22 +210,24 @@ applyCohortPeriodCriteria <- function(connectionDetails = NULL,
         tempEmulationSchema = tempEmulationSchema
       )
     conflicitingCohortIdsInTargetCohortTable <-
-      intersect(x = newCohortId,
-                y = cohortIdsInCohortTable %>% unique())
-    
+      intersect(
+        x = newCohortId,
+        y = cohortIdsInCohortTable %>% unique()
+      )
+
     if (length(conflicitingCohortIdsInTargetCohortTable) > 0) {
       stop("Target cohort id already in use in target cohort table")
     }
   }
-  
+
   if (all(
     paste0(sourceCohortDatabaseSchema, sourceCohortTable) ==
-    paste0(targetCohortDatabaseSchema, targetCohortTable),
+      paste0(targetCohortDatabaseSchema, targetCohortTable),
     oldCohortId == newCohortId
   )) {
     tempTableName <- generateRandomString()
     tempTable1 <- paste0("#", tempTableName, "1")
-    
+
     DatabaseConnector::renderTranslateExecuteSql(
       connection = connection,
       sql = "
@@ -246,13 +248,15 @@ applyCohortPeriodCriteria <- function(connectionDetails = NULL,
       sourceCohortTable = sourceCohortTable,
       tempEmulationSchema = tempEmulationSchema,
       targetCohortTable = tempTable1,
-      oldToNewCohortId = dplyr::tibble(oldCohortId = oldCohortId,
-                                       newCohortId = newCohortId)
+      oldToNewCohortId = dplyr::tibble(
+        oldCohortId = oldCohortId,
+        newCohortId = newCohortId
+      )
     )
     sourceCohortDatabaseSchema <- NULL
     sourceCohortTable <- tempTable1
   }
-  
+
   if (!is.null(filterByMinimumCohortPeriod)) {
     sql <- SqlRender::loadRenderTranslateSql(
       sqlFilename = "FilterByCohortPeriod.sql",
@@ -275,7 +279,7 @@ applyCohortPeriodCriteria <- function(connectionDetails = NULL,
       reportOverallTime = FALSE
     )
   }
-  
+
   if (!is.null(filterByMinimumPriorObservationPeriod)) {
     sql <- SqlRender::loadRenderTranslateSql(
       sqlFilename = "FilterByMinimumPriorObservationPeriod.sql",
@@ -299,8 +303,8 @@ applyCohortPeriodCriteria <- function(connectionDetails = NULL,
       reportOverallTime = FALSE
     )
   }
-  
-  
+
+
   if (!is.null(filterByMinimumPostObservationPeriod)) {
     sql <- SqlRender::loadRenderTranslateSql(
       sqlFilename = "FilterByMinimumPostObservationPeriod.sql",

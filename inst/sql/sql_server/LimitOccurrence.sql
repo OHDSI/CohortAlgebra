@@ -9,9 +9,10 @@ SELECT @new_cohort_id cohort_definition_id,
 FROM {@source_cohort_database_schema != ''} ? {@source_cohort_database_schema.@source_cohort_table} : {@source_cohort_table} t1
 INNER JOIN 
   (
-      SELECT subject_id,
-              max(cohort_start_date) cohort_start_date
-      {@source_cohort_database_schema != ''} ? {@source_cohort_database_schema.@source_cohort_table} : {@source_cohort_table} 
+      SELECT subject_id
+              {@first_occurrence} ? {, min(cohort_start_date) cohort_start_date}
+              {@last_occurrence} ? {, max(cohort_start_date) cohort_start_date}
+      FROM {@source_cohort_database_schema != ''} ? {@source_cohort_database_schema.@source_cohort_table} : {@source_cohort_table} 
       WHERE cohort_definition_id = @old_cohort_id
       GROUP BY subject_id
   ) t2

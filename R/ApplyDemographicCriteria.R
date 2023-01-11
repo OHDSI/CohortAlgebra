@@ -14,10 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' Limit cohort records.
+#' Apply Demographic cohort
 #'
 #' @description
-#' Limit cohort records
 #'
 #' `r lifecycle::badge("experimental")`
 #'
@@ -41,9 +40,13 @@
 #'
 #' @template TempEmulationSchema
 #'
-#' @param firstOccurrence          Do you want to limit to first occurrence?
+#' @template CdmDatabaseSchema
 #'
-#' @param lastOccurrence          Do you want to limit to last occurrence?
+#' @param filterGenderConceptId   Provide an array of integers corresponding to conceptId to look for in the gender_concept_id
+#'                                field of the person table.
+#'
+#' @param filterByAgeRange        Provide an array of two values, where second value is >= first value to filter the persons age on cohort_start_date.
+#'                                Age is calculated as YEAR(cohort_start_date) - person.year_of_birth
 #'
 #' @return
 #' NULL
@@ -51,30 +54,31 @@
 #'
 #' @examples
 #' \dontrun{
-#' CohortAlgebra::limitCohortOccurrence(
+#' CohortAlgebra::applyDemographicCriteria(
 #'   connection = connection,
-#'   sourceCohortTable = "cohort",
-#'   targetCohortTable = "cohort",
+#'   cohortDatabaseSchema = cohortDatabaseSchema,
+#'   cohortTable = tableName,
 #'   oldCohortId = 3,
 #'   newCohortId = 2,
-#'   firstOccurrence = TRUE,
+#'   filterGenderConceptId = c(8201),
 #'   purgeConflicts = TRUE
 #' )
 #' }
 #'
 #' @export
-limitCohortOccurrence <- function(connectionDetails = NULL,
-                                  connection = NULL,
-                                  sourceCohortDatabaseSchema = NULL,
-                                  sourceCohortTable,
-                                  targetCohortDatabaseSchema = NULL,
-                                  targetCohortTable,
-                                  oldCohortId,
-                                  newCohortId,
-                                  firstOccurrence = FALSE,
-                                  lastOccurrence = FALSE,
-                                  tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
-                                  purgeConflicts = FALSE) {
+applyDemographicCriteria <- function(connectionDetails = NULL,
+                                     connection = NULL,
+                                     sourceCohortDatabaseSchema = NULL,
+                                     sourceCohortTable,
+                                     targetCohortDatabaseSchema = NULL,
+                                     targetCohortTable,
+                                     cdmDatabaseSchema,
+                                     oldCohortId,
+                                     newCohortId,
+                                     filterGenderConceptId = NULL,
+                                     filterByAgeRange = NULL,
+                                     tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
+                                     purgeConflicts = TRUE) {
   errorMessages <- checkmate::makeAssertCollection()
   checkmate::assertIntegerish(
     x = oldCohortId,
@@ -85,6 +89,27 @@ limitCohortOccurrence <- function(connectionDetails = NULL,
   checkmate::assertIntegerish(
     x = newCohortId,
     min.len = 1,
+    null.ok = FALSE,
+    add = errorMessages
+  )
+  checkmate::assertCharacter(
+    x = cohortDatabaseSchema,
+    min.chars = 1,
+    len = 1,
+    null.ok = TRUE,
+    add = errorMessages
+  )
+  checkmate::assertCharacter(
+    x = cdmDatabaseSchema,
+    min.chars = 1,
+    len = 1,
+    null.ok = TRUE,
+    add = errorMessages
+  )
+  checkmate::assertCharacter(
+    x = cdmDatabaseSchema,
+    min.chars = 1,
+    len = 1,
     null.ok = FALSE,
     add = errorMessages
   )
@@ -116,34 +141,36 @@ limitCohortOccurrence <- function(connectionDetails = NULL,
     null.ok = FALSE,
     add = errorMessages
   )
+
   checkmate::assertLogical(
     x = purgeConflicts,
     any.missing = FALSE,
     min.len = 1,
     add = errorMessages
   )
-  checkmate::assertLogical(
-    x = firstOccurrence,
-    any.missing = FALSE,
-    len = 1,
+  checkmate::assertIntegerish(
+    x = filterGenderConceptId,
+    min.len = 1,
     null.ok = TRUE,
     add = errorMessages
   )
-  checkmate::assertLogical(
-    x = lastOccurrence,
-    any.missing = FALSE,
-    len = 1,
+  checkmate::assertIntegerish(
+    x = filterByAgeRange,
+    min.len = 2,
     null.ok = TRUE,
     add = errorMessages
   )
+  if (!is.null(filterByAgeRange)) {
+    checkmate::assert_true(x = filterByAgeRange[1] <= filterByAgeRange[2])
+  }
 
   checkmate::reportAssertions(collection = errorMessages)
 
-  if (sum(firstOccurrence, lastOccurrence) == 0) {
-    stop("No criteria specified.")
-  }
-  if (sum(firstOccurrence, lastOccurrence) == 2) {
-    stop("More than one criteria specified")
+  if (all(
+    is.null(filterByAgeRange),
+    is.null(filterGenderConceptId)
+  )) {
+    stop("No criteria specified")
   }
 
   if (is.null(connection)) {
@@ -207,19 +234,22 @@ limitCohortOccurrence <- function(connectionDetails = NULL,
     sourceCohortTable <- tempTable1
   }
 
+
   sql <- SqlRender::loadRenderTranslateSql(
-    sqlFilename = "LimitOccurrence.sql",
+    sqlFilename = "DemographicCritera.sql",
     packageName = utils::packageName(),
     dbms = connection@dbms,
     tempEmulationSchema = tempEmulationSchema,
+    cdm_database_schema = cdmDatabaseSchema,
     source_cohort_database_schema = sourceCohortDatabaseSchema,
     source_cohort_table = sourceCohortTable,
     target_cohort_database_schema = targetCohortDatabaseSchema,
     target_cohort_table = targetCohortTable,
     old_cohort_id = oldCohortId,
     new_cohort_id = newCohortId,
-    first_occurrence = firstOccurrence,
-    last_occurrence = lastOccurrence
+    gender_concept_id = filterGenderConceptId,
+    age_lower = filterByAgeRange[[1]],
+    age_higher = filterByAgeRange[[2]]
   )
   DatabaseConnector::executeSql(
     connection = connection,

@@ -7,14 +7,11 @@ SELECT @new_cohort_id cohort_definition_id,
   	    t1.cohort_start_date,
   	    t1.cohort_end_date
 FROM {@source_cohort_database_schema != ''} ? {@source_cohort_database_schema.@source_cohort_table} : {@source_cohort_table} t1
-INNER JOIN 
-  (
-      SELECT subject_id,
-              min(cohort_start_date) cohort_start_date
-      {@source_cohort_database_schema != ''} ? {@source_cohort_database_schema.@source_cohort_table} : {@source_cohort_table} 
-      WHERE cohort_definition_id = @old_cohort_id
-      GROUP BY subject_id
-  ) t2
-ON t1.subject_id = t2.subject_id
-  AND t1.cohort_start_date = t2.cohort_start_date
-WHERE cohort_definition_id = @old_cohort_id;
+INNER JOIN
+    @cdm_database_schema.person p
+ON t1.subject_id = p.person_id
+WHERE cohort_definition_id = @old_cohort_id
+  {@gender_concept_id != ''} ? {AND gender_concept_id IN (@gender_concept_id)}
+  {@age_lower != ''} ? {AND YEAR(t1.cohort_start_date) - p.year_of_birth >= @age_lower}
+  {@age_higher != ''} ? {AND YEAR(t1.cohort_start_date) - p.year_of_birth <= @age_higher}
+;

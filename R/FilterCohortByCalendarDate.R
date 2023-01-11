@@ -61,7 +61,7 @@
 #'   targetCohortTable = "cohort",
 #'   oldCohortId = 3,
 #'   newCohortId = 2,
-#'   cohortStartDateRangeLow = as.Date('1999-01-01'),
+#'   cohortStartDateRangeLow = as.Date("1999-01-01"),
 #'   purgeConflicts = TRUE
 #' )
 #' }
@@ -160,20 +160,20 @@ filterCohortByCalendarDate <- function(connectionDetails = NULL,
     null.ok = TRUE,
     add = errorMessages
   )
-  
+
   checkmate::reportAssertions(collection = errorMessages)
-  
+
   if (sum(
-    !is.null(cohortStartDateRangeLow),!is.null(cohortStartDateRangeHigh),!is.null(cohortEndDateRangeLow),!is.null(cohortEndDateRangeHigh)
+    !is.null(cohortStartDateRangeLow), !is.null(cohortStartDateRangeHigh), !is.null(cohortEndDateRangeLow), !is.null(cohortEndDateRangeHigh)
   ) == 0) {
     stop("No criteria specified.")
   }
-  
+
   if (is.null(connection)) {
     connection <- DatabaseConnector::connect(connectionDetails)
     on.exit(DatabaseConnector::disconnect(connection))
   }
-  
+
   if (!purgeConflicts) {
     cohortIdsInCohortTable <-
       getCohortIdsInCohortTable(
@@ -183,22 +183,24 @@ filterCohortByCalendarDate <- function(connectionDetails = NULL,
         tempEmulationSchema = tempEmulationSchema
       )
     conflicitingCohortIdsInTargetCohortTable <-
-      intersect(x = newCohortId,
-                y = cohortIdsInCohortTable %>% unique())
-    
+      intersect(
+        x = newCohortId,
+        y = cohortIdsInCohortTable %>% unique()
+      )
+
     if (length(conflicitingCohortIdsInTargetCohortTable) > 0) {
       stop("Target cohort id already in use in target cohort table")
     }
   }
-  
+
   if (all(
     paste0(sourceCohortDatabaseSchema, sourceCohortTable) ==
-    paste0(targetCohortDatabaseSchema, targetCohortTable),
+      paste0(targetCohortDatabaseSchema, targetCohortTable),
     oldCohortId == newCohortId
   )) {
     tempTableName <- generateRandomString()
     tempTable1 <- paste0("#", tempTableName, "1")
-    
+
     DatabaseConnector::renderTranslateExecuteSql(
       connection = connection,
       sql = "
@@ -219,13 +221,15 @@ filterCohortByCalendarDate <- function(connectionDetails = NULL,
       sourceCohortTable = sourceCohortTable,
       tempEmulationSchema = tempEmulationSchema,
       targetCohortTable = tempTable1,
-      oldToNewCohortId = dplyr::tibble(oldCohortId = oldCohortId,
-                                       newCohortId = newCohortId)
+      oldToNewCohortId = dplyr::tibble(
+        oldCohortId = oldCohortId,
+        newCohortId = newCohortId
+      )
     )
     sourceCohortDatabaseSchema <- NULL
     sourceCohortTable <- tempTable1
   }
-  
+
   dateToString <- function(date) {
     x <- NULL
     if (!is.null(date)) {
@@ -238,7 +242,7 @@ filterCohortByCalendarDate <- function(connectionDetails = NULL,
     }
     return(x)
   }
-  
+
   sql <- SqlRender::loadRenderTranslateSql(
     sqlFilename = "FilterCohortByCalendarPeriod.sql",
     packageName = utils::packageName(),
