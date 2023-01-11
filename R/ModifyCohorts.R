@@ -13,7 +13,7 @@
 #' # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #' # See the License for the specific language governing permissions and
 #' # limitations under the License.
-#' 
+#'
 #' #' Modify cohort
 #' #'
 #' #' @description
@@ -50,7 +50,7 @@
 #' #'
 #' #' @param cohortEndFilterRange    A range of dates representing minimum to maximum to filter the cohort by its cohort end date e.g c(as.Date('1999-01-01'), as.Date('1999-12-31'))
 #' #'
-#' 
+#'
 #' #'
 #' #' @param filterGenderConceptId   Provide an array of integers corresponding to conceptId to look for in the gender_concept_id
 #' #'                                field of the person table.
@@ -171,7 +171,7 @@
 #'     lower = 0,
 #'     add = errorMessages
 #'   )
-#' 
+#'
 #'   if (any(
 #'     !is.null(filterByMinimumPriorObservationPeriod),
 #'     !is.null(filterByMinimumPostObservationPeriod)
@@ -184,7 +184,7 @@
 #'       add = errorMessages
 #'     )
 #'   }
-#' 
+#'
 #'   if (!is.null(cohortStartFilterRange)) {
 #'     checkmate::assert_true(x = cohortStartFilterRange[1] <= cohortStartFilterRange[2])
 #'   }
@@ -214,14 +214,14 @@
 #'   if (!is.null(filterByAgeRange)) {
 #'     checkmate::assert_true(x = filterByAgeRange[1] <= filterByAgeRange[2])
 #'   }
-#' 
+#'
 #'   checkmate::reportAssertions(collection = errorMessages)
-#' 
+#'
 #'   if (is.null(connection)) {
 #'     connection <- DatabaseConnector::connect(connectionDetails)
 #'     on.exit(DatabaseConnector::disconnect(connection))
 #'   }
-#' 
+#'
 #'   if (oldCohortId != newCohortId) {
 #'     if (!purgeConflicts) {
 #'       cohortIdsInCohortTable <-
@@ -236,7 +236,7 @@
 #'           x = newCohortId,
 #'           y = cohortIdsInCohortTable %>% unique()
 #'         )
-#' 
+#'
 #'       if (length(conflicitingCohortIdsInTargetCohortTable) > 0) {
 #'         stop(
 #'           paste0(
@@ -249,11 +249,11 @@
 #'       }
 #'     }
 #'   }
-#' 
+#'
 #'   tempTableName <- generateRandomString()
 #'   tempTable1 <- paste0("#", tempTableName, "1")
 #'   tempTable2 <- paste0("#", tempTableName, "2")
-#' 
+#'
 #'   copyCohortsToTempTable(
 #'     connection = connection,
 #'     oldToNewCohortId = dplyr::tibble(oldCohortId = oldCohortId, newCohortId = newCohortId),
@@ -261,8 +261,8 @@
 #'     sourceCohortTable = cohortTable,
 #'     targetCohortTable = tempTable1
 #'   )
-#' 
-#' 
+#'
+#'
 #'   ## Cohort Start Filter Range -----
 #'   if (!is.null(cohortStartFilterRange)) {
 #'     sql <- "  DROP TABLE IF EXISTS @temp_table_2;
@@ -278,18 +278,18 @@
 #'           	      cohort_start_date <= DATEFROMPARTS( @year_cohort_censor_start_high,
 #'                             			                    @month_cohort_censor_start_high,
 #'                             			                    @day_cohort_censor_start_high);
-#' 
-#' 
+#'
+#'
 #'           	DROP TABLE IF EXISTS @temp_table_1;
-#' 
+#'
 #'           SELECT *
 #'           INTO @temp_table_1
 #'           FROM @temp_table_2
 #'           WHERE cohort_start_date <= cohort_end_date;
-#' 
+#'
 #'           DROP TABLE IF EXISTS @temp_table_2;
 #'   "
-#' 
+#'
 #'     DatabaseConnector::renderTranslateExecuteSql(
 #'       connection = connection,
 #'       sql = sql,
@@ -307,7 +307,7 @@
 #'       temp_table_2 = tempTable2
 #'     )
 #'   }
-#' 
+#'
 #'   ## Cohort End Filter Range -----
 #'   if (!is.null(cohortEndFilterRange)) {
 #'     sql <- "  DROP TABLE IF EXISTS @temp_table_2;
@@ -323,17 +323,17 @@
 #'           	      cohort_end_date <= DATEFROMPARTS( @year_cohort_censor_end_high,
 #'                             			                    @month_cohort_censor_end_high,
 #'                             			                    @day_cohort_censor_end_high);
-#' 
+#'
 #'           	DROP TABLE IF EXISTS @temp_table_1;
-#' 
+#'
 #'           SELECT *
 #'           INTO @temp_table_1
 #'           FROM @temp_table_2
 #'           WHERE cohort_start_date <= cohort_end_date;
-#' 
+#'
 #'           DROP TABLE IF EXISTS @temp_table_2;
 #'   "
-#' 
+#'
 #'     DatabaseConnector::renderTranslateExecuteSql(
 #'       connection = connection,
 #'       sql = sql,
@@ -351,7 +351,7 @@
 #'       temp_table_2 = tempTable2
 #'     )
 #'   }
-#' 
+#'
 #'   ## filter- Gender Concept Id -----
 #'   if (!is.null(filterGenderConceptId)) {
 #'     sql <- "DROP TABLE IF EXISTS @temp_table_2;
@@ -364,16 +364,16 @@
 #'           	INNER JOIN @cdm_database_schema.person p
 #'           	ON t.subject_id = p.person_id
 #'           	WHERE p.gender_concept_id IN (@gender_concept_id);
-#' 
+#'
 #'           	DROP TABLE IF EXISTS @temp_table_1;
-#' 
+#'
 #'           SELECT *
 #'           INTO @temp_table_1
 #'           FROM @temp_table_2;
-#' 
+#'
 #'           DROP TABLE IF EXISTS @temp_table_2;
 #'   "
-#' 
+#'
 #'     DatabaseConnector::renderTranslateExecuteSql(
 #'       connection = connection,
 #'       sql = sql,
@@ -387,8 +387,8 @@
 #'       temp_table_2 = tempTable2
 #'     )
 #'   }
-#' 
-#' 
+#'
+#'
 #'   ## filter- Age Range -----
 #'   if (!is.null(filterByAgeRange)) {
 #'     sql <- "DROP TABLE IF EXISTS @temp_table_2;
@@ -402,16 +402,16 @@
 #'           	ON t.subject_id = p.person_id
 #'           	WHERE YEAR(t.cohort_start_date) - p.year_of_birth >= @age_lower
 #'           	      AND YEAR(t.cohort_start_date) - p.year_of_birth <= @age_higher;
-#' 
+#'
 #'           	DROP TABLE IF EXISTS @temp_table_1;
-#' 
+#'
 #'           SELECT *
 #'           INTO @temp_table_1
 #'           FROM @temp_table_2;
-#' 
+#'
 #'           DROP TABLE IF EXISTS @temp_table_2;
 #'   "
-#' 
+#'
 #'     DatabaseConnector::renderTranslateExecuteSql(
 #'       connection = connection,
 #'       sql = sql,
@@ -426,11 +426,11 @@
 #'       temp_table_2 = tempTable2
 #'     )
 #'   }
-#' 
+#'
 #'   ## First Occurrence -----
 #'   if (firstOccurrence) {
 #'     sql <- "  DROP TABLE IF EXISTS @temp_table_2;
-#' 
+#'
 #'             SELECT cohort_definition_id,
 #'                    subject_id,
 #'                    min(cohort_start_date) cohort_start_date,
@@ -438,16 +438,16 @@
 #'           	INTO @temp_table_2
 #'           	FROM @temp_table_1
 #'           	GROUP BY cohort_definition_id, subject_id;
-#' 
+#'
 #'           	DROP TABLE IF EXISTS @temp_table_1;
-#' 
+#'
 #'           SELECT *
 #'           INTO @temp_table_1
 #'           FROM @temp_table_2;
-#' 
+#'
 #'           DROP TABLE IF EXISTS @temp_table_2;
 #'   "
-#' 
+#'
 #'     DatabaseConnector::renderTranslateExecuteSql(
 #'       connection = connection,
 #'       sql = sql,
@@ -459,12 +459,12 @@
 #'       temp_table_2 = tempTable2
 #'     )
 #'   }
-#' 
-#' 
+#'
+#'
 #'   ## Filter cohorts by minimum cohort period -----
 #'   if (!is.null(filterByMinimumCohortPeriod)) {
 #'     sql <- "  DROP TABLE IF EXISTS @temp_table_2;
-#' 
+#'
 #'             SELECT cohort_definition_id,
 #'                    subject_id,
 #'                    cohort_start_date,
@@ -472,16 +472,16 @@
 #'           	INTO @temp_table_2
 #'           	FROM @temp_table_1
 #'           	WHERE DATEDIFF(day, cohort_start_date, cohort_end_date) >= @min_period;
-#' 
+#'
 #'           	DROP TABLE IF EXISTS @temp_table_1;
-#' 
+#'
 #'           SELECT *
 #'           INTO @temp_table_1
 #'           FROM @temp_table_2;
-#' 
+#'
 #'           DROP TABLE IF EXISTS @temp_table_2;
 #'   "
-#' 
+#'
 #'     DatabaseConnector::renderTranslateExecuteSql(
 #'       connection = connection,
 #'       sql = sql,
@@ -494,12 +494,12 @@
 #'       min_period = filterByMinimumCohortPeriod
 #'     )
 #'   }
-#' 
-#' 
+#'
+#'
 #'   ## Filter by minimum prior continuous observation period -----
 #'   if (!is.null(filterByMinimumPriorObservationPeriod)) {
 #'     sql <- "  DROP TABLE IF EXISTS @temp_table_2;
-#' 
+#'
 #'             SELECT cohort_definition_id,
 #'                    subject_id,
 #'                    cohort_start_date,
@@ -511,16 +511,16 @@
 #'           	    AND observation_period_start_date <= cohort_start_date
 #' 		            AND observation_period_end_date >= cohort_start_date
 #'           	WHERE DATEDIFF(DAY, observation_period_start_date, cohort_start_date) >= @min_period;
-#' 
+#'
 #'           	DROP TABLE IF EXISTS @temp_table_1;
-#' 
+#'
 #'           SELECT *
 #'           INTO @temp_table_1
 #'           FROM @temp_table_2;
-#' 
+#'
 #'           DROP TABLE IF EXISTS @temp_table_2;
 #'   "
-#' 
+#'
 #'     DatabaseConnector::renderTranslateExecuteSql(
 #'       connection = connection,
 #'       sql = sql,
@@ -534,12 +534,12 @@
 #'       min_period = filterByMinimumPriorObservationPeriod
 #'     )
 #'   }
-#' 
-#' 
+#'
+#'
 #'   ## Filter by minimum post continuous observation period -----
 #'   if (!is.null(filterByMinimumPostObservationPeriod)) {
 #'     sql <- "  DROP TABLE IF EXISTS @temp_table_2;
-#' 
+#'
 #'             SELECT cohort_definition_id,
 #'                    subject_id,
 #'                    cohort_start_date,
@@ -551,16 +551,16 @@
 #'           	    AND observation_period_start_date <= cohort_start_date
 #' 		            AND observation_period_end_date >= cohort_start_date
 #'           	WHERE DATEDIFF(DAY, cohort_start_date, observation_period_end_date) >= @min_period;
-#' 
+#'
 #'           	DROP TABLE IF EXISTS @temp_table_1;
-#' 
+#'
 #'           SELECT *
 #'           INTO @temp_table_1
 #'           FROM @temp_table_2;
-#' 
+#'
 #'           DROP TABLE IF EXISTS @temp_table_2;
 #'   "
-#' 
+#'
 #'     DatabaseConnector::renderTranslateExecuteSql(
 #'       connection = connection,
 #'       sql = sql,
@@ -574,7 +574,7 @@
 #'       min_period = filterByMinimumPostObservationPeriod
 #'     )
 #'   }
-#' 
+#'
 #'   if (oldCohortId != newCohortId) {
 #'     ParallelLogger::logTrace(
 #'       paste0(
@@ -590,7 +590,7 @@
 #'     cohortTable = cohortTable,
 #'     cohortIds = newCohortId
 #'   )
-#' 
+#'
 #'   DatabaseConnector::renderTranslateExecuteSql(
 #'     connection = connection,
 #'     sql = " INSERT INTO {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table}
@@ -605,7 +605,7 @@
 #'     cohort_table = cohortTable,
 #'     temp_table_1 = tempTable1
 #'   )
-#' 
+#'
 #'   DatabaseConnector::renderTranslateExecuteSql(
 #'     connection = connection,
 #'     sql = " DROP TABLE IF EXISTS @temp_table_1;

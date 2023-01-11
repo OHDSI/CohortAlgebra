@@ -275,7 +275,7 @@ testthat::test_that("Testing cohort era fy", {
     table_temp = tableName,
     cohort_database_schema = cohortDatabaseSchema,
     cdm_database_schema = cohortDatabaseSchema,
-    progressBar = FALSE, 
+    progressBar = FALSE,
     reportOverallTime = FALSE
   )
 })

@@ -781,14 +781,16 @@ cohort %>%
 We can censor the dates (left, right, or both). Parameter `cohortStartCensorDate` performs left censor, while `cohortEndEndCensorDate` performs right censor. This function is useful if you need to force exit based on calendar dates.
 
 ```{r tidy=FALSE,eval=TRUE, echo=TRUE}
-CohortAlgebra::modifyCohort(
+CohortAlgebra::censorCohortDates(
   connection = connection,
-  cohortDatabaseSchema = cohortDatabaseSchema,
-  cohortTable = tableName,
+  sourceCohortDatabaseSchema = cohortDatabaseSchema,
+  sourceCohortTable = tableName,
+  targetCohortDatabaseSchema = cohortDatabaseSchema,
+  targetCohortTable = tableName,
   oldCohortId = 1,
   newCohortId = 2,
-  cohortStartCensorDate = as.Date("1999-01-05"), # for left censor
-  cohortEndCensorDate = as.Date("1999-01-25") # for right censor
+  cohortStartDateLeftCensor = as.Date("1999-01-05"), # for left censor
+  cohortEndDateRightCensor = as.Date("1999-01-25") # for right censor
 )
 ```
 
@@ -814,26 +816,75 @@ cohortObserved
 ```
 
 
-### Example 2: Modify cohort by filtering cohort records by date range.
-We can also filter an instantiated cohort and create a new cohort by filtering the original cohort by date ranges. This may be applied to cohort_start_date, cohort_end_date or both. Lets take this cohort as an example:
+<!-- ### Example 2: Modify cohort by filtering cohort records by date range. -->
+<!-- We can also filter an instantiated cohort and create a new cohort by filtering the original cohort by date ranges. This may be applied to cohort_start_date, cohort_end_date or both. Lets take this cohort as an example: -->
+
+
+<!-- ```{r tidy=FALSE,eval=TRUE, echo=FALSE} -->
+<!-- cohort %>% -->
+<!--   dplyr::filter(.data$cohortDefinitionId == 3) -->
+<!-- ``` -->
+
+<!-- We can filter by cohort_start_date using the parameter cohortStartFilterRange as follows: -->
+
+<!-- ```{r tidy=FALSE,eval=TRUE, echo=TRUE} -->
+<!-- CohortAlgebra::modifyCohort( -->
+<!--   connection = connection, -->
+<!--   cohortDatabaseSchema = cohortDatabaseSchema, -->
+<!--   cohortTable = tableName, -->
+<!--   oldCohortId = 3, -->
+<!--   newCohortId = 2, -->
+<!--   cohortStartFilterRange = c(as.Date("1998-01-01"), as.Date("1999-12-31")), -->
+<!--   purgeConflicts = TRUE -->
+<!-- ) -->
+<!-- ``` -->
+
+<!-- ```{r tidy=FALSE,eval=TRUE, echo=FALSE} -->
+<!-- cohortObserved <- -->
+<!--   DatabaseConnector::renderTranslateQuerySql( -->
+<!--     connection = connection, -->
+<!--     sql = paste0( -->
+<!--       "SELECT * FROM @cohort_database_schema.@table_name -->
+<!--         WHERE cohort_definition_id = 2 -->
+<!--         order by cohort_definition_id, subject_id, cohort_start_date;" -->
+<!--     ), -->
+<!--     cohort_database_schema = cohortDatabaseSchema, -->
+<!--     table_name = tableName, -->
+<!--     snakeCaseToCamelCase = TRUE -->
+<!--   ) %>% -->
+<!--   dplyr::tibble() -->
+<!-- ``` -->
+<!-- Gives the following output. Note only records where the cohort_start_date was within the given date range became cohortId 2. -->
+
+<!-- ```{r tidy=FALSE,eval=TRUE, echo=FALSE} -->
+<!-- cohortObserved -->
+<!-- ``` -->
+
+
+
+### Example 3: Change persistence criteria for cohort.
+We can change the persistence criteria for a previously instantiated cohort. Lets take this cohort as an example:
 
 
 ```{r tidy=FALSE,eval=TRUE, echo=FALSE}
 cohort %>%
-  dplyr::filter(.data$cohortDefinitionId == 3)
+  dplyr::filter(.data$cohortDefinitionId == 1)
 ```
 
-We can filter by cohort_start_date using the parameter cohortStartFilterRange as follows:
+We can change persistence as follows follows:
 
-```{r tidy=FALSE,eval=TRUE, echo=TRUE}
-CohortAlgebra::modifyCohort(
+```{r tidy=FALSE,eval=FALSE, echo=TRUE}
+CohortAlgebra::applyCohortPersistenceCriteria(
   connection = connection,
-  cohortDatabaseSchema = cohortDatabaseSchema,
-  cohortTable = tableName,
-  oldCohortId = 3,
+  sourceCohortDatabaseSchema = cohortDatabaseSchema,
+  sourceCohortTable = tableName,
+  targetCohortDatabaseSchema = cohortDatabaseSchema,
+  targetCohortTable = tableName,
+  cdmDatabaseSchema = cohortDatabaseSchema,
+  oldCohortId = 1,
   newCohortId = 2,
-  cohortStartFilterRange = c(as.Date("1998-01-01"), as.Date("1999-12-31")),
-  purgeConflicts = TRUE
+  purgeConflicts = TRUE,
+  offsetCohortStartDate = 30
 )
 ```
 
@@ -852,40 +903,13 @@ cohortObserved <-
   ) %>%
   dplyr::tibble()
 ```
-Gives the following output. Note only records where the cohort_start_date was within the given date range became cohortId 2.
+
+A new cohort will be created with cohortId who cohort end date is now different because of change in persistence critera.
+
 
 ```{r tidy=FALSE,eval=TRUE, echo=FALSE}
 cohortObserved
 ```
-
-
-
-### Example 3: Pad cohorts by adding/substracting days from cohort start or end date.
-We can add or subtracts days to an instantiated cohort and create a new cohort. Lets take this cohort as an example:
-
-
-```{r tidy=FALSE,eval=TRUE, echo=FALSE}
-cohort %>%
-  dplyr::filter(.data$cohortDefinitionId == 1)
-```
-
-We can pad days as follows:
-
-```{r tidy=FALSE,eval=FALSE, echo=TRUE}
-CohortAlgebra::modifyCohort(
-  connection = connection,
-  cohortDatabaseSchema = cohortDatabaseSchema,
-  cdmDatabaseSchema = cohortDatabaseSchema,
-  cohortTable = tableName,
-  oldCohortId = 1,
-  newCohortId = 2,
-  purgeConflicts = TRUE,
-  cohortStartPadDays = -10,
-  cohortEndPadDays = 5
-)
-```
-Notes: because padding days may extend cohort period outside the observation_period (which is not allowed), this function will require access to the cdmDatabaseSchema and the observation_period table.
-
 
 
 

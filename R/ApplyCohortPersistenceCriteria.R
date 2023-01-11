@@ -61,7 +61,7 @@
 #'                                       value that is minimum of the cohort_end_date + offsetCohortEndDate
 #'                                       or observation_period_end_date of the overlapping observation period. An era logic
 #'                                       will be applied.
-#'                                       
+#'
 #' @template CdmDatabaseSchema
 #'
 #' @return
@@ -72,8 +72,8 @@
 #' \dontrun{
 #' CohortAlgebra::applyCohortPersistenceCriteria(
 #'   connection = connection,
-#'   sourceCohortTable = 'cohort',
-#'   targetCohortTable = 'cohort',
+#'   sourceCohortTable = "cohort",
+#'   targetCohortTable = "cohort",
 #'   oldCohortId = 3,
 #'   newCohortId = 2,
 #'   tillEndOfObservationPeriod = TRUE,
@@ -172,26 +172,26 @@ applyCohortPersistenceCriteria <- function(connectionDetails = NULL,
     null.ok = TRUE,
     add = errorMessages
   )
-  
+
   checkmate::reportAssertions(collection = errorMessages)
-  
+
   if (sum(
-    tillEndOfObservationPeriod,!is.null(offsetCohortStartDate),!is.null(offsetCohortEndDate)
+    tillEndOfObservationPeriod, !is.null(offsetCohortStartDate), !is.null(offsetCohortEndDate)
   ) > 1) {
     stop("Multiple persistence criteria specified.")
   }
-  
+
   if (sum(
-    tillEndOfObservationPeriod,!is.null(offsetCohortStartDate),!is.null(offsetCohortEndDate)
+    tillEndOfObservationPeriod, !is.null(offsetCohortStartDate), !is.null(offsetCohortEndDate)
   ) == 0) {
     stop("No persistence criteria specified.")
   }
-  
+
   if (is.null(connection)) {
     connection <- DatabaseConnector::connect(connectionDetails)
     on.exit(DatabaseConnector::disconnect(connection))
   }
-  
+
   if (!purgeConflicts) {
     cohortIdsInCohortTable <-
       getCohortIdsInCohortTable(
@@ -201,14 +201,16 @@ applyCohortPersistenceCriteria <- function(connectionDetails = NULL,
         tempEmulationSchema = tempEmulationSchema
       )
     conflicitingCohortIdsInTargetCohortTable <-
-      intersect(x = newCohortId,
-                y = cohortIdsInCohortTable %>% unique())
-    
+      intersect(
+        x = newCohortId,
+        y = cohortIdsInCohortTable %>% unique()
+      )
+
     if (length(conflicitingCohortIdsInTargetCohortTable) > 0) {
       stop("Target cohort id already in use in target cohort table")
     }
   }
-  
+
   if (tillEndOfObservationPeriod) {
     sql <- SqlRender::loadRenderTranslateSql(
       sqlFilename = "PersistEndOfContinuousObservationPeriod.sql",
@@ -231,7 +233,7 @@ applyCohortPersistenceCriteria <- function(connectionDetails = NULL,
       reportOverallTime = FALSE
     )
   }
-  
+
   if (!is.null(offsetCohortStartDate)) {
     sql <- SqlRender::loadRenderTranslateSql(
       sqlFilename = "CohortStartDayPersistence.sql",
@@ -255,7 +257,7 @@ applyCohortPersistenceCriteria <- function(connectionDetails = NULL,
       reportOverallTime = FALSE
     )
   }
-  
+
   if (!is.null(offsetCohortEndDate)) {
     sql <- SqlRender::loadRenderTranslateSql(
       sqlFilename = "CohortEndDayPersistence.sql",

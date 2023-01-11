@@ -1,0 +1,1072 @@
+\nonstopmode{}
+\documentclass[a4paper]{book}
+\usepackage[times,inconsolata,hyper]{Rd}
+\usepackage{makeidx}
+\usepackage[utf8]{inputenc} % @SET ENCODING@
+% \usepackage{graphicx} % @USE GRAPHICX@
+\makeindex{}
+\begin{document}
+\chapter*{}
+\begin{center}
+{\textbf{\huge Package `CohortAlgebra'}}
+\par\bigskip{\large \today}
+\end{center}
+\inputencoding{utf8}
+\ifthenelse{\boolean{Rd@use@hyper}}{\hypersetup{pdftitle = {CohortAlgebra: Cohort Algebra to create new cohort(s) from existing cohorts}}}{}
+\ifthenelse{\boolean{Rd@use@hyper}}{\hypersetup{pdfauthor = {Gowtham Rao; Adam Black}}}{}
+\begin{description}
+\raggedright{}
+\item[Type]\AsIs{Package}
+\item[Title]\AsIs{Cohort Algebra to create new cohort(s) from existing cohorts}
+\item[Version]\AsIs{0.5.1}
+\item[Date]\AsIs{2023-01-10}
+\item[Maintainer]\AsIs{Gowtham Rao }\email{rao@ohdsi.org}\AsIs{}
+\item[Description]\AsIs{An R package that creates new cohort(s) from previously instantiated cohorts.}
+\item[Depends]\AsIs{DatabaseConnector (>= 5.0.0),
+R (>= 4.1.0)}
+\item[Imports]\AsIs{checkmate,
+clock,
+CohortGenerator,
+dplyr,
+lifecycle,
+ParallelLogger,
+rlang,
+SqlRender}
+\item[Suggests]\AsIs{Eunomia,
+remotes,
+rmarkdown,
+knitr,
+testthat,
+withr}
+\item[Remotes]\AsIs{ohdsi/CohortGenerator,
+ohdsi/Eunomia,
+ohdsi/ParallelLogger}
+\item[License]\AsIs{Apache License}
+\item[RoxygenNote]\AsIs{7.2.2}
+\item[VignetteBuilder]\AsIs{knitr}
+\item[Roxygen]\AsIs{list(markdown = TRUE)}
+\item[Encoding]\AsIs{UTF-8}
+\item[Language]\AsIs{en-US}
+\item[URL]\AsIs{}\url{https://ohdsi.github.io/CohortAlgebra/}\AsIs{, }\url{https://github.com/OHDSI/CohortAlgebra}\AsIs{}
+\item[BugReports]\AsIs{}\url{https://github.com/OHDSI/CohortAlgebra/issues}\AsIs{}
+\end{description}
+\Rdcontents{\R{} topics documented:}
+\inputencoding{utf8}
+\HeaderA{applyCohortPersistenceCriteria}{Apply persistence criteria.}{applyCohortPersistenceCriteria}
+%
+\begin{Description}\relax
+Apply cohort persistence criteria. Only one persistence criteria may be used at a time. The three options are a) persist till
+end of observation period, b) persist for a certain number of fixed days after cohort\_start\_date, c) persist for
+a certain number of fixed days after cohort\_end\_days. In all cases, the given cohort (oldCohortId) is treated as
+an event and the criteria is applied to get new event dates. Event dates are converted to cohort dates by cohort
+era fy routine in final step.
+
+Offset: The event end date is derived from adding a number of days to the event's start or end date. If an offset is added to the
+event's start date, all cohort episodes will have the same fixed duration (limited by duration of continuos observation).
+If an offset is added to the event's end date, persons in the cohort may have varying cohort duration
+times due to the varying event duration. This event persistence assures that the cohort end date will be no greater than
+the selected index event date, plus the days offset.
+
+\strong{[Experimental]}
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+applyCohortPersistenceCriteria(
+  connectionDetails = NULL,
+  connection = NULL,
+  sourceCohortDatabaseSchema = NULL,
+  sourceCohortTable,
+  targetCohortDatabaseSchema = NULL,
+  targetCohortTable,
+  cdmDatabaseSchema,
+  oldCohortId,
+  newCohortId,
+  tillEndOfObservationPeriod = FALSE,
+  offsetCohortStartDate = NULL,
+  offsetCohortEndDate = NULL,
+  tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
+  purgeConflicts = FALSE
+)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{connectionDetails}] An object of type \code{connectionDetails} as created using the
+\code{\LinkA{createConnectionDetails}{createConnectionDetails}} function in the
+DatabaseConnector package. Can be left NULL if \code{connection} is
+provided.
+
+\item[\code{connection}] An object of type \code{connection} as created using the
+\code{\LinkA{connect}{connect}} function in the
+DatabaseConnector package. Can be left NULL if \code{connectionDetails}
+is provided, in which case a new connection will be opened at the start
+of the function, and closed when the function finishes.
+
+\item[\code{cdmDatabaseSchema}] Schema name where your patient-level data in OMOP CDM format resides.
+Note that for SQL Server, this should include both the database and
+schema name, for example 'cdm\_data.dbo'.
+
+\item[\code{oldCohortId}] The cohort id of the cohort that needs to be modified.
+
+\item[\code{newCohortId}] The cohort id of the output cohort.
+
+\item[\code{tillEndOfObservationPeriod}] The cohort will persist till end of the overlapping observation period. An era logic
+will be applied.
+
+\item[\code{offsetCohortStartDate}] 
+
+\item[\code{offsetCohortEndDate}] Apply a fixed persistence criteria relative to cohort end date. A new cohort
+end date will be created by adding persistence days to cohort\_end\_date with a
+value that is minimum of the cohort\_end\_date + offsetCohortEndDate
+or observation\_period\_end\_date of the overlapping observation period. An era logic
+will be applied.
+
+\item[\code{tempEmulationSchema}] Some database platforms like Oracle and Impala do not truly support
+temp tables. To emulate temp tables, provide a schema with write
+privileges where temp tables can be created.
+
+\item[\code{purgeConflicts}] If there are conflicts in the target cohort table i.e. the target cohort table
+already has records with newCohortId, do you want to purge and replace them
+with transformed. By default - it will not be replaced, and an error message is thrown.
+
+\item[\code{cohortTable}] The name of the cohort table.
+
+\item[\code{cohortDatabaseSchema}] Schema name where your cohort tables reside. Note that for SQL Server,
+this should include both the database and schema name, for example
+'scratch.dbo'.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Examples}
+\begin{ExampleCode}
+## Not run: 
+CohortAlgebra::applyCohortPersistenceCriteria(
+  connection = connection,
+  sourceCohortTable = 'cohort',
+  targetCohortTable = 'cohort',
+  oldCohortId = 3,
+  newCohortId = 2,
+  tillEndOfObservationPeriod = TRUE,
+  purgeConflicts = TRUE
+)
+
+## End(Not run)
+
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{censorCohortDates}{Censor cohort date}{censorCohortDates}
+%
+\begin{Description}\relax
+Censor cohort date by right, left, both censoring. All cohorts will be truncated to the given date.
+
+\strong{[Experimental]}
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+censorCohortDates(
+  connectionDetails = NULL,
+  connection = NULL,
+  sourceCohortDatabaseSchema = NULL,
+  sourceCohortTable,
+  targetCohortDatabaseSchema = NULL,
+  targetCohortTable,
+  oldCohortId,
+  newCohortId,
+  cohortStartDateLeftCensor = NULL,
+  cohortEndDateRightCensor = NULL,
+  tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
+  purgeConflicts = FALSE
+)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{connectionDetails}] An object of type \code{connectionDetails} as created using the
+\code{\LinkA{createConnectionDetails}{createConnectionDetails}} function in the
+DatabaseConnector package. Can be left NULL if \code{connection} is
+provided.
+
+\item[\code{connection}] An object of type \code{connection} as created using the
+\code{\LinkA{connect}{connect}} function in the
+DatabaseConnector package. Can be left NULL if \code{connectionDetails}
+is provided, in which case a new connection will be opened at the start
+of the function, and closed when the function finishes.
+
+\item[\code{oldCohortId}] The cohort id of the cohort that needs to be modified.
+
+\item[\code{newCohortId}] The cohort id of the output cohort.
+
+\item[\code{cohortStartDateLeftCensor}] the minimum date for the cohort start.
+
+\item[\code{cohortEndDateRightCensor}] the maximum date for the cohort end.
+
+\item[\code{tempEmulationSchema}] Some database platforms like Oracle and Impala do not truly support
+temp tables. To emulate temp tables, provide a schema with write
+privileges where temp tables can be created.
+
+\item[\code{purgeConflicts}] If there are conflicts in the target cohort table i.e. the target cohort table
+already has records with newCohortId, do you want to purge and replace them
+with transformed. By default - it will not be replaced, and an error message is thrown.
+
+\item[\code{cohortTable}] The name of the cohort table.
+
+\item[\code{cohortDatabaseSchema}] Schema name where your cohort tables reside. Note that for SQL Server,
+this should include both the database and schema name, for example
+'scratch.dbo'.
+
+\item[\code{cdmDatabaseSchema}] Schema name where your patient-level data in OMOP CDM format resides.
+Note that for SQL Server, this should include both the database and
+schema name, for example 'cdm\_data.dbo'.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Examples}
+\begin{ExampleCode}
+## Not run: 
+CohortAlgebra::censorCohortDates(
+  connection = connection,
+  sourceCohortTable = 'cohort',
+  targetCohortTable = 'cohort',
+  oldCohortId = 3,
+  newCohortId = 2,
+  cohortStartDateLeftCensor = as.Date("2010-01-09"),
+  purgeConflicts = TRUE
+)
+
+## End(Not run)
+
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{copyCohorts}{Copy cohorts from one table to another}{copyCohorts}
+%
+\begin{Description}\relax
+Copy cohorts from one table to another table.
+
+\strong{[Stable]}
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+copyCohorts(
+  connectionDetails = NULL,
+  connection = NULL,
+  oldToNewCohortId,
+  sourceCohortDatabaseSchema = NULL,
+  targetCohortDatabaseSchema = sourceCohortDatabaseSchema,
+  sourceCohortTable,
+  targetCohortTable,
+  purgeConflicts = FALSE,
+  tempEmulationSchema = getOption("sqlRenderTempEmulationSchema")
+)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{connectionDetails}] An object of type \code{connectionDetails} as created using the
+\code{\LinkA{createConnectionDetails}{createConnectionDetails}} function in the
+DatabaseConnector package. Can be left NULL if \code{connection} is
+provided.
+
+\item[\code{connection}] An object of type \code{connection} as created using the
+\code{\LinkA{connect}{connect}} function in the
+DatabaseConnector package. Can be left NULL if \code{connectionDetails}
+is provided, in which case a new connection will be opened at the start
+of the function, and closed when the function finishes.
+
+\item[\code{oldToNewCohortId}] A data.frame object with two columns. oldCohortId and newCohortId. Both should be integers.
+The oldCohortId are the cohorts that are the input cohorts that need to be transformed.
+The newCohortId are the cohortIds of the corresponding output after transformation.
+If the oldCohortId = newCohortId then the data corresponding to oldCohortId
+will be replaced by the data from the newCohortId.
+
+\item[\code{sourceCohortDatabaseSchema}] The database schema of the source cohort table.
+
+\item[\code{targetCohortDatabaseSchema}] The database schema of the source cohort table.
+
+\item[\code{sourceCohortTable}] The name of the source cohort table.
+
+\item[\code{targetCohortTable}] The name of the target cohort table.
+
+\item[\code{purgeConflicts}] If there are conflicts in the target cohort table i.e. the target cohort table
+already has records with newCohortId, do you want to purge and replace them
+with transformed. By default - it will not be replaced, and an error message is thrown.
+
+\item[\code{tempEmulationSchema}] Some database platforms like Oracle and Impala do not truly support
+temp tables. To emulate temp tables, provide a schema with write
+privileges where temp tables can be created.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Examples}
+\begin{ExampleCode}
+## Not run: 
+CohortAlgebra::copyCohorts(
+  connection = connection,
+  sourceCohortDatabaseSchema = cohortDatabaseSchema,
+  targetCohortDatabaseSchema = cohortDatabaseSchema,
+  sourceCohortTable = tableName,
+  targetCohortTable = tableName,
+  purgeConflicts = TRUE
+)
+
+## End(Not run)
+
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{copyCohortsToTempTable}{Copy cohorts to temp table}{copyCohortsToTempTable}
+%
+\begin{Description}\relax
+Copy cohorts to temp table. This function is not exported.
+
+\strong{[Stable]}
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+copyCohortsToTempTable(
+  connection = NULL,
+  oldToNewCohortId,
+  sourceCohortDatabaseSchema = NULL,
+  sourceCohortTable,
+  targetCohortTable = "#cohort_rows",
+  tempEmulationSchema = getOption("sqlRenderTempEmulationSchema")
+)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{connection}] An object of type \code{connection} as created using the
+\code{\LinkA{connect}{connect}} function in the
+DatabaseConnector package. Can be left NULL if \code{connectionDetails}
+is provided, in which case a new connection will be opened at the start
+of the function, and closed when the function finishes.
+
+\item[\code{oldToNewCohortId}] A data.frame object with two columns. oldCohortId and newCohortId. Both should be integers.
+The oldCohortId are the cohorts that are the input cohorts that need to be transformed.
+The newCohortId are the cohortIds of the corresponding output after transformation.
+If the oldCohortId = newCohortId then the data corresponding to oldCohortId
+will be replaced by the data from the newCohortId.
+
+\item[\code{sourceCohortDatabaseSchema}] The database schema of the source cohort table.
+
+\item[\code{sourceCohortTable}] The name of the source cohort table.
+
+\item[\code{targetCohortTable}] A temp table to copy the cohorts from the source table.
+
+\item[\code{tempEmulationSchema}] Some database platforms like Oracle and Impala do not truly support
+temp tables. To emulate temp tables, provide a schema with write
+privileges where temp tables can be created.
+\end{ldescription}
+\end{Arguments}
+\inputencoding{utf8}
+\HeaderA{deleteCohort}{Delete cohort}{deleteCohort}
+%
+\begin{Description}\relax
+Delete all records for a given set of cohorts from the cohort table. Edit privileges
+to the cohort table is required.
+
+\strong{[Stable]}
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+deleteCohort(
+  connectionDetails = NULL,
+  connection = NULL,
+  cohortDatabaseSchema,
+  cohortTable = "cohort",
+  tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
+  cohortIds
+)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{connectionDetails}] An object of type \code{connectionDetails} as created using the
+\code{\LinkA{createConnectionDetails}{createConnectionDetails}} function in the
+DatabaseConnector package. Can be left NULL if \code{connection} is
+provided.
+
+\item[\code{connection}] An object of type \code{connection} as created using the
+\code{\LinkA{connect}{connect}} function in the
+DatabaseConnector package. Can be left NULL if \code{connectionDetails}
+is provided, in which case a new connection will be opened at the start
+of the function, and closed when the function finishes.
+
+\item[\code{cohortDatabaseSchema}] Schema name where your cohort tables reside. Note that for SQL Server,
+this should include both the database and schema name, for example
+'scratch.dbo'.
+
+\item[\code{cohortTable}] The name of the cohort table.
+
+\item[\code{tempEmulationSchema}] Some database platforms like Oracle and Impala do not truly support
+temp tables. To emulate temp tables, provide a schema with write
+privileges where temp tables can be created.
+
+\item[\code{cohortIds}] A vector of one or more Cohort Ids.
+\end{ldescription}
+\end{Arguments}
+\inputencoding{utf8}
+\HeaderA{eraFyCohorts}{Era-fy cohort(s)}{eraFyCohorts}
+%
+\begin{Description}\relax
+Given a table with cohort\_definition\_id, subject\_id, cohort\_start\_date,
+cohort\_end\_date execute era logic. This will delete and replace the
+original rows with the cohort\_definition\_id(s). edit privileges
+to the cohort table is required.
+
+\strong{[Stable]}
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+eraFyCohorts(
+  connectionDetails = NULL,
+  connection = NULL,
+  sourceCohortDatabaseSchema = NULL,
+  sourceCohortTable = "cohort",
+  targetCohortDatabaseSchema = NULL,
+  targetCohortTable,
+  oldCohortIds,
+  newCohortId,
+  eraconstructorpad = 0,
+  cdmDatabaseSchema = NULL,
+  purgeConflicts = FALSE,
+  tempEmulationSchema = getOption("sqlRenderTempEmulationSchema")
+)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{connectionDetails}] An object of type \code{connectionDetails} as created using the
+\code{\LinkA{createConnectionDetails}{createConnectionDetails}} function in the
+DatabaseConnector package. Can be left NULL if \code{connection} is
+provided.
+
+\item[\code{connection}] An object of type \code{connection} as created using the
+\code{\LinkA{connect}{connect}} function in the
+DatabaseConnector package. Can be left NULL if \code{connectionDetails}
+is provided, in which case a new connection will be opened at the start
+of the function, and closed when the function finishes.
+
+\item[\code{sourceCohortDatabaseSchema}] Schema name where your source cohort tables reside. Note that for SQL Server,
+this should include both the database and schema name, for example
+'scratch.dbo'.
+
+\item[\code{sourceCohortTable}] The name of the source cohort table.
+
+\item[\code{targetCohortDatabaseSchema}] Schema name where your target cohort tables reside. Note that for SQL Server,
+this should include both the database and schema name, for example
+'scratch.dbo'.
+
+\item[\code{targetCohortTable}] The name of the target cohort table.
+
+\item[\code{oldCohortIds}] An array of 1 or more integer id representing the cohort id of the cohort
+on which the function will be applied.
+
+\item[\code{newCohortId}] The cohort id of the output cohort.
+
+\item[\code{eraconstructorpad}] Optional value to pad cohort era construction logic. Default = 0. i.e. no padding.
+
+\item[\code{cdmDatabaseSchema}] Schema name where your patient-level data in OMOP CDM format resides.
+Note that for SQL Server, this should include both the database and
+schema name, for example 'cdm\_data.dbo'.
+
+\item[\code{purgeConflicts}] If there are conflicts in the target cohort table i.e. the target cohort table
+already has records with newCohortId, do you want to purge and replace them
+with transformed. By default - it will not be replaced, and an error message is thrown.
+
+\item[\code{tempEmulationSchema}] Some database platforms like Oracle and Impala do not truly support
+temp tables. To emulate temp tables, provide a schema with write
+privileges where temp tables can be created.
+\end{ldescription}
+\end{Arguments}
+\inputencoding{utf8}
+\HeaderA{generateBaseCohorts}{Generate Base Cohorts}{generateBaseCohorts}
+%
+\begin{Description}\relax
+Generates a set of cohorts that are commonly used in cohort algebra functions. Four cohorts will be generated
+with the cohort\_definition\_id of 0, -1, -2, -3 for Observation Period, Visits all, Visits Inpatient, Visits Emergency Room.
+
+\strong{[Experimental]}
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+generateBaseCohorts(
+  connectionDetails = NULL,
+  cohortDatabaseSchema,
+  cdmDatabaseSchema,
+  cohortTable = "cohorts_base",
+  incremental,
+  incrementalFolder = NULL,
+  tempEmulationSchema = getOption("sqlRenderTempEmulationSchema")
+)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{connectionDetails}] An object of type \code{connectionDetails} as created using the
+\code{\LinkA{createConnectionDetails}{createConnectionDetails}} function in the
+DatabaseConnector package. Can be left NULL if \code{connection} is
+provided.
+
+\item[\code{cohortDatabaseSchema}] Schema name where your cohort tables reside. Note that for SQL Server,
+this should include both the database and schema name, for example
+'scratch.dbo'.
+
+\item[\code{cdmDatabaseSchema}] Schema name where your patient-level data in OMOP CDM format resides.
+Note that for SQL Server, this should include both the database and
+schema name, for example 'cdm\_data.dbo'.
+
+\item[\code{cohortTable}] The name of the cohort table.
+
+\item[\code{incremental}] Create only cohorts that haven't been created before?
+
+\item[\code{incrementalFolder}] If \code{incremental = TRUE}, specify a folder where records are
+kept of which definition has been executed.
+
+\item[\code{tempEmulationSchema}] Some database platforms like Oracle and Impala do not truly support
+temp tables. To emulate temp tables, provide a schema with write
+privileges where temp tables can be created.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Examples}
+\begin{ExampleCode}
+## Not run: 
+CohortAlgebra::generateBaseCohorts(
+  connection = connection,
+  cohortDatabaseSchema = cohortDatabaseSchema,
+  cdmDatabaseSchema = cdmDatabaseSchema,
+  cohortTable = tableName,
+  incremental = TRUE,
+  incrementalFolder = incrementalFolder
+)
+
+## End(Not run)
+
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{getBaseCohortDefinitionSet}{Base cohort, cohort definition set.}{getBaseCohortDefinitionSet}
+%
+\begin{Description}\relax
+Base cohort, cohort definition set.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+getBaseCohortDefinitionSet()
+\end{verbatim}
+\end{Usage}
+\inputencoding{utf8}
+\HeaderA{getCohortIdsInCohortTable}{Get cohort ids in table}{getCohortIdsInCohortTable}
+%
+\begin{Description}\relax
+Get cohort ids in table
+
+\strong{[Stable]}
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+getCohortIdsInCohortTable(
+  connection = NULL,
+  cohortDatabaseSchema = NULL,
+  cohortTable,
+  tempEmulationSchema = getOption("sqlRenderTempEmulationSchema")
+)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{connection}] An object of type \code{connection} as created using the
+\code{\LinkA{connect}{connect}} function in the
+DatabaseConnector package. Can be left NULL if \code{connectionDetails}
+is provided, in which case a new connection will be opened at the start
+of the function, and closed when the function finishes.
+
+\item[\code{cohortDatabaseSchema}] Schema name where your cohort tables reside. Note that for SQL Server,
+this should include both the database and schema name, for example
+'scratch.dbo'.
+
+\item[\code{cohortTable}] The name of the cohort table.
+
+\item[\code{tempEmulationSchema}] Some database platforms like Oracle and Impala do not truly support
+temp tables. To emulate temp tables, provide a schema with write
+privileges where temp tables can be created.
+\end{ldescription}
+\end{Arguments}
+\inputencoding{utf8}
+\HeaderA{intersectCohorts}{Intersect cohort(s)}{intersectCohorts}
+%
+\begin{Description}\relax
+Find the common cohort period for persons present in all the cohorts. Note: if
+subject is not found in any of the cohorts, then they will not
+be in the final cohort.
+
+\strong{[Stable]}
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+intersectCohorts(
+  connectionDetails = NULL,
+  connection = NULL,
+  sourceCohortDatabaseSchema = NULL,
+  sourceCohortTable,
+  targetCohortDatabaseSchema = NULL,
+  targetCohortTable,
+  cohortIds,
+  newCohortId,
+  purgeConflicts = FALSE,
+  tempEmulationSchema = getOption("sqlRenderTempEmulationSchema")
+)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{connectionDetails}] An object of type \code{connectionDetails} as created using the
+\code{\LinkA{createConnectionDetails}{createConnectionDetails}} function in the
+DatabaseConnector package. Can be left NULL if \code{connection} is
+provided.
+
+\item[\code{connection}] An object of type \code{connection} as created using the
+\code{\LinkA{connect}{connect}} function in the
+DatabaseConnector package. Can be left NULL if \code{connectionDetails}
+is provided, in which case a new connection will be opened at the start
+of the function, and closed when the function finishes.
+
+\item[\code{sourceCohortDatabaseSchema}] Schema name where your source cohort tables reside. Note that for SQL Server,
+this should include both the database and schema name, for example
+'scratch.dbo'.
+
+\item[\code{sourceCohortTable}] The name of the source cohort table.
+
+\item[\code{targetCohortDatabaseSchema}] Schema name where your target cohort tables reside. Note that for SQL Server,
+this should include both the database and schema name, for example
+'scratch.dbo'.
+
+\item[\code{targetCohortTable}] The name of the target cohort table.
+
+\item[\code{cohortIds}] A vector of one or more Cohort Ids.
+
+\item[\code{newCohortId}] The cohort id of the output cohort.
+
+\item[\code{purgeConflicts}] If there are conflicts in the target cohort table i.e. the target cohort table
+already has records with newCohortId, do you want to purge and replace them
+with transformed. By default - it will not be replaced, and an error message is thrown.
+
+\item[\code{tempEmulationSchema}] Some database platforms like Oracle and Impala do not truly support
+temp tables. To emulate temp tables, provide a schema with write
+privileges where temp tables can be created.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Examples}
+\begin{ExampleCode}
+## Not run: 
+intersectCohorts(
+  connectionDetails = Eunomia::getEunomiaConnectionDetails(),
+  sourceCohortDatabaseSchema = "main",
+  sourceCohortTable = "cohort",
+  cohortIds = c(1, 2, 3),
+  newCohortId = 9,
+  purgeConflicts = TRUE
+)
+
+## End(Not run)
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{keepCohortOverlaps}{Keep records in cohort that overlap with another cohort}{keepCohortOverlaps}
+%
+\begin{Description}\relax
+Keep records in cohort that overlap with another cohort. Given a Cohort A, check if the records of
+subjects in cohort A overlaps with records for the same subject in cohort B. If there is overlap
+then only keep those records in Cohort A. All non overlapping records in Cohort A will be removed.
+Overlap is defined as b.cohort\_end\_date >= a.cohort\_start\_date AND b.cohort\_start\_date <= a.cohort\_end\_date.
+The overlap logic maybe offset by using a startDayOffSet (applied on cohort A's cohort\_start\_date)
+and endDayOffSet (applied on Cohort A's cohort\_end\_date). If while applying offset, the window becomes
+such that (a.cohort\_start\_date + startDayOffSet) > (a.cohort\_end\_date + endDayOffset) that record is ignored
+and thus deleted.
+
+By default we are looking for atleast one day of overlap. We can change this to look for any number of overlap
+days e.g. 2 days of overlap in the window. The overlap days are calculated as the total number of days
+between maximum of cohort\_start\_date's of both cohorts, and minimum of cohort\_end\_date's of both cohorts, using
+offset when used.
+
+Overlap formula is (min(a.cohort\_end\_date, b.cohort\_end\_date) - max(a.cohort\_start\_date, b.cohort\_start\_date)) + 1.
+Note the use of +1, i.e. the lowest number of days of overlap is 1 day.
+
+\strong{[Experimental]}
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+keepCohortOverlaps(
+  connectionDetails = NULL,
+  connection = NULL,
+  cohortDatabaseSchema = NULL,
+  cohortTable = "cohort",
+  firstCohortId,
+  secondCohortId,
+  newCohortId,
+  offsetCohortStartDate = 0,
+  offsetCohortEndDate = 0,
+  restrictSecondCohortStartBeforeFirstCohortStart = FALSE,
+  restrictSecondCohortStartAfterFirstCohortStart = FALSE,
+  minimumOverlapDays = 1,
+  purgeConflicts = FALSE,
+  tempEmulationSchema = getOption("sqlRenderTempEmulationSchema")
+)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{connectionDetails}] An object of type \code{connectionDetails} as created using the
+\code{\LinkA{createConnectionDetails}{createConnectionDetails}} function in the
+DatabaseConnector package. Can be left NULL if \code{connection} is
+provided.
+
+\item[\code{connection}] An object of type \code{connection} as created using the
+\code{\LinkA{connect}{connect}} function in the
+DatabaseConnector package. Can be left NULL if \code{connectionDetails}
+is provided, in which case a new connection will be opened at the start
+of the function, and closed when the function finishes.
+
+\item[\code{cohortDatabaseSchema}] Schema name where your cohort tables reside. Note that for SQL Server,
+this should include both the database and schema name, for example
+'scratch.dbo'.
+
+\item[\code{cohortTable}] The name of the cohort table.
+
+\item[\code{firstCohortId}] The cohort id of the cohort whose records will be retained after the operation.
+
+\item[\code{secondCohortId}] The cohort id of the cohort that will be used to check for the presence of overlap.
+
+\item[\code{newCohortId}] The cohort id of the output cohort.
+
+\item[\code{offsetCohortStartDate}] (Default = 0) If you want to offset cohort start date, please provide a integer number.
+
+\item[\code{offsetCohortEndDate}] (Default = 0) If you want to offset cohort start date, please provide a integer number.
+
+\item[\code{restrictSecondCohortStartBeforeFirstCohortStart}] (Default = FALSE) If TRUE, then the secondCohort's cohort\_start\_date
+should be < firstCohort's cohort\_start\_date.
+
+\item[\code{restrictSecondCohortStartAfterFirstCohortStart}] (Default = FALSE) If TRUE, then the secondCohort's cohort\_start\_date
+should be > firstCohort's cohort\_start\_date.
+
+\item[\code{minimumOverlapDays}] (Default = 1) The minimum number of days of overlap.
+
+\item[\code{purgeConflicts}] If there are conflicts in the target cohort table i.e. the target cohort table
+already has records with newCohortId, do you want to purge and replace them
+with transformed. By default - it will not be replaced, and an error message is thrown.
+
+\item[\code{tempEmulationSchema}] Some database platforms like Oracle and Impala do not truly support
+temp tables. To emulate temp tables, provide a schema with write
+privileges where temp tables can be created.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Examples}
+\begin{ExampleCode}
+## Not run: 
+keepCohortOverlaps(
+  connectionDetails = Eunomia::getEunomiaConnectionDetails(),
+  cohortDatabaseSchema = "main",
+  cohortTable = "cohort",
+  firstCohortId = 1,
+  secondCohortId = 2,
+  newCohortId = 9,
+  purgeConflicts = TRUE
+)
+
+## End(Not run)
+
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{minusCohorts}{Minus cohort(s)}{minusCohorts}
+%
+\begin{Description}\relax
+Given two cohorts, substract (minus) the dates from the first cohort, the
+dates the subject also had on the second cohort.
+
+\strong{[Stable]}
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+minusCohorts(
+  connectionDetails = NULL,
+  connection = NULL,
+  sourceCohortDatabaseSchema = NULL,
+  sourceCohortTable = "cohort",
+  targetCohortDatabaseSchema = sourceCohortDatabaseSchema,
+  targetCohortTable = sourceCohortTable,
+  firstCohortId,
+  secondCohortId,
+  newCohortId,
+  purgeConflicts = FALSE,
+  tempEmulationSchema = getOption("sqlRenderTempEmulationSchema")
+)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{connectionDetails}] An object of type \code{connectionDetails} as created using the
+\code{\LinkA{createConnectionDetails}{createConnectionDetails}} function in the
+DatabaseConnector package. Can be left NULL if \code{connection} is
+provided.
+
+\item[\code{connection}] An object of type \code{connection} as created using the
+\code{\LinkA{connect}{connect}} function in the
+DatabaseConnector package. Can be left NULL if \code{connectionDetails}
+is provided, in which case a new connection will be opened at the start
+of the function, and closed when the function finishes.
+
+\item[\code{sourceCohortDatabaseSchema}] Schema name where your source cohort tables reside. Note that for SQL Server,
+this should include both the database and schema name, for example
+'scratch.dbo'.
+
+\item[\code{sourceCohortTable}] The name of the source cohort table.
+
+\item[\code{targetCohortDatabaseSchema}] Schema name where your target cohort tables reside. Note that for SQL Server,
+this should include both the database and schema name, for example
+'scratch.dbo'.
+
+\item[\code{targetCohortTable}] The name of the target cohort table.
+
+\item[\code{firstCohortId}] The cohort id of the cohort from which to subtract.
+
+\item[\code{secondCohortId}] The cohort id of the cohort that is used to subtract.
+
+\item[\code{newCohortId}] The cohort id of the output cohort.
+
+\item[\code{purgeConflicts}] If there are conflicts in the target cohort table i.e. the target cohort table
+already has records with newCohortId, do you want to purge and replace them
+with transformed. By default - it will not be replaced, and an error message is thrown.
+
+\item[\code{tempEmulationSchema}] Some database platforms like Oracle and Impala do not truly support
+temp tables. To emulate temp tables, provide a schema with write
+privileges where temp tables can be created.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Examples}
+\begin{ExampleCode}
+## Not run: 
+minusCohorts(
+  connectionDetails = Eunomia::getEunomiaConnectionDetails(),
+  sourceCohortDatabaseSchema = "main",
+  sourceCohortTable = "cohort",
+  firstCohortId = 1,
+  secondCohortId = 2,
+  newCohortId = 9,
+  purgeConflicts = TRUE
+)
+
+## End(Not run)
+
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{removeOverlappingSubjects}{Remove subjects in cohort that overlap with another cohort}{removeOverlappingSubjects}
+%
+\begin{Description}\relax
+Remove subjects in cohort that overlap with another cohort. Given a Cohort A, check if the records of
+subjects in cohort A overlaps with records for the same subject in cohort B. If there is overlap
+then remove all records of that subject from Cohort A.
+Overlap is defined as b.cohort\_end\_date >= a.cohort\_start\_date AND b.cohort\_start\_date <= a.cohort\_end\_date.
+The overlap logic maybe offset by using a startDayOffSet (applied on cohort A's cohort\_start\_date)
+and endDayOffSet (applied on Cohort A's cohort\_end\_date). If while applying offset, the window becomes
+such that (a.cohort\_start\_date + startDayOffSet) > (a.cohort\_end\_date + endDayOffset) that record is ignored
+and thus deleted.
+
+\strong{[Experimental]}
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+removeOverlappingSubjects(
+  connectionDetails = NULL,
+  connection = NULL,
+  cohortDatabaseSchema,
+  cohortId,
+  newCohortId,
+  cohortsWithSubjectsToRemove,
+  offsetCohortStartDate = -99999,
+  offsetCohortEndDate = 99999,
+  restrictSecondCohortStartBeforeFirstCohortStart = FALSE,
+  restrictSecondCohortStartAfterFirstCohortStart = FALSE,
+  cohortTable = "cohort",
+  purgeConflicts = FALSE,
+  tempEmulationSchema = getOption("sqlRenderTempEmulationSchema")
+)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{connectionDetails}] An object of type \code{connectionDetails} as created using the
+\code{\LinkA{createConnectionDetails}{createConnectionDetails}} function in the
+DatabaseConnector package. Can be left NULL if \code{connection} is
+provided.
+
+\item[\code{connection}] An object of type \code{connection} as created using the
+\code{\LinkA{connect}{connect}} function in the
+DatabaseConnector package. Can be left NULL if \code{connectionDetails}
+is provided, in which case a new connection will be opened at the start
+of the function, and closed when the function finishes.
+
+\item[\code{cohortDatabaseSchema}] Schema name where your cohort tables reside. Note that for SQL Server,
+this should include both the database and schema name, for example
+'scratch.dbo'.
+
+\item[\code{cohortId}] The cohort id of the cohort whose subjects will be removed.
+
+\item[\code{newCohortId}] The cohort id of the output cohort.
+
+\item[\code{cohortsWithSubjectsToRemove}] An array of one or more cohorts with subjects to remove from given cohorts.
+
+\item[\code{offsetCohortStartDate}] (Default = 0) If you want to offset cohort start date, please provide a integer number.
+
+\item[\code{offsetCohortEndDate}] (Default = 0) If you want to offset cohort start date, please provide a integer number.
+
+\item[\code{restrictSecondCohortStartBeforeFirstCohortStart}] (Default = FALSE) If TRUE, then the secondCohort's cohort\_start\_date
+should be < firstCohort's cohort\_start\_date.
+
+\item[\code{restrictSecondCohortStartAfterFirstCohortStart}] (Default = FALSE) If TRUE, then the secondCohort's cohort\_start\_date
+should be > firstCohort's cohort\_start\_date.
+
+\item[\code{cohortTable}] The name of the cohort table.
+
+\item[\code{purgeConflicts}] If there are conflicts in the target cohort table i.e. the target cohort table
+already has records with newCohortId, do you want to purge and replace them
+with transformed. By default - it will not be replaced, and an error message is thrown.
+
+\item[\code{tempEmulationSchema}] Some database platforms like Oracle and Impala do not truly support
+temp tables. To emulate temp tables, provide a schema with write
+privileges where temp tables can be created.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Examples}
+\begin{ExampleCode}
+## Not run: 
+removeOverlappingSubjects(
+  connection = connection,
+  cohortDatabaseSchema = cohortDatabaseSchema,
+  cohortId = 1,
+  newCohortId = 9,
+  cohortsWithSubjectsToRemove = c(3),
+  purgeConflicts = FALSE,
+  cohortTable = tableName
+)
+
+## End(Not run)
+
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{unionCohorts}{Union cohort(s)}{unionCohorts}
+%
+\begin{Description}\relax
+Given a specified array of cohortIds in a cohort table, perform
+cohort union operator to create new cohorts.
+
+\strong{[Stable]}
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+unionCohorts(
+  connectionDetails = NULL,
+  connection = NULL,
+  sourceCohortDatabaseSchema = NULL,
+  sourceCohortTable,
+  targetCohortDatabaseSchema = NULL,
+  targetCohortTable,
+  oldToNewCohortId,
+  tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
+  purgeConflicts = FALSE
+)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{connectionDetails}] An object of type \code{connectionDetails} as created using the
+\code{\LinkA{createConnectionDetails}{createConnectionDetails}} function in the
+DatabaseConnector package. Can be left NULL if \code{connection} is
+provided.
+
+\item[\code{connection}] An object of type \code{connection} as created using the
+\code{\LinkA{connect}{connect}} function in the
+DatabaseConnector package. Can be left NULL if \code{connectionDetails}
+is provided, in which case a new connection will be opened at the start
+of the function, and closed when the function finishes.
+
+\item[\code{sourceCohortDatabaseSchema}] Schema name where your source cohort tables reside. Note that for SQL Server,
+this should include both the database and schema name, for example
+'scratch.dbo'.
+
+\item[\code{sourceCohortTable}] The name of the source cohort table.
+
+\item[\code{targetCohortDatabaseSchema}] Schema name where your target cohort tables reside. Note that for SQL Server,
+this should include both the database and schema name, for example
+'scratch.dbo'.
+
+\item[\code{targetCohortTable}] The name of the target cohort table.
+
+\item[\code{oldToNewCohortId}] A data.frame object with two columns. oldCohortId and newCohortId. Both should be integers.
+The oldCohortId are the cohorts that are the input cohorts that need to be transformed.
+The newCohortId are the cohortIds of the corresponding output after transformation.
+If the oldCohortId = newCohortId then the data corresponding to oldCohortId
+will be replaced by the data from the newCohortId.
+
+\item[\code{tempEmulationSchema}] Some database platforms like Oracle and Impala do not truly support
+temp tables. To emulate temp tables, provide a schema with write
+privileges where temp tables can be created.
+
+\item[\code{purgeConflicts}] If there are conflicts in the target cohort table i.e. the target cohort table
+already has records with newCohortId, do you want to purge and replace them
+with transformed. By default - it will not be replaced, and an error message is thrown.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Examples}
+\begin{ExampleCode}
+## Not run: 
+unionCohorts(
+  connectionDetails = Eunomia::getEunomiaConnectionDetails(),
+  sourceDatabaseSchema = "main",
+  sourceCohortTable = "cohort",
+  oldToNewCohortId = dplyr::tibble(oldCohortId = c(1, 2), newCohortId = 4),
+  purgeConflicts = TRUE
+)
+
+## End(Not run)
+
+\end{ExampleCode}
+\end{Examples}
+\printindex{}
+\end{document}
