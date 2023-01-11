@@ -142,7 +142,6 @@ testthat::test_that("Testing censor cohort dates", {
     sql = "DROP TABLE IF EXISTS @cohort_database_schema.@table_temp;",
     table_temp = tableName,
     cohort_database_schema = cohortDatabaseSchema,
-    cdm_database_schema = cohortDatabaseSchema,
     progressBar = FALSE,
     reportOverallTime = FALSE
   )
