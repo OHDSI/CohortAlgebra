@@ -27,9 +27,13 @@
 #'
 #' @template Connection
 #'
-#' @template CohortTable
+#' @template SourceCohortDatabaseSchema
 #'
-#' @template CohortDatabaseSchema
+#' @template SourceCohortTable
+#'
+#' @template TargetCohortDatabaseSchema
+#'
+#' @template TargetCohortTable
 #'
 #' @template OldCohortId
 #'
@@ -135,14 +139,8 @@ applyCohortPeriodCriteria <- function(connectionDetails = NULL,
     min.len = 1,
     add = errorMessages
   )
-  checkmate::assertLogical(
-    x = tillEndOfObservationPeriod,
-    any.missing = FALSE,
-    min.len = 1,
-    add = errorMessages
-  )
   checkmate::assertDouble(
-    x = offsetCohortStartDate,
+    x = filterByMinimumCohortPeriod,
     any.missing = FALSE,
     lower = 0,
     len = 1,
@@ -150,19 +148,40 @@ applyCohortPeriodCriteria <- function(connectionDetails = NULL,
     add = errorMessages
   )
   checkmate::assertDouble(
-    x = offsetCohortEndDate,
+    x = filterByMinimumPriorObservationPeriod,
     any.missing = FALSE,
     lower = 0,
     len = 1,
     null.ok = TRUE,
     add = errorMessages
   )
+  checkmate::assertDouble(
+    x = filterByMinimumPostObservationPeriod,
+    any.missing = FALSE,
+    lower = 0,
+    len = 1,
+    null.ok = TRUE,
+    add = errorMessages
+  )
+  
+  if (any(
+    !is.null(filterByMinimumPriorObservationPeriod),
+    !is.null(filterByMinimumPostObservationPeriod)
+  )) {
+    checkmate::assertCharacter(
+      x = cdmDatabaseSchema,
+      min.chars = 1,
+      len = 1,
+      null.ok = FALSE,
+      add = errorMessages
+    )
+  }
   
   checkmate::reportAssertions(collection = errorMessages)
-
+  
   
   if (sum(
-    !is.null(filterByMinimumPriorObservationPeriod),
+    !is.null(filterByMinimumCohortPeriod),
     !is.null(filterByMinimumPriorObservationPeriod),
     !is.null(filterByMinimumPostObservationPeriod)
   ) > 1) {
@@ -170,7 +189,7 @@ applyCohortPeriodCriteria <- function(connectionDetails = NULL,
   }
   
   if (sum(
-    tillEndOfObservationPeriod,
+    !is.null(filterByMinimumCohortPeriod),
     !is.null(filterByMinimumPriorObservationPeriod),
     !is.null(filterByMinimumPostObservationPeriod)
   ) == 0) {
@@ -199,19 +218,54 @@ applyCohortPeriodCriteria <- function(connectionDetails = NULL,
     }
   }
   
-  if (tillEndOfObservationPeriod) {
+  if (all(
+    paste0(sourceCohortDatabaseSchema, sourceCohortTable) ==
+    paste0(targetCohortDatabaseSchema, targetCohortTable),
+    oldCohortId == newCohortId
+  )) {
+    tempTableName <- generateRandomString()
+    tempTable1 <- paste0("#", tempTableName, "1")
+    
+    DatabaseConnector::renderTranslateExecuteSql(
+      connection = connection,
+      sql = "
+      DROP TABLE IF EXISTS @target_cohort_table;
+      CREATE TABLE @target_cohort_table (
+                    	cohort_definition_id BIGINT,
+                    	subject_id BIGINT,
+                    	cohort_start_date DATE,
+                    	cohort_end_date DATE
+  );",
+      target_cohort_table = tempTable1,
+      progressBar = FALSE,
+      reportOverallTime = FALSE
+    )
+    copyCohortsToTempTable(
+      connection = connection,
+      sourceCohortDatabaseSchema = sourceCohortDatabaseSchema,
+      sourceCohortTable = sourceCohortTable,
+      tempEmulationSchema = tempEmulationSchema,
+      targetCohortTable = tempTable1,
+      oldToNewCohortId = dplyr::tibble(oldCohortId = oldCohortId,
+                                       newCohortId = newCohortId)
+    )
+    sourceCohortDatabaseSchema <- NULL
+    sourceCohortTable <- tempTable1
+  }
+  
+  if (!is.null(filterByMinimumCohortPeriod)) {
     sql <- SqlRender::loadRenderTranslateSql(
-      sqlFilename = "PersistEndOfContinuousObservationPeriod.sql",
+      sqlFilename = "FilterByCohortPeriod.sql",
       packageName = utils::packageName(),
       dbms = connection@dbms,
       tempEmulationSchema = tempEmulationSchema,
-      cdm_database_schema = cdmDatabaseSchema,
       source_cohort_database_schema = sourceCohortDatabaseSchema,
       source_cohort_table = sourceCohortTable,
       target_cohort_database_schema = targetCohortDatabaseSchema,
       target_cohort_table = targetCohortTable,
       old_cohort_id = oldCohortId,
-      new_cohort_id = newCohortId
+      new_cohort_id = newCohortId,
+      min_days = filterByMinimumCohortPeriod
     )
     DatabaseConnector::executeSql(
       connection = connection,
@@ -222,9 +276,9 @@ applyCohortPeriodCriteria <- function(connectionDetails = NULL,
     )
   }
   
-  if (!is.null(offsetCohortStartDate)) {
+  if (!is.null(filterByMinimumPriorObservationPeriod)) {
     sql <- SqlRender::loadRenderTranslateSql(
-      sqlFilename = "CohortStartDayPersistence.sql",
+      sqlFilename = "FilterByMinimumPriorObservationPeriod.sql",
       packageName = utils::packageName(),
       dbms = connection@dbms,
       tempEmulationSchema = tempEmulationSchema,
@@ -235,7 +289,7 @@ applyCohortPeriodCriteria <- function(connectionDetails = NULL,
       target_cohort_table = targetCohortTable,
       old_cohort_id = oldCohortId,
       new_cohort_id = newCohortId,
-      offset_cohort_start_date = offsetCohortStartDate
+      min_days = filterByMinimumPriorObservationPeriod
     )
     DatabaseConnector::executeSql(
       connection = connection,
@@ -246,9 +300,10 @@ applyCohortPeriodCriteria <- function(connectionDetails = NULL,
     )
   }
   
-  if (!is.null(offsetCohortEndDate)) {
+  
+  if (!is.null(filterByMinimumPostObservationPeriod)) {
     sql <- SqlRender::loadRenderTranslateSql(
-      sqlFilename = "CohortEndDayPersistence.sql",
+      sqlFilename = "FilterByMinimumPostObservationPeriod.sql",
       packageName = utils::packageName(),
       dbms = connection@dbms,
       tempEmulationSchema = tempEmulationSchema,
@@ -259,7 +314,7 @@ applyCohortPeriodCriteria <- function(connectionDetails = NULL,
       target_cohort_table = targetCohortTable,
       old_cohort_id = oldCohortId,
       new_cohort_id = newCohortId,
-      offset_cohort_end_date = offsetCohortEndDate
+      min_days = filterByMinimumPostObservationPeriod
     )
     DatabaseConnector::executeSql(
       connection = connection,

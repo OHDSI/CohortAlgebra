@@ -37,9 +37,13 @@
 #'
 #' @template Connection
 #'
-#' @template CohortTable
+#' @template SourceCohortDatabaseSchema
 #'
-#' @template CohortDatabaseSchema
+#' @template SourceCohortTable
+#'
+#' @template TargetCohortDatabaseSchema
+#'
+#' @template TargetCohortTable
 #'
 #' @template OldCohortId
 #'
@@ -172,26 +176,30 @@ applyCohortPersistenceCriteria <- function(connectionDetails = NULL,
     null.ok = TRUE,
     add = errorMessages
   )
-
+  
   checkmate::reportAssertions(collection = errorMessages)
-
+  
   if (sum(
-    tillEndOfObservationPeriod, !is.null(offsetCohortStartDate), !is.null(offsetCohortEndDate)
+    tillEndOfObservationPeriod,
+    !is.null(offsetCohortStartDate),
+    !is.null(offsetCohortEndDate)
   ) > 1) {
     stop("Multiple persistence criteria specified.")
   }
-
+  
   if (sum(
-    tillEndOfObservationPeriod, !is.null(offsetCohortStartDate), !is.null(offsetCohortEndDate)
+    tillEndOfObservationPeriod,
+    !is.null(offsetCohortStartDate),
+    !is.null(offsetCohortEndDate)
   ) == 0) {
     stop("No persistence criteria specified.")
   }
-
+  
   if (is.null(connection)) {
     connection <- DatabaseConnector::connect(connectionDetails)
     on.exit(DatabaseConnector::disconnect(connection))
   }
-
+  
   if (!purgeConflicts) {
     cohortIdsInCohortTable <-
       getCohortIdsInCohortTable(
@@ -201,16 +209,49 @@ applyCohortPersistenceCriteria <- function(connectionDetails = NULL,
         tempEmulationSchema = tempEmulationSchema
       )
     conflicitingCohortIdsInTargetCohortTable <-
-      intersect(
-        x = newCohortId,
-        y = cohortIdsInCohortTable %>% unique()
-      )
-
+      intersect(x = newCohortId,
+                y = cohortIdsInCohortTable %>% unique())
+    
     if (length(conflicitingCohortIdsInTargetCohortTable) > 0) {
       stop("Target cohort id already in use in target cohort table")
     }
   }
-
+  
+  if (all(
+    paste0(sourceCohortDatabaseSchema, sourceCohortTable) ==
+    paste0(targetCohortDatabaseSchema, targetCohortTable),
+    oldCohortId == newCohortId
+  )) {
+    tempTableName <- generateRandomString()
+    tempTable1 <- paste0("#", tempTableName, "1")
+    
+    DatabaseConnector::renderTranslateExecuteSql(
+      connection = connection,
+      sql = "
+      DROP TABLE IF EXISTS @target_cohort_table;
+      CREATE TABLE @target_cohort_table (
+                    	cohort_definition_id BIGINT,
+                    	subject_id BIGINT,
+                    	cohort_start_date DATE,
+                    	cohort_end_date DATE
+  );",
+      target_cohort_table = tempTable1,
+      progressBar = FALSE,
+      reportOverallTime = FALSE
+    )
+    copyCohortsToTempTable(
+      connection = connection,
+      sourceCohortDatabaseSchema = sourceCohortDatabaseSchema,
+      sourceCohortTable = sourceCohortTable,
+      tempEmulationSchema = tempEmulationSchema,
+      targetCohortTable = tempTable1,
+      oldToNewCohortId = dplyr::tibble(oldCohortId = oldCohortId,
+                                       newCohortId = newCohortId)
+    )
+    sourceCohortDatabaseSchema <- NULL
+    sourceCohortTable <- tempTable1
+  }
+  
   if (tillEndOfObservationPeriod) {
     sql <- SqlRender::loadRenderTranslateSql(
       sqlFilename = "PersistEndOfContinuousObservationPeriod.sql",
@@ -233,7 +274,7 @@ applyCohortPersistenceCriteria <- function(connectionDetails = NULL,
       reportOverallTime = FALSE
     )
   }
-
+  
   if (!is.null(offsetCohortStartDate)) {
     sql <- SqlRender::loadRenderTranslateSql(
       sqlFilename = "CohortStartDayPersistence.sql",
@@ -257,7 +298,7 @@ applyCohortPersistenceCriteria <- function(connectionDetails = NULL,
       reportOverallTime = FALSE
     )
   }
-
+  
   if (!is.null(offsetCohortEndDate)) {
     sql <- SqlRender::loadRenderTranslateSql(
       sqlFilename = "CohortEndDayPersistence.sql",
