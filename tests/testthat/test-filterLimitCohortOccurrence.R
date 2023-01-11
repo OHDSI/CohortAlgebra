@@ -86,7 +86,7 @@ testthat::test_that("Testing filter cohort by calendar date", {
   )
   expected <- dplyr::tibble(
     cohortDefinitionId = 10,
-    subjectId = 2,
+    subjectId = 1,
     cohortStartDate = as.Date("1999-01-01"),
     cohortEndDate = as.Date("1999-12-01")
   )

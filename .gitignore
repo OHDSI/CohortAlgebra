@@ -30,3 +30,5 @@ sql/sql_server/IntersectCohorts.sql
 sql/sql_server/KeepErasWithOverlap.sql
 sql/sql_server/MinusCohorts.sql
 sql/sql_server/PersistEndOfContinuousObservationPeriod.sql
+sql/sql_server/LimitOccurrence.sql
+sql/sql_server/DemographicCritera.sql
