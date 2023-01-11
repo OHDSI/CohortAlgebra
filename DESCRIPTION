@@ -5,7 +5,6 @@ Version: 0.5.1
 Date: 2023-01-10
 Authors@R: c(
     person("Gowtham", "Rao", email = "rao@ohdsi.org", role = c("aut", "cre")),
-    person("Adam", "Black", email = "black@ohdsi.org", role = c("aut")),
     person("Observational Health Data Science and Informatics", role = c("cph"))
   )
 Maintainer: Gowtham Rao <rao@ohdsi.org>
