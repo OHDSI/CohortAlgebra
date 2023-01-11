@@ -53,10 +53,10 @@ getBaseCohortDefinitionSet <- function() {
         sep = ""
       ), ".sql"))
 
-    dbms <- "sql_server"
+
     sqlFileName <- cohorts[[i]]$sqlFileName
     pathToSql <-
-      system.file(file.path("sql", dbms, sqlFileName),
+      system.file(file.path("sql", "sql_server", sqlFileName),
         package = utils::packageName()
       )
     cohorts[[i]]$sql <- SqlRender::readSql(sourceFile = pathToSql)
