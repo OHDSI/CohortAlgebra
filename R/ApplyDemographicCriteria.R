@@ -56,8 +56,7 @@
 #' \dontrun{
 #' CohortAlgebra::applyDemographicCriteria(
 #'   connection = connection,
-#'   cohortDatabaseSchema = cohortDatabaseSchema,
-#'   cohortTable = tableName,
+#'   sourceCohortTable = tableName,
 #'   oldCohortId = 3,
 #'   newCohortId = 2,
 #'   filterGenderConceptId = c(8201),
@@ -90,20 +89,6 @@ applyDemographicCriteria <- function(connectionDetails = NULL,
     x = newCohortId,
     min.len = 1,
     null.ok = FALSE,
-    add = errorMessages
-  )
-  checkmate::assertCharacter(
-    x = cohortDatabaseSchema,
-    min.chars = 1,
-    len = 1,
-    null.ok = TRUE,
-    add = errorMessages
-  )
-  checkmate::assertCharacter(
-    x = cdmDatabaseSchema,
-    min.chars = 1,
-    len = 1,
-    null.ok = TRUE,
     add = errorMessages
   )
   checkmate::assertCharacter(

@@ -73,8 +73,7 @@ with transformed. By default - it will not be replaced, and an error message is 
 \dontrun{
 CohortAlgebra::applyDemographicCriteria(
   connection = connection,
-  cohortDatabaseSchema = cohortDatabaseSchema,
-  cohortTable = tableName,
+  sourceCohortTable = tableName,
   oldCohortId = 3,
   newCohortId = 2,
   filterGenderConceptId = c(8201),

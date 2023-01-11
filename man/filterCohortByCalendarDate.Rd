@@ -78,7 +78,7 @@ CohortAlgebra::filterCohortByCalendarDate(
   targetCohortTable = "cohort",
   oldCohortId = 3,
   newCohortId = 2,
-  cohortStartDateRangeLow = as.Date('1999-01-01'),
+  cohortStartDateRangeLow = as.Date("1999-01-01"),
   purgeConflicts = TRUE
 )
 }
