@@ -7,12 +7,12 @@ FROM (
 	SELECT c1.*,
 		DATEDIFF(day, 
 		          CASE WHEN 
-		              DATEADD(DAY, @first_offset, c1.cohort_start_date) > c2.cohort_start_date 
-		                  THEN DATEADD(DAY, @first_offset, c1.cohort_start_date) ELSE c2.cohort_start_date 
-		          END, 
-		          CASE WHEN 
 		              DATEADD(DAY, @second_offset, c1.cohort_end_date) > c2.cohort_end_date 
 		                  THEN c2.cohort_end_date ELSE DATEADD(DAY, @second_offset, c1.cohort_end_date) 
+		          END, 
+		          CASE WHEN 
+		              DATEADD(DAY, @first_offset, c1.cohort_start_date) > c2.cohort_start_date 
+		                  THEN DATEADD(DAY, @first_offset, c1.cohort_start_date) ELSE c2.cohort_start_date 
 		          END
 		        ) + 1 overlap_days
 	FROM @cohort_database_schema.@cohort_table c1

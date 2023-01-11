@@ -176,30 +176,26 @@ applyCohortPersistenceCriteria <- function(connectionDetails = NULL,
     null.ok = TRUE,
     add = errorMessages
   )
-
+  
   checkmate::reportAssertions(collection = errorMessages)
-
+  
   if (sum(
-    tillEndOfObservationPeriod,
-    !is.null(offsetCohortStartDate),
-    !is.null(offsetCohortEndDate)
+    tillEndOfObservationPeriod,!is.null(offsetCohortStartDate),!is.null(offsetCohortEndDate)
   ) > 1) {
     stop("Multiple persistence criteria specified.")
   }
-
+  
   if (sum(
-    tillEndOfObservationPeriod,
-    !is.null(offsetCohortStartDate),
-    !is.null(offsetCohortEndDate)
+    tillEndOfObservationPeriod,!is.null(offsetCohortStartDate),!is.null(offsetCohortEndDate)
   ) == 0) {
     stop("No persistence criteria specified.")
   }
-
+  
   if (is.null(connection)) {
     connection <- DatabaseConnector::connect(connectionDetails)
     on.exit(DatabaseConnector::disconnect(connection))
   }
-
+  
   if (!purgeConflicts) {
     cohortIdsInCohortTable <-
       getCohortIdsInCohortTable(
@@ -209,27 +205,20 @@ applyCohortPersistenceCriteria <- function(connectionDetails = NULL,
         tempEmulationSchema = tempEmulationSchema
       )
     conflicitingCohortIdsInTargetCohortTable <-
-      intersect(
-        x = newCohortId,
-        y = cohortIdsInCohortTable %>% unique()
-      )
-
+      intersect(x = newCohortId,
+                y = cohortIdsInCohortTable %>% unique())
+    
     if (length(conflicitingCohortIdsInTargetCohortTable) > 0) {
       stop("Target cohort id already in use in target cohort table")
     }
   }
-
-  if (all(
-    paste0(sourceCohortDatabaseSchema, sourceCohortTable) ==
-      paste0(targetCohortDatabaseSchema, targetCohortTable),
-    oldCohortId == newCohortId
-  )) {
-    tempTableName <- generateRandomString()
-    tempTable1 <- paste0("#", tempTableName, "1")
-
-    DatabaseConnector::renderTranslateExecuteSql(
-      connection = connection,
-      sql = "
+  
+  tempTableName <- generateRandomString()
+  tempTable1 <- paste0("#", tempTableName, "1")
+  
+  DatabaseConnector::renderTranslateExecuteSql(
+    connection = connection,
+    sql = "
       DROP TABLE IF EXISTS @target_cohort_table;
       CREATE TABLE @target_cohort_table (
                     	cohort_definition_id BIGINT,
@@ -237,25 +226,11 @@ applyCohortPersistenceCriteria <- function(connectionDetails = NULL,
                     	cohort_start_date DATE,
                     	cohort_end_date DATE
   );",
-      target_cohort_table = tempTable1,
-      progressBar = FALSE,
-      reportOverallTime = FALSE
-    )
-    copyCohortsToTempTable(
-      connection = connection,
-      sourceCohortDatabaseSchema = sourceCohortDatabaseSchema,
-      sourceCohortTable = sourceCohortTable,
-      tempEmulationSchema = tempEmulationSchema,
-      targetCohortTable = tempTable1,
-      oldToNewCohortId = dplyr::tibble(
-        oldCohortId = oldCohortId,
-        newCohortId = newCohortId
-      )
-    )
-    sourceCohortDatabaseSchema <- NULL
-    sourceCohortTable <- tempTable1
-  }
-
+    target_cohort_table = tempTable1,
+    progressBar = FALSE,
+    reportOverallTime = FALSE
+  )
+  
   if (tillEndOfObservationPeriod) {
     sql <- SqlRender::loadRenderTranslateSql(
       sqlFilename = "PersistEndOfContinuousObservationPeriod.sql",
@@ -265,8 +240,8 @@ applyCohortPersistenceCriteria <- function(connectionDetails = NULL,
       cdm_database_schema = cdmDatabaseSchema,
       source_cohort_database_schema = sourceCohortDatabaseSchema,
       source_cohort_table = sourceCohortTable,
-      target_cohort_database_schema = targetCohortDatabaseSchema,
-      target_cohort_table = targetCohortTable,
+      target_cohort_database_schema = NULL,
+      target_cohort_table = tempTable1,
       old_cohort_id = oldCohortId,
       new_cohort_id = newCohortId
     )
@@ -278,7 +253,7 @@ applyCohortPersistenceCriteria <- function(connectionDetails = NULL,
       reportOverallTime = FALSE
     )
   }
-
+  
   if (!is.null(offsetCohortStartDate)) {
     sql <- SqlRender::loadRenderTranslateSql(
       sqlFilename = "CohortStartDayPersistence.sql",
@@ -288,8 +263,8 @@ applyCohortPersistenceCriteria <- function(connectionDetails = NULL,
       cdm_database_schema = cdmDatabaseSchema,
       source_cohort_database_schema = sourceCohortDatabaseSchema,
       source_cohort_table = sourceCohortTable,
-      target_cohort_database_schema = targetCohortDatabaseSchema,
-      target_cohort_table = targetCohortTable,
+      target_cohort_database_schema = NULL,
+      target_cohort_table = tempTable1,
       old_cohort_id = oldCohortId,
       new_cohort_id = newCohortId,
       offset_cohort_start_date = offsetCohortStartDate
@@ -302,7 +277,7 @@ applyCohortPersistenceCriteria <- function(connectionDetails = NULL,
       reportOverallTime = FALSE
     )
   }
-
+  
   if (!is.null(offsetCohortEndDate)) {
     sql <- SqlRender::loadRenderTranslateSql(
       sqlFilename = "CohortEndDayPersistence.sql",
@@ -312,8 +287,8 @@ applyCohortPersistenceCriteria <- function(connectionDetails = NULL,
       cdm_database_schema = cdmDatabaseSchema,
       source_cohort_database_schema = sourceCohortDatabaseSchema,
       source_cohort_table = sourceCohortTable,
-      target_cohort_database_schema = targetCohortDatabaseSchema,
-      target_cohort_table = targetCohortTable,
+      target_cohort_database_schema = NULL,
+      target_cohort_table = tempTable1,
       old_cohort_id = oldCohortId,
       new_cohort_id = newCohortId,
       offset_cohort_end_date = offsetCohortEndDate
@@ -326,4 +301,17 @@ applyCohortPersistenceCriteria <- function(connectionDetails = NULL,
       reportOverallTime = FALSE
     )
   }
+  
+  eraFyCohorts(
+    connection = connection,
+    sourceCohortDatabaseSchema = NULL,
+    sourceCohortTable = tempTable1,
+    targetCohortDatabaseSchema = targetCohortDatabaseSchema,
+    targetCohortTable = targetCohortTable,
+    cdmDatabaseSchema = cdmDatabaseSchema,
+    purgeConflicts = purgeConflicts,
+    oldCohortId = newCohortId,
+    newCohortId = newCohortId,
+    tempEmulationSchema = tempEmulationSchema
+  )
 }
