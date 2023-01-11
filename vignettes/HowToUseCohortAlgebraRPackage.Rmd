@@ -711,7 +711,7 @@ DatabaseConnector::renderTranslateExecuteSql(
 
 ## Modify Cohort
 
-Sometimes there is a need to modify a previously instantiated cohorts. Modification may be censoring (left or right) based on calendar date. This may be done using modifyCohort as follows:
+Sometimes there is a need to modify a previously instantiated cohorts. 
 
 ```{r tidy=FALSE,eval=TRUE, echo=FALSE}
 
@@ -771,14 +771,14 @@ DatabaseConnector::insertTable(
 )
 ```
 
-### Example 1: Modify cohort based on calendar date censoring.
+###  Modify cohort based on calendar date censoring.
 Let us say we have a simple cohort as follows:
 ```{r tidy=FALSE,eval=TRUE, echo=FALSE}
 cohort %>%
   dplyr::filter(.data$cohortDefinitionId == 1)
 ```
 
-We can censor the dates (left, right, or both). Parameter `cohortStartCensorDate` performs left censor, while `cohortEndEndCensorDate` performs right censor. This function is useful if you need to force exit based on calendar dates.
+We can censor the dates (left, right, or both). 
 
 ```{r tidy=FALSE,eval=TRUE, echo=TRUE}
 CohortAlgebra::censorCohortDates(
@@ -816,55 +816,9 @@ cohortObserved
 ```
 
 
-<!-- ### Example 2: Modify cohort by filtering cohort records by date range. -->
-<!-- We can also filter an instantiated cohort and create a new cohort by filtering the original cohort by date ranges. This may be applied to cohort_start_date, cohort_end_date or both. Lets take this cohort as an example: -->
 
-
-<!-- ```{r tidy=FALSE,eval=TRUE, echo=FALSE} -->
-<!-- cohort %>% -->
-<!--   dplyr::filter(.data$cohortDefinitionId == 3) -->
-<!-- ``` -->
-
-<!-- We can filter by cohort_start_date using the parameter cohortStartFilterRange as follows: -->
-
-<!-- ```{r tidy=FALSE,eval=TRUE, echo=TRUE} -->
-<!-- CohortAlgebra::modifyCohort( -->
-<!--   connection = connection, -->
-<!--   cohortDatabaseSchema = cohortDatabaseSchema, -->
-<!--   cohortTable = tableName, -->
-<!--   oldCohortId = 3, -->
-<!--   newCohortId = 2, -->
-<!--   cohortStartFilterRange = c(as.Date("1998-01-01"), as.Date("1999-12-31")), -->
-<!--   purgeConflicts = TRUE -->
-<!-- ) -->
-<!-- ``` -->
-
-<!-- ```{r tidy=FALSE,eval=TRUE, echo=FALSE} -->
-<!-- cohortObserved <- -->
-<!--   DatabaseConnector::renderTranslateQuerySql( -->
-<!--     connection = connection, -->
-<!--     sql = paste0( -->
-<!--       "SELECT * FROM @cohort_database_schema.@table_name -->
-<!--         WHERE cohort_definition_id = 2 -->
-<!--         order by cohort_definition_id, subject_id, cohort_start_date;" -->
-<!--     ), -->
-<!--     cohort_database_schema = cohortDatabaseSchema, -->
-<!--     table_name = tableName, -->
-<!--     snakeCaseToCamelCase = TRUE -->
-<!--   ) %>% -->
-<!--   dplyr::tibble() -->
-<!-- ``` -->
-<!-- Gives the following output. Note only records where the cohort_start_date was within the given date range became cohortId 2. -->
-
-<!-- ```{r tidy=FALSE,eval=TRUE, echo=FALSE} -->
-<!-- cohortObserved -->
-<!-- ``` -->
-
-
-
-### Example 3: Change persistence criteria for cohort.
-We can change the persistence criteria for a previously instantiated cohort. Lets take this cohort as an example:
-
+### Change persistence criteria for cohort.
+We can change the persistence criteria for a previously instantiated cohort. 
 
 ```{r tidy=FALSE,eval=TRUE, echo=FALSE}
 cohort %>%

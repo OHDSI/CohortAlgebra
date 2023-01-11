@@ -33,3 +33,4 @@ rmarkdown::render("vignettes/HowToUseCohortAlgebraRPackage.Rmd",
 # Build site---------------------------------------------------------
 pkgdown::build_site()
 OhdsiRTools::fixHadesLogo()
+

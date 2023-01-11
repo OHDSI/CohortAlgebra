@@ -66,8 +66,8 @@ Censor cohort date by right, left, both censoring. All cohorts will be truncated
 \dontrun{
 CohortAlgebra::censorCohortDates(
   connection = connection,
-  sourceCohortTable = 'cohort',
-  targetCohortTable = 'cohort',
+  sourceCohortTable = "cohort",
+  targetCohortTable = "cohort",
   oldCohortId = 3,
   newCohortId = 2,
   cohortStartDateLeftCensor = as.Date("2010-01-09"),

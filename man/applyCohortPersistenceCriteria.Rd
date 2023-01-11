@@ -85,8 +85,8 @@ the selected index event date, plus the days offset.
 \dontrun{
 CohortAlgebra::applyCohortPersistenceCriteria(
   connection = connection,
-  sourceCohortTable = 'cohort',
-  targetCohortTable = 'cohort',
+  sourceCohortTable = "cohort",
+  targetCohortTable = "cohort",
   oldCohortId = 3,
   newCohortId = 2,
   tillEndOfObservationPeriod = TRUE,

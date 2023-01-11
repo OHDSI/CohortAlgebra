@@ -19,6 +19,12 @@
     <loc>/news/index.html</loc>
   </url>
   <url>
+    <loc>/reference/applyCohortPersistenceCriteria.html</loc>
+  </url>
+  <url>
+    <loc>/reference/censorCohortDates.html</loc>
+  </url>
+  <url>
     <loc>/reference/CohortAlgebra-package.html</loc>
   </url>
   <url>
