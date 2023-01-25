@@ -11,32 +11,33 @@ INTO #cohort_rows
 FROM {@source_cohort_database_schema != ''} ? {@source_cohort_database_schema.@source_cohort_table} : {@source_cohort_table}
 WHERE cohort_definition_id IN (@old_cohort_ids);
 
-
-CREATE TABLE #raw_data (
-  	subject_id BIGINT,
-  	event_date DATE,
-  	event_type INT,
-  	start_ordinal BIGINT NULL
-);
+SELECT subject_id, 
+        event_date,
+        event_type,
+        start_ordinal
+INTO #raw_data
+FROM
+(
+  SELECT 
+  	CAST(f.subject_id AS BIGINT) subject_id,
+  	CAST(cohort_start_date AS DATE) AS event_date,
+  	CAST(- 1 AS INT) AS event_type,
+  	CAST(
+  	      ROW_NUMBER() OVER (PARTITION BY subject_id 
+  	                    ORDER BY cohort_start_date
+  		    ) AS BIGINT) AS start_ordinal
   
-INSERT INTO #raw_data (subject_id, event_date, event_type, start_ordinal)   
-SELECT 
-	f.subject_id,
-	cohort_start_date AS event_date,
-	- 1 AS event_type,
-	ROW_NUMBER() OVER (PARTITION BY subject_id 
-	                    ORDER BY cohort_start_date
-		) AS start_ordinal
-
-FROM #cohort_rows f;
-
-INSERT INTO #raw_data (subject_id, event_date, event_type, start_ordinal)
-SELECT 
-	subject_id,
-	DATEADD(day, @era_constructor_pad, cohort_end_date) AS cohort_end_date,
-	1 AS event_type,
-	NULL AS start_ordinal
-FROM #cohort_rows;
+  FROM #cohort_rows f
+  
+  UNION
+  
+  SELECT 
+  	CAST(subject_id AS BIGINT) subject_id,
+  	CAST(DATEADD(day, @era_constructor_pad, cohort_end_date) AS DATE) AS cohort_end_date,
+  	CAST(1 AS INT) event_type,
+  	CAST(NULL AS BIGINT) AS start_ordinal
+  FROM #cohort_rows
+) f;
   
 --HINT DISTRIBUTE ON KEY (subject_id)
 SELECT 
