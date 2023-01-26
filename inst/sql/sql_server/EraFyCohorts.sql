@@ -11,59 +11,33 @@ INTO #cohort_rows
 FROM {@source_cohort_database_schema != ''} ? {@source_cohort_database_schema.@source_cohort_table} : {@source_cohort_table}
 WHERE cohort_definition_id IN (@old_cohort_ids);
 
-SELECT subject_id, 
-        event_date,
-        event_type,
-        start_ordinal
-INTO #raw_data
-FROM
-(
-  SELECT 
-  	CAST(f.subject_id AS BIGINT) subject_id,
-  	CAST(cohort_start_date AS DATE) AS event_date,
-  	CAST(- 1 AS INT) AS event_type,
-  	CAST(
-  	      ROW_NUMBER() OVER (PARTITION BY subject_id 
-  	                    ORDER BY cohort_start_date
-  		    ) AS BIGINT) AS start_ordinal
-  
-  FROM #cohort_rows f
-  
-  UNION
-  
-  SELECT 
-  	CAST(subject_id AS BIGINT) subject_id,
-  	CAST(DATEADD(day, @era_constructor_pad, cohort_end_date) AS DATE) AS cohort_end_date,
-  	CAST(1 AS INT) event_type,
-  	CAST(NULL AS BIGINT) AS start_ordinal
-  FROM #cohort_rows
-) f;
-  
 --HINT DISTRIBUTE ON KEY (subject_id)
-SELECT 
-	subject_id,
+SELECT subject_id,
 	DATEADD(day, - 1 * @era_constructor_pad, event_date) AS cohort_end_date
 INTO #cte_end_dates
 FROM (
-	SELECT 
-		subject_id,
+	SELECT subject_id,
 		event_date,
-		event_type,
-		MAX(start_ordinal) OVER (
-			PARTITION BY 
-			subject_id ORDER BY event_date,
-				event_type,
-				start_ordinal ROWS UNBOUNDED PRECEDING
-			) AS start_ordinal,
-		ROW_NUMBER() OVER (
-			PARTITION BY 
-			subject_id ORDER BY event_date,
-				event_type,
-				start_ordinal
-			) AS overall_ord
-	FROM #raw_data
+		SUM(event_type) OVER (
+			PARTITION BY subject_id ORDER BY event_date,
+				event_type ROWS UNBOUNDED PRECEDING
+			) AS interval_status
+	FROM (
+		SELECT subject_id,
+			cohort_start_date AS event_date,
+			- 1 AS event_type
+		FROM #cohort_rows
+		
+		UNION ALL
+		
+		SELECT subject_id,
+			DATEADD(day, @era_constructor_pad, Cohort_end_date) AS end_date,
+			1 AS event_type
+		FROM #cohort_rows
+		) RAWDATA
 	) e
-WHERE (2 * e.start_ordinal) - e.overall_ord = 0;
+WHERE interval_status = 0;
+
 DROP TABLE IF EXISTS #raw_data;
 
 --HINT DISTRIBUTE ON KEY (subject_id)
