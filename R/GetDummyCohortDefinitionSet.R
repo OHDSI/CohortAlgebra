@@ -32,8 +32,14 @@
 #' @export
 #'
 #'
-getDummyCohortDefinitionSet <- function(cohortId = 0) {
+getDummyCohortDefinitionSet <- function(cohortId = 0,
+                                        cohortName = "Do not use") {
   pathToCsv <- system.file("dummyCohortDefinitionSet.csv", package = utils::packageName())
   readr::read_csv(file = pathToCsv, col_types = readr::cols(), na = "") %>% 
-    dplyr::mutate(cohortId = cohortId)
+    dplyr::mutate(cohortId = cohortId,
+                  cohortName = cohortName) %>% 
+    dplyr::select(cohortId,
+                  cohortName,
+                  json,
+                  sql)
 }

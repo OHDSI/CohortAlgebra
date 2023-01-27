@@ -4,7 +4,7 @@
 \alias{getDummyCohortDefinitionSet}
 \title{Get dummy cohort definition set}
 \usage{
-getDummyCohortDefinitionSet(cohortId = 0)
+getDummyCohortDefinitionSet(cohortId = 0, cohortName = "Do not use")
 }
 \description{
 Get dummy cohort definition set
