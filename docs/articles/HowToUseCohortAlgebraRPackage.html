@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">CohortAlgebra</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.2</span>
       </span>
     </div>
 
@@ -85,7 +85,7 @@
                         <h4 data-toc-skip class="author">Gowtham A.
 Rao</h4>
             
-            <h4 data-toc-skip class="date">2023-05-31</h4>
+            <h4 data-toc-skip class="date">2023-06-01</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/OHDSI/CohortAlgebra/blob/HEAD/vignettes/HowToUseCohortAlgebraRPackage.Rmd" class="external-link"><code>vignettes/HowToUseCohortAlgebraRPackage.Rmd</code></a></small>
       <div class="hidden name"><code>HowToUseCohortAlgebraRPackage.Rmd</code></div>
@@ -135,8 +135,8 @@ follows:</li>
 <pre><code><span><span class="co">#&gt; The following objects are masked from 'package:base':</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;     intersect, setdiff, setequal, union</span></span></code></pre>
-<pre><code><span><span class="co">#&gt; Consider adding `DATABASECONNECTOR_JAR_FOLDER='D:/windows_temp/AppData/Local/Temp/rtemp\RtmpKKfUkk\jdbcDrivers392060b510ca'` to C:/Users/admin_grao9/Documents/.Renviron and restarting R.</span></span>
-<span><span class="co">#&gt; DatabaseConnector postgresql JDBC driver downloaded to 'D:/windows_temp/AppData/Local/Temp/rtemp\RtmpKKfUkk\jdbcDrivers392060b510ca'.</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Consider adding `DATABASECONNECTOR_JAR_FOLDER='D:/windows_temp/AppData/Local/Temp/rtemp\RtmpQRWk1B\jdbcDrivers5df46c3f4497'` to C:/Users/admin_grao9/Documents/.Renviron and restarting R.</span></span>
+<span><span class="co">#&gt; DatabaseConnector postgresql JDBC driver downloaded to 'D:/windows_temp/AppData/Local/Temp/rtemp\RtmpQRWk1B\jdbcDrivers5df46c3f4497'.</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="cohort-union">Cohort UNION<a class="anchor" aria-label="anchor" href="#cohort-union"></a>
@@ -155,7 +155,7 @@ of the cohorts. For example: given a cohort table as follows</li>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>                  2         1 2022-02-10      2022-05-10   </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>                  2         1 2022-08-15      2022-12-30</span></span></code></pre>
 <pre><code><span><span class="co">#&gt; Connecting using PostgreSQL driver</span></span>
-<span><span class="co">#&gt; Inserting data took 0.771 secs</span></span></code></pre>
+<span><span class="co">#&gt; Inserting data took 0.0505 secs</span></span></code></pre>
 <p>The union of the two cohorts is expected to give us</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cohortExpected</span></span></code></pre></div>
@@ -220,7 +220,7 @@ of the cohorts.</li>
 <span><span class="co">#&gt;                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>       </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>                  1         1 2022-01-01      2022-01-15   </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>                  2         1 2021-12-15      2022-01-30</span></span></code></pre>
-<pre><code><span><span class="co">#&gt; Inserting data took 0.0265 secs</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Inserting data took 0.027 secs</span></span></code></pre>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">CohortAlgebra</span><span class="fu">::</span><span class="fu"><a href="../reference/intersectCohorts.html">intersectCohorts</a></span><span class="op">(</span></span>
 <span>  connection <span class="op">=</span> <span class="va">connection</span>,</span>
@@ -238,7 +238,7 @@ of the cohorts.</li>
   |===================================                                   |  50%
   |                                                                            
   |======================================================================| 100%</code></pre>
-<pre><code><span><span class="co">#&gt; Executing SQL took 0.0175 secs</span></span>
+<pre><code><span><span class="co">#&gt; Executing SQL took 0.0178 secs</span></span>
 <span><span class="co">#&gt; Currently in a tryCatch or withCallingHandlers block, so unable to add global calling handlers. ParallelLogger will not capture R messages, errors, and warnings, only explicit calls to ParallelLogger. (This message will not be shown again this R session)</span></span></code></pre>
 <pre><code><span><span class="co">#&gt;  Intersecting cohorts.</span></span>
 <span><span class="co">#&gt;  Generating eras and saving.</span></span></code></pre>
@@ -263,7 +263,7 @@ of the cohorts.</li>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>                  1         1 2022-01-01      2022-01-15   </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>                  2         1 2021-12-15      2022-01-05   </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>                  2         1 2022-01-10      2022-01-30</span></span></code></pre>
-<pre><code><span><span class="co">#&gt; Inserting data took 0.0259 secs</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Inserting data took 0.0268 secs</span></span></code></pre>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">CohortAlgebra</span><span class="fu">::</span><span class="fu"><a href="../reference/intersectCohorts.html">intersectCohorts</a></span><span class="op">(</span></span>
 <span>  connection <span class="op">=</span> <span class="va">connection</span>,</span>
@@ -281,7 +281,7 @@ of the cohorts.</li>
   |===================================                                   |  50%
   |                                                                            
   |======================================================================| 100%</code></pre>
-<pre><code><span><span class="co">#&gt; Executing SQL took 0.0175 secs</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Executing SQL took 0.0144 secs</span></span></code></pre>
 <pre><code><span><span class="co">#&gt;  Intersecting cohorts.</span></span>
 <span><span class="co">#&gt;  Generating eras and saving.</span></span></code></pre>
 <div class="figure">
@@ -306,7 +306,7 @@ of the cohorts.</li>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>                  1         1 2022-01-01      2022-01-15   </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>                  2         1 2021-12-15      2022-01-30   </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>                  3         1 2022-03-01      2022-03-15</span></span></code></pre>
-<pre><code><span><span class="co">#&gt; Inserting data took 0.0263 secs</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Inserting data took 0.0303 secs</span></span></code></pre>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">CohortAlgebra</span><span class="fu">::</span><span class="fu"><a href="../reference/intersectCohorts.html">intersectCohorts</a></span><span class="op">(</span></span>
 <span>  connection <span class="op">=</span> <span class="va">connection</span>,</span>
@@ -324,7 +324,7 @@ of the cohorts.</li>
   |===================================                                   |  50%
   |                                                                            
   |======================================================================| 100%</code></pre>
-<pre><code><span><span class="co">#&gt; Executing SQL took 0.0154 secs</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Executing SQL took 0.645 secs</span></span></code></pre>
 <pre><code><span><span class="co">#&gt;  Intersecting cohorts.</span></span>
 <span><span class="co">#&gt;  Generating eras and saving.</span></span></code></pre>
 <div class="figure">
@@ -348,7 +348,7 @@ of the cohorts.</li>
 <span><span class="co">#&gt;                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>       </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>                  1         1 2022-01-01      2022-01-15   </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>                  2         1 2021-12-15      2022-01-30</span></span></code></pre>
-<pre><code><span><span class="co">#&gt; Inserting data took 0.0304 secs</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Inserting data took 0.0293 secs</span></span></code></pre>
 <div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">CohortAlgebra</span><span class="fu">::</span><span class="fu"><a href="../reference/intersectCohorts.html">intersectCohorts</a></span><span class="op">(</span></span>
 <span>  connection <span class="op">=</span> <span class="va">connection</span>,</span>
@@ -366,7 +366,7 @@ of the cohorts.</li>
   |===================================                                   |  50%
   |                                                                            
   |======================================================================| 100%</code></pre>
-<pre><code><span><span class="co">#&gt; Executing SQL took 0.0153 secs</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Executing SQL took 0.0146 secs</span></span></code></pre>
 <pre><code><span><span class="co">#&gt;  Intersecting cohorts.</span></span>
 <span><span class="co">#&gt;  Generating eras and saving.</span></span></code></pre>
 <div class="figure">
@@ -390,7 +390,7 @@ of the cohorts.</li>
 <span><span class="co">#&gt;                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>       </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>                  1         1 2022-01-01      2022-01-01   </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>                  2         1 2022-01-01      2022-01-02</span></span></code></pre>
-<pre><code><span><span class="co">#&gt; Inserting data took 0.025 secs</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Inserting data took 0.0256 secs</span></span></code></pre>
 <div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">CohortAlgebra</span><span class="fu">::</span><span class="fu"><a href="../reference/intersectCohorts.html">intersectCohorts</a></span><span class="op">(</span></span>
 <span>  connection <span class="op">=</span> <span class="va">connection</span>,</span>
@@ -408,7 +408,7 @@ of the cohorts.</li>
   |===================================                                   |  50%
   |                                                                            
   |======================================================================| 100%</code></pre>
-<pre><code><span><span class="co">#&gt; Executing SQL took 0.453 secs</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Executing SQL took 0.221 secs</span></span></code></pre>
 <pre><code><span><span class="co">#&gt;  Intersecting cohorts.</span></span>
 <span><span class="co">#&gt;  Generating eras and saving.</span></span></code></pre>
 <div class="figure">
@@ -434,7 +434,7 @@ of the cohorts.</li>
 <span><span class="co">#&gt;                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>       </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>                  1         1 2022-01-01      2022-03-01   </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>                  2         1 2022-02-10      2022-05-10</span></span></code></pre>
-<pre><code><span><span class="co">#&gt; Inserting data took 0.0246 secs</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Inserting data took 0.0684 secs</span></span></code></pre>
 <div class="sourceCode" id="cb60"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">CohortAlgebra</span><span class="fu">::</span><span class="fu"><a href="../reference/minusCohorts.html">minusCohorts</a></span><span class="op">(</span></span>
 <span>  connection <span class="op">=</span> <span class="va">connection</span>,</span>
@@ -453,7 +453,7 @@ of the cohorts.</li>
   |===================================                                   |  50%
   |                                                                            
   |======================================================================| 100%</code></pre>
-<pre><code><span><span class="co">#&gt; Executing SQL took 0.0155 secs</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Executing SQL took 0.0682 secs</span></span></code></pre>
 <pre><code>#&gt; 
   |                                                                            
   |                                                                      |   0%
@@ -461,7 +461,7 @@ of the cohorts.</li>
   |===================================                                   |  50%
   |                                                                            
   |======================================================================| 100%</code></pre>
-<pre><code><span><span class="co">#&gt; Executing SQL took 0.0166 secs</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Executing SQL took 0.0347 secs</span></span></code></pre>
 <pre><code>#&gt; Performing minus operation.
 #&gt; 
   |                                                                            
@@ -470,7 +470,7 @@ of the cohorts.</li>
   |===================================                                   |  50%
   |                                                                            
   |======================================================================| 100%</code></pre>
-<pre><code><span><span class="co">#&gt; Executing SQL took 0.323 secs</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Executing SQL took 0.0145 secs</span></span></code></pre>
 <pre><code><span><span class="co">#&gt;  Intersecting cohorts.</span></span>
 <span><span class="co">#&gt;  Generating eras and saving.</span></span></code></pre>
 <div class="figure">
@@ -511,7 +511,7 @@ of the cohorts.</li>
   |===================================                                   |  50%
   |                                                                            
   |======================================================================| 100%</code></pre>
-<pre><code><span><span class="co">#&gt; Executing SQL took 0.0143 secs</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Executing SQL took 0.0141 secs</span></span></code></pre>
 <pre><code>#&gt; Performing minus operation.
 #&gt; 
   |                                                                            
@@ -520,7 +520,7 @@ of the cohorts.</li>
   |===================================                                   |  50%
   |                                                                            
   |======================================================================| 100%</code></pre>
-<pre><code><span><span class="co">#&gt; Executing SQL took 0.0142 secs</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Executing SQL took 0.0143 secs</span></span></code></pre>
 <pre><code><span><span class="co">#&gt;  Intersecting cohorts.</span></span>
 <span><span class="co">#&gt;  Generating eras and saving.</span></span></code></pre>
 <div class="figure">
