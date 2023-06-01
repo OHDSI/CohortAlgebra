@@ -48,6 +48,7 @@ testthat::test_that("Testing cohort union", {
     ),
     targetCohortDatabaseSchema = cohortDatabaseSchema,
     targetCohortTable = tableName,
+    tempEmulationSchema = tempEmulationSchema,
     purgeConflicts = FALSE
   )
   
@@ -103,6 +104,7 @@ testthat::test_that("Testing cohort union", {
       ),
       targetCohortDatabaseSchema = cohortDatabaseSchema,
       targetCohortTable = tableName,
+      tempEmulationSchema = tempEmulationSchema,
       isTempTable = TRUE
     )
   )
@@ -115,6 +117,7 @@ testthat::test_that("Testing cohort union", {
       oldCohortId = c(1, 2, 2),
       newCohortId = c(3, 3, 3)
     ),
+    tempEmulationSchema = tempEmulationSchema,
     targetCohortDatabaseSchema = cohortDatabaseSchema,
     targetCohortTable = paste0("#", tableName),
     isTempTable = TRUE
