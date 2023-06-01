@@ -196,6 +196,7 @@ unionCohorts <- function(connectionDetails = NULL,
       sourceCohortTableName = tempTables
     ),
     targetCohortDatabaseSchema = targetCohortDatabaseSchema,
-    targetCohortTable = targetCohortTable
+    targetCohortTable = targetCohortTable,
+    isTempTable = isTempTable
   )
 }

@@ -48,9 +48,12 @@ Append cohort data from multiple cohort tables.
 }
 \examples{
 \dontrun{
+sourceTables <- dplyr::tibble(sourceCohortDatabaseSchema = "main", 
+  sourceCohortTableName = "cohort")
+  
 appendCohortTables(
   connectionDetails = Eunomia::getEunomiaConnectionDetails(),
-  sourceTables = dplyr::tibble(sourceCohortDatabaseSchema = "main", sourceCohortTableName = "cohort"),
+  sourceTables = sourceTables,
   targetCohortDatabaseSchema = "main",
   targetCohortTable = "target"
 )
