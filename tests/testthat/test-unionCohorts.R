@@ -110,7 +110,7 @@ testthat::test_that("Testing cohort union", {
     ),
     tempEmulationSchema = tempEmulationSchema,
     targetCohortDatabaseSchema = NULL,
-    targetCohortTable = paste0("#", tableName),
+    targetCohortTable = paste0("#", tableName, "2"),
     isTempTable = TRUE
   )
 
