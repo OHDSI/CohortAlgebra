@@ -133,6 +133,34 @@ testthat::test_that("Testing cohort union", {
     purgeConflicts = TRUE,
     tempEmulationSchema = tempEmulationSchema
   )
+  
+  testthat::expect_error(
+    copyCohorts(
+      connection = connection,
+      oldToNewCohortId = dplyr::tibble(oldCohortId = c(1, 2),
+                                       newCohortId = c(1, 2)),
+      sourceCohortDatabaseSchema = cohortDatabaseSchema,
+      targetCohortDatabaseSchema = NULL,
+      sourceCohortTable = tableName1,
+      targetCohortTable = tableName1,
+      isTempTable = TRUE,
+      purgeConflicts = FALSE,
+      tempEmulationSchema = tempEmulationSchema
+    )
+  )
+  
+  copyCohorts(
+    connection = connection,
+    oldToNewCohortId = dplyr::tibble(oldCohortId = c(1, 2),
+                                     newCohortId = c(1, 2)),
+    sourceCohortDatabaseSchema = cohortDatabaseSchema,
+    targetCohortDatabaseSchema = NULL,
+    sourceCohortTable = tableName1,
+    targetCohortTable = paste0("#", tableName1),
+    isTempTable = TRUE,
+    purgeConflicts = FALSE,
+    tempEmulationSchema = tempEmulationSchema
+  )
 
   DatabaseConnector::disconnect(connection = connection)
 
@@ -213,4 +241,5 @@ testthat::test_that("Testing cohort union", {
       tempEmulationSchema = tempEmulationSchema
     )
   )
+  
 })
