@@ -70,19 +70,94 @@ unionCohorts <- function(connectionDetails = NULL,
   if (isTempTable) {
     if (!all(
       is.null(targetCohortDatabaseSchema),
-      tableNameIsCompatibleWithTempTableName(tableName = targetCohortTable),
-      !is.null(connection)
+      tableNameIsCompatibleWithTempTableName(tableName = targetCohortTable),!is.null(connection)
     )) {
       stop("Cannot output temp table - check input specifications")
     }
   }
   
-  if (is.null(connection)) {
-    connection <- DatabaseConnector::connect(connectionDetails)
-    on.exit(DatabaseConnector::disconnect(connection))
-  }
+  errorMessages <- checkmate::makeAssertCollection()
+  checkmate::assertDataFrame(x = oldToNewCohortId,
+                             min.rows = 1,
+                             add = errorMessages)
+  checkmate::assertNames(
+    x = colnames(oldToNewCohortId),
+    must.include = c("oldCohortId", "newCohortId"),
+    add = errorMessages
+  )
+  checkmate::assertIntegerish(
+    x = oldToNewCohortId$oldCohortId,
+    min.len = 1,
+    null.ok = FALSE,
+    add = errorMessages
+  )
+  checkmate::assertIntegerish(
+    x = oldToNewCohortId$newCohortId,
+    min.len = 1,
+    null.ok = FALSE,
+    add = errorMessages
+  )
+  checkmate::assertCharacter(
+    x = sourceCohortDatabaseSchema,
+    min.chars = 1,
+    len = 1,
+    null.ok = TRUE,
+    add = errorMessages
+  )
+  checkmate::assertCharacter(
+    x = targetCohortDatabaseSchema,
+    min.chars = 1,
+    len = 1,
+    null.ok = TRUE,
+    add = errorMessages
+  )
+  checkmate::assertCharacter(
+    x = sourceCohortTable,
+    min.chars = 1,
+    len = 1,
+    null.ok = FALSE,
+    add = errorMessages
+  )
+  checkmate::assertCharacter(
+    x = targetCohortTable,
+    min.chars = 1,
+    len = 1,
+    null.ok = FALSE,
+    add = errorMessages
+  )
+  checkmate::assertLogical(
+    x = purgeConflicts,
+    any.missing = FALSE,
+    min.len = 1,
+    add = errorMessages
+  )
+  checkmate::reportAssertions(collection = errorMessages)
   
   newCohortIds <- oldToNewCohortId$newCohortId %>% unique()
+  
+  if (!isTempTable) {
+    if (is.null(connection)) {
+      connection <- DatabaseConnector::connect(connectionDetails)
+      on.exit(DatabaseConnector::disconnect(connection))
+    }
+    
+    if (!purgeConflicts) {
+      cohortIdsInCohortTable <-
+        getCohortIdsInCohortTable(
+          connection = connection,
+          cohortDatabaseSchema = targetCohortDatabaseSchema,
+          cohortTable = targetCohortTable,
+          tempEmulationSchema = tempEmulationSchema
+        )
+      
+      conflicitingCohortIdsInTargetCohortTable <-
+        intersect(x = newCohortIds,
+                  y = cohortIdsInCohortTable %>% unique())
+      if (length(conflicitingCohortIdsInTargetCohortTable) > 0) {
+        stop("Target cohort id already in use in target cohort table")
+      }
+    }
+  }
   
   tempTables <- c()
   
@@ -109,62 +184,13 @@ unionCohorts <- function(connectionDetails = NULL,
     )
   }
   
-  sqlNest <- c()
-  for (i in (1:length(tempTables))) {
-    sqlNest[[i]] <- paste0(
-      "SELECT cohort_definition_id,
-                                    subject_id,
-                                    cohort_start_date,
-                                    cohort_end_date
-                              FROM ",
-      
-      tempTables[[i]],
-      " "
-    )
-  }
-  
-  if (isTempTable) {
-    sql <- paste0(
-      "SELECT cohort_definition_id,
-                        subject_id,
-                        cohort_start_date,
-                        cohort_end_date
-                INTO @temp_table_name
-                FROM (",
-      paste0(paste0(sqlNest, collapse = " union all "), ";"),
-      ") f;"
-    )
-    
-    DatabaseConnector::renderTranslateExecuteSql(
-      connection = connection,
-      sql = sql,
-      progressBar = FALSE,
-      reportOverallTime = FALSE,
-      tempEmulationSchema = tempEmulationSchema,
-      temp_table_name = targetCohortTable
-    )
-  } else {
-    sql <- paste0(
-      "  INSERT INTO
-              {@target_cohort_database_schema != ''} ? {
-                @target_cohort_database_schema.@target_cohort_table
-              } : {@target_cohort_table}
-              SELECT cohort_definition_id,
-                    subject_id,
-                    cohort_start_date,
-                    cohort_end_date
-              FROM (",
-      paste0(paste0(sqlNest, collapse = " union all ")),
-      ") f;"
-    )
-    DatabaseConnector::renderTranslateExecuteSql(
-      connection = connection,
-      sql = sql,
-      progressBar = FALSE,
-      reportOverallTime = FALSE,
-      tempEmulationSchema = tempEmulationSchema,
-      target_cohort_database_schema = targetCohortDatabaseSchema,
-      target_cohort_table = targetCohortTable
-    )
-  }
+  appendCohortTables(
+    connection = connection,
+    sourceTables = dplyr::tibble(
+      sourceCohortDatabaseSchema = NA,
+      sourceCohortTableName = tempTables
+    ),
+    targetCohortDatabaseSchema = targetCohortDatabaseSchema,
+    targetCohortTable = targetCohortTable
+  )
 }
