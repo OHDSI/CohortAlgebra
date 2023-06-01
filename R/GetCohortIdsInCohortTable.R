@@ -45,9 +45,9 @@ getCohortIdsInCohortTable <- function(connection = NULL,
       cohort_database_schema = cohortDatabaseSchema,
       tempEmulationSchema = tempEmulationSchema,
       cohort_table = cohortTable
-    ) %>%
-    dplyr::pull(.data$cohortDefinitionId) %>%
-    unique() %>%
+    ) |>
+    dplyr::pull(.data$cohortDefinitionId) |>
+    unique() |>
     sort()
   return(cohortIdsInCohortTable)
 }

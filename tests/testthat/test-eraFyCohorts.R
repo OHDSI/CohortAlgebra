@@ -22,12 +22,12 @@ testthat::test_that("Testing cohort era fy", {
   )
   cohort <- dplyr::bind_rows(
     cohort,
-    cohort %>% dplyr::mutate(subjectId = 2)
+    cohort |> dplyr::mutate(subjectId = 2)
   )
   cohort <- dplyr::bind_rows(
     cohort,
-    cohort %>% dplyr::mutate(cohortDefinitionId = 2)
-  ) %>%
+    cohort |> dplyr::mutate(cohortDefinitionId = 2)
+  ) |>
     dplyr::arrange(
       .data$subjectId,
       .data$cohortStartDate,
@@ -93,7 +93,7 @@ testthat::test_that("Testing cohort era fy", {
       cohort_database_schema = cohortDatabaseSchema,
       table_name = tableName,
       snakeCaseToCamelCase = TRUE
-    ) %>%
+    ) |>
     dplyr::tibble()
 
   testthat::expect_equal(
@@ -110,10 +110,10 @@ testthat::test_that("Testing cohort era fy", {
   )
   cohortExpected <- dplyr::bind_rows(
     cohortExpected,
-    cohortExpected %>%
+    cohortExpected |>
       dplyr::mutate(subjectId = 2)
-  ) %>%
-    dplyr::distinct() %>%
+  ) |>
+    dplyr::distinct() |>
     dplyr::arrange(
       .data$cohortDefinitionId,
       .data$subjectId,
@@ -222,7 +222,7 @@ testthat::test_that("Testing cohort era fy", {
       ),
       table_name = tempTableName,
       snakeCaseToCamelCase = TRUE
-    ) %>%
+    ) |>
     dplyr::tibble()
 
   cohortExpectedEraPad <- dplyr::tibble(
@@ -230,7 +230,7 @@ testthat::test_that("Testing cohort era fy", {
     subjectId = c(1, 2),
     cohortStartDate = c(as.Date("1999-01-01"), as.Date("1999-01-01")),
     cohortEndDate = c(as.Date("1999-03-04"), as.Date("1999-03-31"))
-  ) %>%
+  ) |>
     dplyr::arrange(
       .data$cohortDefinitionId,
       .data$subjectId,

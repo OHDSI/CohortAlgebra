@@ -168,8 +168,8 @@ copyCohorts <- function(connectionDetails = NULL,
 
     conflicitingCohortIdsInTargetCohortTable <-
       intersect(
-        x = oldToNewCohortId$newCohortId %>% unique() %>% sort(),
-        y = cohortIdsInCohortTable %>% unique()
+        x = oldToNewCohortId$newCohortId |> unique() |> sort(),
+        y = cohortIdsInCohortTable |> unique()
       )
 
     if (length(conflicitingCohortIdsInTargetCohortTable) > 0) {

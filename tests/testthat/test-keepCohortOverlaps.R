@@ -20,7 +20,7 @@
 #       as.Date("1998-01-31"),
 #       as.Date("1999-01-20")
 #     )
-#   ) %>%
+#   ) |>
 #     dplyr::arrange(
 #       .data$subjectId,
 #       .data$cohortDefinitionId,
@@ -68,7 +68,7 @@
 #       cohort_database_schema = cohortDatabaseSchema,
 #       table_name = tableName,
 #       snakeCaseToCamelCase = TRUE
-#     ) %>%
+#     ) |>
 #     dplyr::tibble()
 # 
 #   testthat::expect_equal(
@@ -129,7 +129,7 @@
 #       cohort_database_schema = cohortDatabaseSchema,
 #       table_name = tableName,
 #       snakeCaseToCamelCase = TRUE
-#     ) %>%
+#     ) |>
 #     dplyr::tibble()
 # 
 #   testthat::expect_equal(
@@ -191,7 +191,7 @@
 #       cohort_database_schema = cohortDatabaseSchema,
 #       table_name = tableName,
 #       snakeCaseToCamelCase = TRUE
-#     ) %>%
+#     ) |>
 #     dplyr::tibble()
 # 
 #   testthat::expect_equal(
@@ -237,7 +237,7 @@
 #       cohort_database_schema = cohortDatabaseSchema,
 #       table_name = tableName,
 #       snakeCaseToCamelCase = TRUE
-#     ) %>%
+#     ) |>
 #     dplyr::tibble()
 # 
 #   testthat::expect_equal(
@@ -246,7 +246,7 @@
 #   )
 # 
 #   # create the expected output data frame object to compare
-#   cohortExpected <- cohortExpected %>%
+#   cohortExpected <- cohortExpected |>
 #     dplyr::slice(0)
 # 
 #   testthat::expect_true(object = all(cohortObservered == cohortExpected))
@@ -281,7 +281,7 @@
 #       cohort_database_schema = cohortDatabaseSchema,
 #       table_name = tableName,
 #       snakeCaseToCamelCase = TRUE
-#     ) %>%
+#     ) |>
 #     dplyr::tibble()
 # 
 #   testthat::expect_equal(
@@ -290,12 +290,12 @@
 #   )
 # 
 #   # create the expected output data frame object to compare
-#   cohortExpected <- cohort %>%
+#   cohortExpected <- cohort |>
 #     dplyr::filter(
 #       subjectId == 1,
 #       cohortDefinitionId == 1
-#     ) %>%
-#     dplyr::filter(cohortStartDate == as.Date("1999-01-01")) %>%
+#     ) |>
+#     dplyr::filter(cohortStartDate == as.Date("1999-01-01")) |>
 #     dplyr::mutate(cohortDefinitionId = 16)
 # 
 #   testthat::expect_true(object = all(cohortObservered == cohortExpected))
@@ -329,7 +329,7 @@
 #       cohort_database_schema = cohortDatabaseSchema,
 #       table_name = tableName,
 #       snakeCaseToCamelCase = TRUE
-#     ) %>%
+#     ) |>
 #     dplyr::tibble()
 # 
 #   testthat::expect_equal(
@@ -338,7 +338,7 @@
 #   )
 # 
 #   # create the expected output data frame object to compare
-#   cohortExpected <- cohortExpected %>%
+#   cohortExpected <- cohortExpected |>
 #     dplyr::slice(0)
 # 
 #   testthat::expect_true(object = all(cohortObservered == cohortExpected))

@@ -135,7 +135,7 @@ intersectCohorts <- function(connectionDetails = NULL,
     conflicitingCohortIdsInTargetCohortTable <-
       intersect(
         x = newCohortId,
-        y = cohortIdsInCohortTable %>% unique()
+        y = cohortIdsInCohortTable |> unique()
       )
     if (length(conflicitingCohortIdsInTargetCohortTable) > 0) {
       stop("Target cohort id already in use in target cohort table")
@@ -158,7 +158,7 @@ intersectCohorts <- function(connectionDetails = NULL,
     target_cohort_table = tempTable1
   )
 
-  numberOfCohorts <- length(cohortIds %>% unique())
+  numberOfCohorts <- length(cohortIds |> unique())
 
   sql <- SqlRender::loadRenderTranslateSql(
     sqlFilename = "IntersectCohorts.sql",

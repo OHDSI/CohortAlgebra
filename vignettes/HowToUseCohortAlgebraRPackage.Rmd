@@ -160,7 +160,7 @@ data <-
     cohort_database_schema = cohortDatabaseSchema,
     table_name = tableName,
     snakeCaseToCamelCase = TRUE
-  ) %>%
+  ) |>
   dplyr::tibble()
 ```
 
@@ -243,7 +243,7 @@ data <-
     cohort_database_schema = cohortDatabaseSchema,
     table_name = tableName,
     snakeCaseToCamelCase = TRUE
-  ) %>%
+  ) |>
   dplyr::tibble()
 ```
 
@@ -323,7 +323,7 @@ data <-
     cohort_database_schema = cohortDatabaseSchema,
     table_name = tableName,
     snakeCaseToCamelCase = TRUE
-  ) %>%
+  ) |>
   dplyr::tibble()
 ```
 
@@ -403,7 +403,7 @@ data <-
     cohort_database_schema = cohortDatabaseSchema,
     table_name = tableName,
     snakeCaseToCamelCase = TRUE
-  ) %>%
+  ) |>
   dplyr::tibble()
 ```
 
@@ -484,7 +484,7 @@ data <-
     cohort_database_schema = cohortDatabaseSchema,
     table_name = tableName,
     snakeCaseToCamelCase = TRUE
-  ) %>%
+  ) |>
   dplyr::tibble()
 ```
 
@@ -564,7 +564,7 @@ data <-
     cohort_database_schema = cohortDatabaseSchema,
     table_name = tableName,
     snakeCaseToCamelCase = TRUE
-  ) %>%
+  ) |>
   dplyr::tibble()
 ```
 
@@ -646,7 +646,7 @@ data <-
     cohort_database_schema = cohortDatabaseSchema,
     table_name = tableName,
     snakeCaseToCamelCase = TRUE
-  ) %>%
+  ) |>
   dplyr::tibble()
 ```
 
@@ -688,7 +688,7 @@ data <-
     cohort_database_schema = cohortDatabaseSchema,
     table_name = tableName,
     snakeCaseToCamelCase = TRUE
-  ) %>%
+  ) |>
   dplyr::tibble()
 ```
 
@@ -774,7 +774,7 @@ DatabaseConnector::insertTable(
 ###  Modify cohort based on calendar date censoring.
 Let us say we have a simple cohort as follows:
 ```{r tidy=FALSE,eval=TRUE, echo=FALSE}
-cohort %>%
+cohort |>
   dplyr::filter(.data$cohortDefinitionId == 1)
 ```
 
@@ -806,7 +806,7 @@ cohortObserved <-
     cohort_database_schema = cohortDatabaseSchema,
     table_name = tableName,
     snakeCaseToCamelCase = TRUE
-  ) %>%
+  ) |>
   dplyr::tibble()
 ```
 Gives the following output
@@ -821,7 +821,7 @@ cohortObserved
 We can change the persistence criteria for a previously instantiated cohort. 
 
 ```{r tidy=FALSE,eval=TRUE, echo=FALSE}
-cohort %>%
+cohort |>
   dplyr::filter(.data$cohortDefinitionId == 1)
 ```
 
@@ -854,7 +854,7 @@ cohortObserved <-
     cohort_database_schema = cohortDatabaseSchema,
     table_name = tableName,
     snakeCaseToCamelCase = TRUE
-  ) %>%
+  ) |>
   dplyr::tibble()
 ```
 
@@ -914,7 +914,7 @@ DatabaseConnector::insertTable(
 lets suppose we have a cohort table with following data:
 
 ```{r tidy=FALSE,eval=TRUE, echo=FALSE}
-cohort %>%
+cohort |>
   dplyr::filter(.data$cohortDefinitionId %in% c(1, 3))
 ```
 
@@ -944,7 +944,7 @@ cohortObserved <-
     cohort_database_schema = cohortDatabaseSchema,
     table_name = tableName,
     snakeCaseToCamelCase = TRUE
-  ) %>%
+  ) |>
   dplyr::tibble()
 
 cohortObserved

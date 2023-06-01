@@ -162,7 +162,7 @@ removeOverlappingSubjects <- function(connectionDetails = NULL,
     conflicitingCohortIdsInTargetCohortTable <-
       intersect(
         x = newCohortId,
-        y = cohortIdsInCohortTable %>% unique()
+        y = cohortIdsInCohortTable |> unique()
       )
 
     if (length(conflicitingCohortIdsInTargetCohortTable) > 0) {

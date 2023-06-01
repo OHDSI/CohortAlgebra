@@ -169,7 +169,7 @@ eraFyCohorts <- function(connectionDetails = NULL,
       
       conflicitingCohortIdsInTargetCohortTable <-
         intersect(x = newCohortId,
-                  y = cohortIdsInCohortTable %>% unique())
+                  y = cohortIdsInCohortTable |> unique())
       if (length(conflicitingCohortIdsInTargetCohortTable) > 0) {
         stop("Target cohort id already in use in target cohort table")
       }

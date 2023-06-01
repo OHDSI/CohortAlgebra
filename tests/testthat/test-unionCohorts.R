@@ -65,7 +65,7 @@ testthat::test_that("Testing cohort union", {
       cohort_database_schema = cohortDatabaseSchema,
       table_name = tableName,
       snakeCaseToCamelCase = TRUE
-    ) %>%
+    ) |>
     dplyr::tibble()
 
   testthat::expect_equal(

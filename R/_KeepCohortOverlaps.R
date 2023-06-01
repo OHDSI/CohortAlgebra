@@ -178,8 +178,8 @@
 #' 
 #'   conflicitingCohortIdsInTargetCohortTable <-
 #'     intersect(
-#'       x = newCohortId %>% unique(),
-#'       y = cohortIdsInCohortTable %>% unique()
+#'       x = newCohortId |> unique(),
+#'       y = cohortIdsInCohortTable |> unique()
 #'     )
 #' 
 #'   if (length(conflicitingCohortIdsInTargetCohortTable) > 0) {

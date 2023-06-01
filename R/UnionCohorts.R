@@ -133,7 +133,7 @@ unionCohorts <- function(connectionDetails = NULL,
   )
   checkmate::reportAssertions(collection = errorMessages)
   
-  newCohortIds <- oldToNewCohortId$newCohortId %>% unique()
+  newCohortIds <- oldToNewCohortId$newCohortId |> unique()
   
   if (!isTempTable) {
     if (is.null(connection)) {
@@ -152,7 +152,7 @@ unionCohorts <- function(connectionDetails = NULL,
       
       conflicitingCohortIdsInTargetCohortTable <-
         intersect(x = newCohortIds,
-                  y = cohortIdsInCohortTable %>% unique())
+                  y = cohortIdsInCohortTable |> unique())
       if (length(conflicitingCohortIdsInTargetCohortTable) > 0) {
         stop("Target cohort id already in use in target cohort table")
       }
@@ -171,9 +171,9 @@ unionCohorts <- function(connectionDetails = NULL,
       sourceCohortTable = sourceCohortTable,
       targetCohortDatabaseSchema = NULL,
       targetCohortTable = tempTableName,
-      oldCohortIds = oldToNewCohortId %>%
-        dplyr::filter(.data$newCohortId == newCohortIds[[i]]) %>%
-        dplyr::pull("oldCohortId") %>%
+      oldCohortIds = oldToNewCohortId |>
+        dplyr::filter(.data$newCohortId == newCohortIds[[i]]) |>
+        dplyr::pull("oldCohortId") |>
         unique(),
       newCohortId = newCohortIds[[i]],
       eraconstructorpad = 0,

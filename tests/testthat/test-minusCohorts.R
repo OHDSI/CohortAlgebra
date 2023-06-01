@@ -28,7 +28,7 @@ testthat::test_that("Testing cohort intersect", {
       as.Date("1999-01-31"),
       as.Date("1999-01-25")
     )
-  ) %>%
+  ) |>
     dplyr::arrange(
       .data$subjectId,
       .data$cohortDefinitionId,
@@ -79,7 +79,7 @@ testthat::test_that("Testing cohort intersect", {
       cohort_database_schema = cohortDatabaseSchema,
       table_name = tableName,
       snakeCaseToCamelCase = TRUE
-    ) %>%
+    ) |>
     dplyr::tibble()
 
   testthat::expect_equal(
@@ -195,7 +195,7 @@ testthat::test_that("Testing cohort intersect", {
       ),
       table_name = tempTableName,
       snakeCaseToCamelCase = TRUE
-    ) %>%
+    ) |>
     dplyr::tibble()
 
   # this should throw error as there is already a cohort with cohort_definition_id = 9

@@ -42,7 +42,7 @@
 #' 
 #'   cohorts <- c()
 #'   for (i in (1:nrow(specifications))) {
-#'     cohorts[[i]] <- specifications[i, ] %>%
+#'     cohorts[[i]] <- specifications[i, ] |>
 #'       dplyr::mutate(sqlFileName = paste0(paste(
 #'         "BaseCohort", formatC(
 #'           abs(specifications[i, ]$cohortId),
@@ -72,7 +72,7 @@
 #'       )
 #'     )
 #' 
-#'   return(cohortDefinitionSet %>%
+#'   return(cohortDefinitionSet |>
 #'     dplyr::tibble())
 #' }
 #' 

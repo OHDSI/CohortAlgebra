@@ -42,10 +42,10 @@ copyCohortsToTempTable <- function(connection = NULL,
                                    sourceCohortTable,
                                    targetCohortTable = "#cohort_rows",
                                    tempEmulationSchema = getOption("sqlRenderTempEmulationSchema")) {
-  if (length(oldToNewCohortId$oldCohortId %>% unique()) != length(oldToNewCohortId$newCohortId %>% unique())) {
+  if (length(oldToNewCohortId$oldCohortId |> unique()) != length(oldToNewCohortId$newCohortId |> unique())) {
     stop("Number of oldCohortId is not equal to number of new cohort id")
   }
-  if (length(oldToNewCohortId$oldCohortId %>% unique()) != nrow(oldToNewCohortId)) {
+  if (length(oldToNewCohortId$oldCohortId |> unique()) != nrow(oldToNewCohortId)) {
     stop("oldCohortId is repeated")
   }
 

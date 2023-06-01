@@ -21,7 +21,7 @@ testthat::test_that("Testing cohort union", {
       as.Date("2022-05-10"),
       as.Date("2022-12-30")
     )
-  ) %>%
+  ) |>
     dplyr::arrange(
       cohortDefinitionId,
       subjectId,
@@ -88,7 +88,7 @@ testthat::test_that("Testing cohort union", {
     cohort = tableName2$cohortTable,
     snakeCaseToCamelCase = TRUE,
     tempEmulationSchema = tempEmulationSchema
-  ) %>%
+  ) |>
     dplyr::tibble()
 
   testthat::expect_equal(
