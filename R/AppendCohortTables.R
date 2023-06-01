@@ -65,11 +65,13 @@ appendCohortTables <- function(connectionDetails = NULL,
       stop("Cannot output temp table - check input specifications")
     }
   }
-  
+
   errorMessages <- checkmate::makeAssertCollection()
-  checkmate::assertDataFrame(x = sourceTables,
-                             min.rows = 1,
-                             add = errorMessages)
+  checkmate::assertDataFrame(
+    x = sourceTables,
+    min.rows = 1,
+    add = errorMessages
+  )
   checkmate::assertNames(
     x = colnames(sourceTables),
     must.include = c("sourceCohortDatabaseSchema", "sourceCohortTableName"),
@@ -88,24 +90,24 @@ appendCohortTables <- function(connectionDetails = NULL,
     add = errorMessages
   )
   checkmate::reportAssertions(collection = errorMessages)
-  
+
   if (is.null(connection)) {
     connection <- DatabaseConnector::connect(connectionDetails)
     on.exit(DatabaseConnector::disconnect(connection))
   }
-  
+
   sqlNest <- c()
   for (i in (1:nrow(sourceTables))) {
-    if (length(sourceTables[i,]$sourceCohortDatabaseSchema) > 1) {
+    if (length(sourceTables[i, ]$sourceCohortDatabaseSchema) > 1) {
       tableName <- paste0(
-        sourceTables[i,]$sourceCohortDatabaseSchema,
+        sourceTables[i, ]$sourceCohortDatabaseSchema,
         ".",
-        sourceTables[i,]$sourceCohortTableName
+        sourceTables[i, ]$sourceCohortTableName
       )
     } else {
-      tableName <- sourceTables[i,]$sourceCohortTableName
+      tableName <- sourceTables[i, ]$sourceCohortTableName
     }
-    
+
     sqlNest[[i]] <- paste0(
       "SELECT cohort_definition_id,
                subject_id,
@@ -118,7 +120,7 @@ appendCohortTables <- function(connectionDetails = NULL,
       " "
     )
   }
-  
+
   if (isTempTable) {
     sql <- paste0(
       "SELECT cohort_definition_id,
@@ -132,7 +134,7 @@ appendCohortTables <- function(connectionDetails = NULL,
       ") f
       "
     )
-    
+
     DatabaseConnector::renderTranslateExecuteSql(
       connection = connection,
       sql = sql,

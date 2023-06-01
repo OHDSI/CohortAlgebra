@@ -3,7 +3,7 @@
 #   sysTime <- as.numeric(Sys.time()) * 100000
 #   tableName <- paste0("cr", sysTime)
 #   tempTableName <- paste0("#", tableName, "_1")
-# 
+#
 #   # make up date for a cohort table
 #   cohort <- dplyr::tibble(
 #     cohortDefinitionId = c(1, 1, 2, 3),
@@ -26,7 +26,7 @@
 #       .data$cohortDefinitionId,
 #       .data$cohortStartDate
 #     )
-# 
+#
 #   # upload table
 #   connection <-
 #     DatabaseConnector::connect(connectionDetails = connectionDetails)
@@ -41,7 +41,7 @@
 #     camelCaseToSnakeCase = TRUE,
 #     progressBar = FALSE
 #   )
-# 
+#
 #   # should not throw error
 #   CohortAlgebra::keepCohortOverlaps(
 #     connection = connection,
@@ -56,7 +56,7 @@
 #     offsetCohortEndDate = 0,
 #     tempEmulationSchema = tempEmulationSchema
 #   )
-# 
+#
 #   cohortObservered <-
 #     DatabaseConnector::renderTranslateQuerySql(
 #       connection = connection,
@@ -70,12 +70,12 @@
 #       snakeCaseToCamelCase = TRUE
 #     ) |>
 #     dplyr::tibble()
-# 
+#
 #   testthat::expect_equal(
 #     object = nrow(cohortObservered),
 #     expected = 1
 #   )
-# 
+#
 #   # create the expected output data frame object to compare
 #   cohortExpected <- dplyr::tibble(
 #     cohortDefinitionId = c(9),
@@ -83,9 +83,9 @@
 #     cohortStartDate = c(as.Date("1999-01-01")),
 #     cohortEndDate = c(as.Date("1999-01-31"))
 #   )
-# 
+#
 #   testthat::expect_true(object = all(cohortObservered == cohortExpected))
-# 
+#
 #   # this should throw error as there is already a cohort with cohort_definition_id = 9
 #   testthat::expect_error(
 #     CohortAlgebra::keepCohortOverlaps(
@@ -102,7 +102,7 @@
 #       tempEmulationSchema = tempEmulationSchema
 #     )
 #   )
-# 
+#
 #   # repeat after purging conflicts
 #   CohortAlgebra::keepCohortOverlaps(
 #     connection = connection,
@@ -117,7 +117,7 @@
 #     offsetCohortEndDate = 0,
 #     tempEmulationSchema = tempEmulationSchema
 #   )
-# 
+#
 #   cohortObservered <-
 #     DatabaseConnector::renderTranslateQuerySql(
 #       connection = connection,
@@ -131,12 +131,12 @@
 #       snakeCaseToCamelCase = TRUE
 #     ) |>
 #     dplyr::tibble()
-# 
+#
 #   testthat::expect_equal(
 #     object = nrow(cohortObservered),
 #     expected = 1
 #   )
-# 
+#
 #   # create the expected output data frame object to compare
 #   cohortExpected <- dplyr::tibble(
 #     cohortDefinitionId = c(9),
@@ -144,10 +144,10 @@
 #     cohortStartDate = c(as.Date("1999-01-01")),
 #     cohortEndDate = c(as.Date("1999-01-31"))
 #   )
-# 
+#
 #   testthat::expect_true(object = all(cohortObservered == cohortExpected))
-# 
-# 
+#
+#
 #   # should throw warning - check for NULL result
 #   testthat::expect_warning(
 #     CohortAlgebra::keepCohortOverlaps(
@@ -164,7 +164,7 @@
 #       tempEmulationSchema = tempEmulationSchema
 #     )
 #   )
-# 
+#
 #   # with large offset
 #   CohortAlgebra::keepCohortOverlaps(
 #     connection = connection,
@@ -179,7 +179,7 @@
 #     offsetCohortEndDate = 0,
 #     tempEmulationSchema = tempEmulationSchema
 #   )
-# 
+#
 #   cohortObservered <-
 #     DatabaseConnector::renderTranslateQuerySql(
 #       connection = connection,
@@ -193,12 +193,12 @@
 #       snakeCaseToCamelCase = TRUE
 #     ) |>
 #     dplyr::tibble()
-# 
+#
 #   testthat::expect_equal(
 #     object = nrow(cohortObservered),
 #     expected = 1
 #   )
-# 
+#
 #   # create the expected output data frame object to compare
 #   cohortExpected <- dplyr::tibble(
 #     cohortDefinitionId = c(11),
@@ -206,11 +206,11 @@
 #     cohortStartDate = c(as.Date("1999-01-01")),
 #     cohortEndDate = c(as.Date("1999-01-31"))
 #   )
-# 
+#
 #   testthat::expect_true(object = all(cohortObservered == cohortExpected))
-# 
-# 
-# 
+#
+#
+#
 #   # with no offset
 #   CohortAlgebra::keepCohortOverlaps(
 #     connection = connection,
@@ -225,7 +225,7 @@
 #     offsetCohortEndDate = 0,
 #     tempEmulationSchema = tempEmulationSchema
 #   )
-# 
+#
 #   cohortObservered <-
 #     DatabaseConnector::renderTranslateQuerySql(
 #       connection = connection,
@@ -239,20 +239,20 @@
 #       snakeCaseToCamelCase = TRUE
 #     ) |>
 #     dplyr::tibble()
-# 
+#
 #   testthat::expect_equal(
 #     object = nrow(cohortObservered),
 #     expected = 0
 #   )
-# 
+#
 #   # create the expected output data frame object to compare
 #   cohortExpected <- cohortExpected |>
 #     dplyr::slice(0)
-# 
+#
 #   testthat::expect_true(object = all(cohortObservered == cohortExpected))
-# 
+#
 #   DatabaseConnector::disconnect(connection)
-# 
+#
 #   # check if establishes connection
 #   # also check if count of days workds - 20 vs 21
 #   CohortAlgebra::keepCohortOverlaps(
@@ -269,7 +269,7 @@
 #     offsetCohortEndDate = 0,
 #     tempEmulationSchema = tempEmulationSchema
 #   )
-# 
+#
 #   cohortObservered <-
 #     DatabaseConnector::renderTranslateQuerySql(
 #       connection = DatabaseConnector::connect(connectionDetails = connectionDetails),
@@ -283,12 +283,12 @@
 #       snakeCaseToCamelCase = TRUE
 #     ) |>
 #     dplyr::tibble()
-# 
+#
 #   testthat::expect_equal(
 #     object = nrow(cohortObservered),
 #     expected = 1
 #   )
-# 
+#
 #   # create the expected output data frame object to compare
 #   cohortExpected <- cohort |>
 #     dplyr::filter(
@@ -297,10 +297,10 @@
 #     ) |>
 #     dplyr::filter(cohortStartDate == as.Date("1999-01-01")) |>
 #     dplyr::mutate(cohortDefinitionId = 16)
-# 
+#
 #   testthat::expect_true(object = all(cohortObservered == cohortExpected))
-# 
-# 
+#
+#
 #   # check if establishes connection
 #   # also check if using more than occurrence works
 #   CohortAlgebra::keepCohortOverlaps(
@@ -317,7 +317,7 @@
 #     offsetCohortEndDate = 0,
 #     tempEmulationSchema = tempEmulationSchema
 #   )
-# 
+#
 #   cohortObservered <-
 #     DatabaseConnector::renderTranslateQuerySql(
 #       connection = DatabaseConnector::connect(connectionDetails = connectionDetails),
@@ -331,15 +331,15 @@
 #       snakeCaseToCamelCase = TRUE
 #     ) |>
 #     dplyr::tibble()
-# 
+#
 #   testthat::expect_equal(
 #     object = nrow(cohortObservered),
 #     expected = 0
 #   )
-# 
+#
 #   # create the expected output data frame object to compare
 #   cohortExpected <- cohortExpected |>
 #     dplyr::slice(0)
-# 
+#
 #   testthat::expect_true(object = all(cohortObservered == cohortExpected))
 # })

@@ -13,7 +13,7 @@
 #' # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #' # See the License for the specific language governing permissions and
 #' # limitations under the License.
-#' 
+#'
 #' #' Apply Demographic cohort
 #' #'
 #' #' @description
@@ -126,7 +126,7 @@
 #'     null.ok = FALSE,
 #'     add = errorMessages
 #'   )
-#' 
+#'
 #'   checkmate::assertLogical(
 #'     x = purgeConflicts,
 #'     any.missing = FALSE,
@@ -148,21 +148,21 @@
 #'   if (!is.null(filterByAgeRange)) {
 #'     checkmate::assert_true(x = filterByAgeRange[1] <= filterByAgeRange[2])
 #'   }
-#' 
+#'
 #'   checkmate::reportAssertions(collection = errorMessages)
-#' 
+#'
 #'   if (all(
 #'     is.null(filterByAgeRange),
 #'     is.null(filterGenderConceptId)
 #'   )) {
 #'     stop("No criteria specified")
 #'   }
-#' 
+#'
 #'   if (is.null(connection)) {
 #'     connection <- DatabaseConnector::connect(connectionDetails)
 #'     on.exit(DatabaseConnector::disconnect(connection))
 #'   }
-#' 
+#'
 #'   if (!purgeConflicts) {
 #'     cohortIdsInCohortTable <-
 #'       getCohortIdsInCohortTable(
@@ -176,12 +176,12 @@
 #'         x = newCohortId,
 #'         y = cohortIdsInCohortTable |> unique()
 #'       )
-#' 
+#'
 #'     if (length(conflicitingCohortIdsInTargetCohortTable) > 0) {
 #'       stop("Target cohort id already in use in target cohort table")
 #'     }
 #'   }
-#' 
+#'
 #'   if (all(
 #'     paste0(sourceCohortDatabaseSchema, sourceCohortTable) ==
 #'       paste0(targetCohortDatabaseSchema, targetCohortTable),
@@ -189,7 +189,7 @@
 #'   )) {
 #'     tempTableName <- generateRandomString()
 #'     tempTable1 <- paste0("#", tempTableName, "1")
-#' 
+#'
 #'     DatabaseConnector::renderTranslateExecuteSql(
 #'       connection = connection,
 #'       sql = "
@@ -218,8 +218,8 @@
 #'     sourceCohortDatabaseSchema <- NULL
 #'     sourceCohortTable <- tempTable1
 #'   }
-#' 
-#' 
+#'
+#'
 #'   sql <- SqlRender::loadRenderTranslateSql(
 #'     sqlFilename = "DemographicCritera.sql",
 #'     packageName = utils::packageName(),

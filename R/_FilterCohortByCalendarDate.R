@@ -13,7 +13,7 @@
 #' # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #' # See the License for the specific language governing permissions and
 #' # limitations under the License.
-#' 
+#'
 #' #' Apply calendar date criteria.
 #' #'
 #' #' @description
@@ -160,20 +160,20 @@
 #'     null.ok = TRUE,
 #'     add = errorMessages
 #'   )
-#' 
+#'
 #'   checkmate::reportAssertions(collection = errorMessages)
-#' 
+#'
 #'   if (sum(
 #'     !is.null(cohortStartDateRangeLow), !is.null(cohortStartDateRangeHigh), !is.null(cohortEndDateRangeLow), !is.null(cohortEndDateRangeHigh)
 #'   ) == 0) {
 #'     stop("No criteria specified.")
 #'   }
-#' 
+#'
 #'   if (is.null(connection)) {
 #'     connection <- DatabaseConnector::connect(connectionDetails)
 #'     on.exit(DatabaseConnector::disconnect(connection))
 #'   }
-#' 
+#'
 #'   if (!purgeConflicts) {
 #'     cohortIdsInCohortTable <-
 #'       getCohortIdsInCohortTable(
@@ -187,12 +187,12 @@
 #'         x = newCohortId,
 #'         y = cohortIdsInCohortTable |> unique()
 #'       )
-#' 
+#'
 #'     if (length(conflicitingCohortIdsInTargetCohortTable) > 0) {
 #'       stop("Target cohort id already in use in target cohort table")
 #'     }
 #'   }
-#' 
+#'
 #'   if (all(
 #'     paste0(sourceCohortDatabaseSchema, sourceCohortTable) ==
 #'       paste0(targetCohortDatabaseSchema, targetCohortTable),
@@ -200,7 +200,7 @@
 #'   )) {
 #'     tempTableName <- generateRandomString()
 #'     tempTable1 <- paste0("#", tempTableName, "1")
-#' 
+#'
 #'     DatabaseConnector::renderTranslateExecuteSql(
 #'       connection = connection,
 #'       sql = "
@@ -229,7 +229,7 @@
 #'     sourceCohortDatabaseSchema <- NULL
 #'     sourceCohortTable <- tempTable1
 #'   }
-#' 
+#'
 #'   dateToString <- function(date) {
 #'     x <- NULL
 #'     if (!is.null(date)) {
@@ -242,7 +242,7 @@
 #'     }
 #'     return(x)
 #'   }
-#' 
+#'
 #'   sql <- SqlRender::loadRenderTranslateSql(
 #'     sqlFilename = "FilterCohortByCalendarPeriod.sql",
 #'     packageName = utils::packageName(),

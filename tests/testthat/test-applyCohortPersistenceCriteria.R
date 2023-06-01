@@ -3,7 +3,7 @@
 #   sysTime <- as.numeric(Sys.time()) * 100000
 #   tableName <- paste0("cr", sysTime)
 #   tempTableName <- paste0("#", tableName, "_1")
-# 
+#
 #   # make up date for a cohort table
 #   cohort <- dplyr::tibble(
 #     cohortDefinitionId = c(1, 1, 1),
@@ -19,7 +19,7 @@
 #       as.Date("1999-01-01")
 #     )
 #   )
-# 
+#
 #   observationPeriod <- dplyr::tibble(
 #     personId = c(1, 2),
 #     observation_period_start_date = c(
@@ -31,7 +31,7 @@
 #       as.Date("2010-01-01")
 #     )
 #   )
-# 
+#
 #   # upload table
 #   connection <-
 #     DatabaseConnector::connect(connectionDetails = connectionDetails)
@@ -59,7 +59,7 @@
 #   )
 #   # disconnecting - as this is a test for a non temp cohort table
 #   DatabaseConnector::disconnect(connection)
-# 
+#
 #   applyCohortPersistenceCriteria(
 #     connectionDetails = connectionDetails,
 #     sourceCohortDatabaseSchema = cohortDatabaseSchema,
@@ -72,7 +72,7 @@
 #     tillEndOfObservationPeriod = TRUE,
 #     purgeConflicts = FALSE
 #   )
-# 
+#
 #   # extract the generated output and compare to expected
 #   connection <-
 #     DatabaseConnector::connect(connectionDetails = connectionDetails)
@@ -89,7 +89,7 @@
 #       snakeCaseToCamelCase = TRUE
 #     ) |>
 #     dplyr::tibble()
-# 
+#
 #   testthat::expect_equal(
 #     object = nrow(dataPost),
 #     expected = 1
@@ -104,7 +104,7 @@
 #     object = dataPost,
 #     expected = expected
 #   )
-# 
+#
 #   # repeat for temp table
 #   applyCohortPersistenceCriteria(
 #     connection = connection,
@@ -131,7 +131,7 @@
 #       snakeCaseToCamelCase = TRUE
 #     ) |>
 #     dplyr::tibble()
-# 
+#
 #   testthat::expect_equal(
 #     object = nrow(dataPost),
 #     expected = 1
@@ -146,7 +146,7 @@
 #     object = dataPost,
 #     expected = expected
 #   )
-# 
+#
 #   testthat::expect_error(
 #     applyCohortPersistenceCriteria(
 #       connection = connection,
@@ -161,7 +161,7 @@
 #       purgeConflicts = FALSE
 #     )
 #   )
-# 
+#
 #   DatabaseConnector::disconnect(connection)
 #   testthat::expect_error(
 #     applyCohortPersistenceCriteria(
@@ -176,7 +176,7 @@
 #       purgeConflicts = FALSE
 #     )
 #   )
-# 
+#
 #   testthat::expect_error(
 #     applyCohortPersistenceCriteria(
 #       connectionDetails = connectionDetails,
@@ -192,8 +192,8 @@
 #       purgeConflicts = FALSE
 #     )
 #   )
-# 
-# 
+#
+#
 #   connection <-
 #     DatabaseConnector::connect(connectionDetails = connectionDetails)
 #   applyCohortPersistenceCriteria(
@@ -221,7 +221,7 @@
 #       snakeCaseToCamelCase = TRUE
 #     ) |>
 #     dplyr::tibble()
-# 
+#
 #   testthat::expect_equal(
 #     object = nrow(dataPost),
 #     expected = 1
@@ -236,9 +236,9 @@
 #     object = dataPost,
 #     expected = expected
 #   )
-# 
-# 
-# 
+#
+#
+#
 #   applyCohortPersistenceCriteria(
 #     connectionDetails = connectionDetails,
 #     sourceCohortDatabaseSchema = cohortDatabaseSchema,
@@ -251,8 +251,8 @@
 #     offsetCohortEndDate = 2000,
 #     purgeConflicts = FALSE
 #   )
-# 
-# 
+#
+#
 #   dataPost <-
 #     DatabaseConnector::renderTranslateQuerySql(
 #       connection = connection,
@@ -266,7 +266,7 @@
 #       snakeCaseToCamelCase = TRUE
 #     ) |>
 #     dplyr::tibble()
-# 
+#
 #   testthat::expect_equal(
 #     object = nrow(dataPost),
 #     expected = 1
@@ -281,8 +281,8 @@
 #     object = dataPost,
 #     expected = expected
 #   )
-# 
-# 
+#
+#
 #   applyCohortPersistenceCriteria(
 #     connection = connection,
 #     sourceCohortDatabaseSchema = cohortDatabaseSchema,
@@ -295,7 +295,7 @@
 #     offsetCohortEndDate = 2,
 #     purgeConflicts = FALSE
 #   )
-# 
+#
 #   dataPost <-
 #     DatabaseConnector::renderTranslateQuerySql(
 #       connection = connection,
@@ -309,12 +309,12 @@
 #       snakeCaseToCamelCase = TRUE
 #     ) |>
 #     dplyr::tibble()
-# 
+#
 #   testthat::expect_equal(
 #     object = nrow(dataPost),
 #     expected = 2
 #   )
-# 
+#
 #   DatabaseConnector::renderTranslateExecuteSql(
 #     connection = connection,
 #     sql = paste0(
@@ -329,9 +329,9 @@
 #     reportOverallTime = FALSE,
 #     temp_table_name = tempTableName
 #   )
-# 
+#
 #   DatabaseConnector::disconnect(connection)
-# 
+#
 #   DatabaseConnector::renderTranslateExecuteSql(
 #     connection = DatabaseConnector::connect(connectionDetails = connectionDetails),
 #     sql = "DROP TABLE IF EXISTS @cohort_database_schema.@table_temp;

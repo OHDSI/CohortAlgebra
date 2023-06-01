@@ -42,7 +42,7 @@ testthat::test_that("Testing cohort union", {
     camelCaseToSnakeCase = TRUE,
     progressBar = FALSE
   )
-  
+
   DatabaseConnector::insertTable(
     connection = connection,
     databaseSchema = cohortDatabaseSchema,

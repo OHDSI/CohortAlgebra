@@ -13,7 +13,7 @@
 #' # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #' # See the License for the specific language governing permissions and
 #' # limitations under the License.
-#' 
+#'
 #' #' Apply persistence criteria.
 #' #'
 #' #' @description
@@ -176,26 +176,26 @@
 #'     null.ok = TRUE,
 #'     add = errorMessages
 #'   )
-#'   
+#'
 #'   checkmate::reportAssertions(collection = errorMessages)
-#'   
+#'
 #'   if (sum(
 #'     tillEndOfObservationPeriod,!is.null(offsetCohortStartDate),!is.null(offsetCohortEndDate)
 #'   ) > 1) {
 #'     stop("Multiple persistence criteria specified.")
 #'   }
-#'   
+#'
 #'   if (sum(
 #'     tillEndOfObservationPeriod,!is.null(offsetCohortStartDate),!is.null(offsetCohortEndDate)
 #'   ) == 0) {
 #'     stop("No persistence criteria specified.")
 #'   }
-#'   
+#'
 #'   if (is.null(connection)) {
 #'     connection <- DatabaseConnector::connect(connectionDetails)
 #'     on.exit(DatabaseConnector::disconnect(connection))
 #'   }
-#'   
+#'
 #'   if (!purgeConflicts) {
 #'     cohortIdsInCohortTable <-
 #'       getCohortIdsInCohortTable(
@@ -207,15 +207,15 @@
 #'     conflicitingCohortIdsInTargetCohortTable <-
 #'       intersect(x = newCohortId,
 #'                 y = cohortIdsInCohortTable |> unique())
-#'     
+#'
 #'     if (length(conflicitingCohortIdsInTargetCohortTable) > 0) {
 #'       stop("Target cohort id already in use in target cohort table")
 #'     }
 #'   }
-#'   
+#'
 #'   tempTableName <- generateRandomString()
 #'   tempTable1 <- paste0("#", tempTableName, "1")
-#'   
+#'
 #'   DatabaseConnector::renderTranslateExecuteSql(
 #'     connection = connection,
 #'     sql = "
@@ -230,7 +230,7 @@
 #'     progressBar = FALSE,
 #'     reportOverallTime = FALSE
 #'   )
-#'   
+#'
 #'   if (tillEndOfObservationPeriod) {
 #'     sql <- SqlRender::loadRenderTranslateSql(
 #'       sqlFilename = "PersistEndOfContinuousObservationPeriod.sql",
@@ -253,7 +253,7 @@
 #'       reportOverallTime = FALSE
 #'     )
 #'   }
-#'   
+#'
 #'   if (!is.null(offsetCohortStartDate)) {
 #'     sql <- SqlRender::loadRenderTranslateSql(
 #'       sqlFilename = "CohortStartDayPersistence.sql",
@@ -277,7 +277,7 @@
 #'       reportOverallTime = FALSE
 #'     )
 #'   }
-#'   
+#'
 #'   if (!is.null(offsetCohortEndDate)) {
 #'     sql <- SqlRender::loadRenderTranslateSql(
 #'       sqlFilename = "CohortEndDayPersistence.sql",
@@ -301,7 +301,7 @@
 #'       reportOverallTime = FALSE
 #'     )
 #'   }
-#'   
+#'
 #'   eraFyCohorts(
 #'     connection = connection,
 #'     sourceCohortDatabaseSchema = NULL,

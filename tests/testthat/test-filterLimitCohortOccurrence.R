@@ -3,7 +3,7 @@
 #   sysTime <- as.numeric(Sys.time()) * 100000
 #   tableName <- paste0("cr", sysTime)
 #   tempTableName <- paste0("#", tableName, "_1")
-# 
+#
 #   # make up date for a cohort table
 #   cohort <- dplyr::tibble(
 #     cohortDefinitionId = c(1, 1, 1),
@@ -19,7 +19,7 @@
 #       as.Date("2001-12-01")
 #     )
 #   )
-# 
+#
 #   # upload table
 #   connection <-
 #     DatabaseConnector::connect(connectionDetails = connectionDetails)
@@ -36,7 +36,7 @@
 #   )
 #   # disconnecting - as this is a test for a non temp cohort table
 #   DatabaseConnector::disconnect(connection)
-# 
+#
 #   testthat::expect_error(
 #     limitCohortOccurrence(
 #       connectionDetails = connectionDetails,
@@ -51,7 +51,7 @@
 #       purgeConflicts = TRUE
 #     )
 #   )
-# 
+#
 #   limitCohortOccurrence(
 #     connectionDetails = connectionDetails,
 #     sourceCohortDatabaseSchema = cohortDatabaseSchema,
@@ -79,7 +79,7 @@
 #       snakeCaseToCamelCase = TRUE
 #     ) |>
 #     dplyr::tibble()
-# 
+#
 #   testthat::expect_equal(
 #     object = nrow(dataPost),
 #     expected = 1
@@ -94,7 +94,7 @@
 #     object = dataPost,
 #     expected = expected
 #   )
-# 
+#
 #   testthat::expect_error(
 #     limitCohortOccurrence(
 #       connectionDetails = connectionDetails,
@@ -108,7 +108,7 @@
 #       purgeConflicts = FALSE
 #     )
 #   )
-# 
+#
 #   limitCohortOccurrence(
 #     connectionDetails = connectionDetails,
 #     sourceCohortDatabaseSchema = cohortDatabaseSchema,
@@ -136,7 +136,7 @@
 #       snakeCaseToCamelCase = TRUE
 #     ) |>
 #     dplyr::tibble()
-# 
+#
 #   testthat::expect_equal(
 #     object = nrow(dataPost),
 #     expected = 1
@@ -151,9 +151,9 @@
 #     object = dataPost,
 #     expected = expected
 #   )
-# 
+#
 #   DatabaseConnector::disconnect(connection)
-# 
+#
 #   DatabaseConnector::renderTranslateExecuteSql(
 #     connection = DatabaseConnector::connect(connectionDetails = connectionDetails),
 #     sql = "DROP TABLE IF EXISTS @cohort_database_schema.@table_temp;

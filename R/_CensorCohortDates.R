@@ -13,7 +13,7 @@
 #' # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #' # See the License for the specific language governing permissions and
 #' # limitations under the License.
-#' 
+#'
 #' #' Censor cohort date
 #' #'
 #' #' @description
@@ -30,9 +30,9 @@
 #' #' @param sourceCohortDatabaseSchema The database schema of the source cohort table.
 #' #'
 #' #' @param targetCohortDatabaseSchema The database schema of the source cohort table.
-#' #' 
+#' #'
 #' #' @param sourceCohortTable          The name of the cohort table with source cohorts.
-#' #' 
+#' #'
 #' #' @param targetCohortTable          The name of the cohort table with source cohorts.
 #' #'
 #' #' @template OldCohortId
@@ -140,21 +140,21 @@
 #'     null.ok = TRUE,
 #'     add = errorMessages
 #'   )
-#' 
+#'
 #'   checkmate::reportAssertions(collection = errorMessages)
-#' 
+#'
 #'   if (all(
 #'     is.null(cohortStartDateLeftCensor),
 #'     is.null(cohortEndDateRightCensor)
 #'   )) {
 #'     stop("Censort information not provided.")
 #'   }
-#' 
+#'
 #'   if (is.null(connection)) {
 #'     connection <- DatabaseConnector::connect(connectionDetails)
 #'     on.exit(DatabaseConnector::disconnect(connection))
 #'   }
-#' 
+#'
 #'   if (!purgeConflicts) {
 #'     cohortIdsInCohortTable <-
 #'       getCohortIdsInCohortTable(
@@ -168,32 +168,32 @@
 #'         x = newCohortId,
 #'         y = cohortIdsInCohortTable |> unique()
 #'       )
-#' 
+#'
 #'     if (length(conflicitingCohortIdsInTargetCohortTable) > 0) {
 #'       stop("Target cohort id already in use in target cohort table")
 #'     }
 #'   }
-#' 
+#'
 #'   cohort_start_left_censort_start_year <- NULL
 #'   cohort_start_left_censort_start_month <- NULL
 #'   cohort_start_left_censort_start_day <- NULL
-#' 
+#'
 #'   cohort_end_right_censort_start_year <- NULL
 #'   cohort_end_right_censort_start_month <- NULL
 #'   cohort_end_right_censort_start_day <- NULL
-#' 
+#'
 #'   if (!is.null(cohortStartDateLeftCensor)) {
 #'     cohort_start_left_censort_start_year <- clock::get_year(cohortStartDateLeftCensor)
 #'     cohort_start_left_censort_start_month <- clock::get_month(cohortStartDateLeftCensor)
 #'     cohort_start_left_censort_start_day <- clock::get_day(cohortStartDateLeftCensor)
 #'   }
-#' 
+#'
 #'   if (!is.null(cohortEndDateRightCensor)) {
 #'     cohort_end_right_censort_start_year <- clock::get_year(cohortEndDateRightCensor)
 #'     cohort_end_right_censort_start_month <- clock::get_month(cohortEndDateRightCensor)
 #'     cohort_end_right_censort_start_day <- clock::get_day(cohortEndDateRightCensor)
 #'   }
-#' 
+#'
 #'   sql <- SqlRender::loadRenderTranslateSql(
 #'     sqlFilename = "CohortCensorDates.sql",
 #'     packageName = utils::packageName(),
@@ -211,7 +211,7 @@
 #'     cohort_end_right_censort_start_month = cohort_end_right_censort_start_month,
 #'     cohort_end_right_censort_start_day = cohort_end_right_censort_start_day
 #'   )
-#' 
+#'
 #'   DatabaseConnector::executeSql(
 #'     connection = connection,
 #'     sql = sql,

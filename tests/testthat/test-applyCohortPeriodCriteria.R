@@ -3,7 +3,7 @@
 #   sysTime <- as.numeric(Sys.time()) * 100000
 #   tableName <- paste0("cr", sysTime)
 #   tempTableName <- paste0("#", tableName, "_1")
-# 
+#
 #   # make up date for a cohort table
 #   cohort <- dplyr::tibble(
 #     cohortDefinitionId = c(1, 1, 1),
@@ -19,7 +19,7 @@
 #       as.Date("1999-01-31")
 #     )
 #   )
-# 
+#
 #   observationPeriod <- dplyr::tibble(
 #     personId = c(1, 2, 3),
 #     observation_period_start_date = c(
@@ -33,7 +33,7 @@
 #       as.Date("2000-01-31")
 #     )
 #   )
-# 
+#
 #   # upload table
 #   connection <-
 #     DatabaseConnector::connect(connectionDetails = connectionDetails)
@@ -61,7 +61,7 @@
 #   )
 #   # disconnecting - as this is a test for a non temp cohort table
 #   DatabaseConnector::disconnect(connection)
-# 
+#
 #   applyCohortPeriodCriteria(
 #     connectionDetails = connectionDetails,
 #     sourceCohortDatabaseSchema = cohortDatabaseSchema,
@@ -74,7 +74,7 @@
 #     filterByMinimumCohortPeriod = 180,
 #     purgeConflicts = FALSE
 #   )
-# 
+#
 #   # extract the generated output and compare to expected
 #   connection <-
 #     DatabaseConnector::connect(connectionDetails = connectionDetails)
@@ -91,7 +91,7 @@
 #       snakeCaseToCamelCase = TRUE
 #     ) |>
 #     dplyr::tibble()
-# 
+#
 #   testthat::expect_equal(
 #     object = nrow(dataPost),
 #     expected = 1
@@ -106,7 +106,7 @@
 #     object = dataPost,
 #     expected = expected
 #   )
-# 
+#
 #   applyCohortPeriodCriteria(
 #     connectionDetails = connectionDetails,
 #     sourceCohortDatabaseSchema = cohortDatabaseSchema,
@@ -119,7 +119,7 @@
 #     filterByMinimumCohortPeriod = 180,
 #     purgeConflicts = TRUE
 #   )
-# 
+#
 #   testthat::expect_error(
 #     applyCohortPeriodCriteria(
 #       connection = connection,
@@ -134,7 +134,7 @@
 #       purgeConflicts = FALSE
 #     )
 #   )
-# 
+#
 #   DatabaseConnector::disconnect(connection)
 #   testthat::expect_error(
 #     applyCohortPeriodCriteria(
@@ -150,8 +150,8 @@
 #       purgeConflicts = FALSE
 #     )
 #   )
-# 
-# 
+#
+#
 #   connection <-
 #     DatabaseConnector::connect(connectionDetails = connectionDetails)
 #   applyCohortPeriodCriteria(
@@ -179,7 +179,7 @@
 #       snakeCaseToCamelCase = TRUE
 #     ) |>
 #     dplyr::tibble()
-# 
+#
 #   testthat::expect_equal(
 #     object = nrow(dataPost),
 #     expected = 1
@@ -194,7 +194,7 @@
 #     object = dataPost,
 #     expected = expected
 #   )
-# 
+#
 #   applyCohortPeriodCriteria(
 #     connection = connection,
 #     sourceCohortDatabaseSchema = cohortDatabaseSchema,
@@ -207,7 +207,7 @@
 #     filterByMinimumPostObservationPeriod = 180,
 #     purgeConflicts = TRUE
 #   )
-# 
+#
 #   dataPost <-
 #     DatabaseConnector::renderTranslateQuerySql(
 #       connection = connection,
@@ -221,7 +221,7 @@
 #       snakeCaseToCamelCase = TRUE
 #     ) |>
 #     dplyr::tibble()
-# 
+#
 #   testthat::expect_equal(
 #     object = nrow(dataPost),
 #     expected = 1
@@ -236,7 +236,7 @@
 #     object = dataPost,
 #     expected = expected
 #   )
-# 
+#
 #   DatabaseConnector::renderTranslateExecuteSql(
 #     connection = connection,
 #     sql = paste0(
@@ -251,9 +251,9 @@
 #     reportOverallTime = FALSE,
 #     temp_table_name = tempTableName
 #   )
-# 
+#
 #   DatabaseConnector::disconnect(connection)
-# 
+#
 #   DatabaseConnector::renderTranslateExecuteSql(
 #     connection = DatabaseConnector::connect(connectionDetails = connectionDetails),
 #     sql = "DROP TABLE IF EXISTS @cohort_database_schema.@table_temp;

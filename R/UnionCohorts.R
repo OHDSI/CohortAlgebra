@@ -76,11 +76,13 @@ unionCohorts <- function(connectionDetails = NULL,
       stop("Cannot output temp table - check input specifications")
     }
   }
-  
+
   errorMessages <- checkmate::makeAssertCollection()
-  checkmate::assertDataFrame(x = oldToNewCohortId,
-                             min.rows = 1,
-                             add = errorMessages)
+  checkmate::assertDataFrame(
+    x = oldToNewCohortId,
+    min.rows = 1,
+    add = errorMessages
+  )
   checkmate::assertNames(
     x = colnames(oldToNewCohortId),
     must.include = c("oldCohortId", "newCohortId"),
@@ -133,15 +135,15 @@ unionCohorts <- function(connectionDetails = NULL,
     add = errorMessages
   )
   checkmate::reportAssertions(collection = errorMessages)
-  
+
   newCohortIds <- oldToNewCohortId$newCohortId |> unique()
-  
+
   if (!isTempTable) {
     if (is.null(connection)) {
       connection <- DatabaseConnector::connect(connectionDetails)
       on.exit(DatabaseConnector::disconnect(connection))
     }
-    
+
     if (!purgeConflicts) {
       cohortIdsInCohortTable <-
         getCohortIdsInCohortTable(
@@ -150,22 +152,24 @@ unionCohorts <- function(connectionDetails = NULL,
           cohortTable = targetCohortTable,
           tempEmulationSchema = tempEmulationSchema
         )
-      
+
       conflicitingCohortIdsInTargetCohortTable <-
-        intersect(x = newCohortIds,
-                  y = cohortIdsInCohortTable |> unique())
+        intersect(
+          x = newCohortIds,
+          y = cohortIdsInCohortTable |> unique()
+        )
       if (length(conflicitingCohortIdsInTargetCohortTable) > 0) {
         stop("Target cohort id already in use in target cohort table")
       }
     }
   }
-  
+
   tempTables <- c()
-  
+
   for (i in (1:length(newCohortIds))) {
     tempTableName <- paste0("#", generateRandomString())
     tempTables <- c(tempTables, tempTableName)
-    
+
     eraFyCohorts(
       connection = connection,
       sourceCohortDatabaseSchema = sourceCohortDatabaseSchema,
@@ -184,7 +188,7 @@ unionCohorts <- function(connectionDetails = NULL,
       purgeConflicts = FALSE
     )
   }
-  
+
   appendCohortTables(
     connection = connection,
     sourceTables = dplyr::tibble(

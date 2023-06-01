@@ -43,9 +43,9 @@
 #' @template PurgeConflicts
 #'
 #' @template TempEmulationSchema
-#'  
+#'
 #' @template IsTempTable
-#' 
+#'
 #' @param eraconstructorpad   Optional value to pad cohort era construction logic. Default = 0. i.e. no padding.
 #'
 #' @template CdmDatabaseSchema
@@ -129,13 +129,13 @@ eraFyCohorts <- function(connectionDetails = NULL,
   checkmate::assertLogical(
     x = isTempTable,
     len = 1,
-    null.ok = FALSE, 
+    null.ok = FALSE,
     add = errorMessages
   )
   checkmate::reportAssertions(collection = errorMessages)
-  
+
   if (isTempTable) {
-    if(!all(
+    if (!all(
       is.null(targetCohortDatabaseSchema),
       tableNameIsCompatibleWithTempTableName(tableName = targetCohortTable),
       !is.null(connection)
@@ -157,7 +157,7 @@ eraFyCohorts <- function(connectionDetails = NULL,
       connection <- DatabaseConnector::connect(connectionDetails)
       on.exit(DatabaseConnector::disconnect(connection))
     }
-    
+
     if (!purgeConflicts) {
       cohortIdsInCohortTable <-
         getCohortIdsInCohortTable(
@@ -166,10 +166,12 @@ eraFyCohorts <- function(connectionDetails = NULL,
           cohortTable = targetCohortTable,
           tempEmulationSchema = tempEmulationSchema
         )
-      
+
       conflicitingCohortIdsInTargetCohortTable <-
-        intersect(x = newCohortId,
-                  y = cohortIdsInCohortTable |> unique())
+        intersect(
+          x = newCohortId,
+          y = cohortIdsInCohortTable |> unique()
+        )
       if (length(conflicitingCohortIdsInTargetCohortTable) > 0) {
         stop("Target cohort id already in use in target cohort table")
       }

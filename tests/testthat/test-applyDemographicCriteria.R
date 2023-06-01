@@ -3,7 +3,7 @@
 #   sysTime <- as.numeric(Sys.time()) * 100000
 #   tableName <- paste0("cr", sysTime)
 #   tempTableName <- paste0("#", tableName, "_1")
-# 
+#
 #   cohort <- dplyr::tibble(
 #     cohortDefinitionId = c(1, 1),
 #     subjectId = c(1, 3),
@@ -16,19 +16,19 @@
 #       as.Date("2010-01-05")
 #     )
 #   )
-# 
+#
 #   observationPeriod <- dplyr::tibble(
 #     personId = c(1),
 #     observation_period_start_date = as.Date("1998-12-30"),
 #     observation_period_end_date = as.Date("2020-12-31")
 #   )
-# 
+#
 #   person <- dplyr::tibble(
 #     personId = c(1, 3),
 #     gender_concept_id = c(8507, 8532),
 #     year_of_birth = c(1995, 1900)
 #   )
-# 
+#
 #   # upload table
 #   connection <-
 #     DatabaseConnector::connect(connectionDetails = connectionDetails)
@@ -43,7 +43,7 @@
 #     camelCaseToSnakeCase = TRUE,
 #     progressBar = FALSE
 #   )
-# 
+#
 #   DatabaseConnector::insertTable(
 #     connection = connection,
 #     databaseSchema = cohortDatabaseSchema,
@@ -68,7 +68,7 @@
 #   )
 #   # disconnecting - as this is a test for a non temp cohort table
 #   DatabaseConnector::disconnect(connection)
-# 
+#
 #   testthat::expect_error(
 #     applyDemographicCriteria(
 #       connectionDetails = connectionDetails,
@@ -82,7 +82,7 @@
 #       purgeConflicts = FALSE
 #     )
 #   )
-# 
+#
 #   applyDemographicCriteria(
 #     connectionDetails = connectionDetails,
 #     cdmDatabaseSchema = cohortDatabaseSchema,
@@ -95,7 +95,7 @@
 #     filterGenderConceptId = c(8507),
 #     purgeConflicts = FALSE
 #   )
-# 
+#
 #   connection <-
 #     DatabaseConnector::connect(connectionDetails = connectionDetails)
 #   dataPost <-
@@ -111,7 +111,7 @@
 #       snakeCaseToCamelCase = TRUE
 #     ) |>
 #     dplyr::tibble()
-# 
+#
 #   testthat::expect_error(
 #     applyDemographicCriteria(
 #       connectionDetails = connectionDetails,
@@ -126,7 +126,7 @@
 #       purgeConflicts = FALSE
 #     )
 #   )
-# 
+#
 #   applyDemographicCriteria(
 #     connectionDetails = connectionDetails,
 #     cdmDatabaseSchema = cohortDatabaseSchema,
@@ -139,7 +139,7 @@
 #     filterByAgeRange = c(0, 30),
 #     purgeConflicts = FALSE
 #   )
-# 
+#
 #   dataPost <-
 #     DatabaseConnector::renderTranslateQuerySql(
 #       connection = connection,
@@ -153,7 +153,7 @@
 #       snakeCaseToCamelCase = TRUE
 #     ) |>
 #     dplyr::tibble()
-# 
+#
 #   DatabaseConnector::renderTranslateExecuteSql(
 #     connection = DatabaseConnector::connect(connectionDetails = connectionDetails),
 #     sql = "DROP TABLE IF EXISTS @cohort_database_schema.@table_temp;

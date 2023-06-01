@@ -3,7 +3,7 @@
 #   sysTime <- as.numeric(Sys.time()) * 100000
 #   tableName <- paste0("cr", sysTime)
 #   tempTableName <- paste0("#", tableName, "_1")
-# 
+#
 #   # make up date for a cohort table
 #   cohort <- dplyr::tibble(
 #     cohortDefinitionId = c(1, 1, 1),
@@ -19,7 +19,7 @@
 #       as.Date("1999-01-01")
 #     )
 #   )
-# 
+#
 #   # upload table
 #   connection <-
 #     DatabaseConnector::connect(connectionDetails = connectionDetails)
@@ -34,10 +34,10 @@
 #     camelCaseToSnakeCase = TRUE,
 #     progressBar = FALSE
 #   )
-# 
+#
 #   # disconnecting - as this is a test for a non temp cohort table
 #   DatabaseConnector::disconnect(connection)
-# 
+#
 #   testthat::expect_error(
 #     censorCohortDates(
 #       connectionDetails = connectionDetails,
@@ -50,7 +50,7 @@
 #       purgeConflicts = FALSE
 #     )
 #   )
-# 
+#
 #   censorCohortDates(
 #     connectionDetails = connectionDetails,
 #     sourceCohortDatabaseSchema = cohortDatabaseSchema,
@@ -62,7 +62,7 @@
 #     cohortStartDateLeftCensor = as.Date("1999-01-15"),
 #     purgeConflicts = FALSE
 #   )
-# 
+#
 #   # extract the generated output and compare to expected
 #   connection <-
 #     DatabaseConnector::connect(connectionDetails = connectionDetails)
@@ -79,7 +79,7 @@
 #       snakeCaseToCamelCase = TRUE
 #     ) |>
 #     dplyr::tibble()
-# 
+#
 #   testthat::expect_equal(
 #     object = nrow(dataPost),
 #     expected = 2
@@ -94,7 +94,7 @@
 #     object = dataPost,
 #     expected = expected
 #   )
-# 
+#
 #   censorCohortDates(
 #     connectionDetails = connectionDetails,
 #     sourceCohortDatabaseSchema = cohortDatabaseSchema,
@@ -107,7 +107,7 @@
 #     cohortEndDateRightCensor = as.Date("1999-01-30"),
 #     purgeConflicts = FALSE
 #   )
-# 
+#
 #   dataPost <-
 #     DatabaseConnector::renderTranslateQuerySql(
 #       connection = connection,
@@ -121,7 +121,7 @@
 #       snakeCaseToCamelCase = TRUE
 #     ) |>
 #     dplyr::tibble()
-# 
+#
 #   testthat::expect_equal(
 #     object = nrow(dataPost),
 #     expected = 1
@@ -136,7 +136,7 @@
 #     object = dataPost,
 #     expected = expected
 #   )
-# 
+#
 #   DatabaseConnector::renderTranslateExecuteSql(
 #     connection = DatabaseConnector::connect(connectionDetails = connectionDetails),
 #     sql = "DROP TABLE IF EXISTS @cohort_database_schema.@table_temp;",

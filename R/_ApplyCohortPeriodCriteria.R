@@ -13,7 +13,7 @@
 #' # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #' # See the License for the specific language governing permissions and
 #' # limitations under the License.
-#' 
+#'
 #' #' Apply cohort period criteria.
 #' #'
 #' #' @description
@@ -163,7 +163,7 @@
 #'     null.ok = TRUE,
 #'     add = errorMessages
 #'   )
-#' 
+#'
 #'   if (any(
 #'     !is.null(filterByMinimumPriorObservationPeriod),
 #'     !is.null(filterByMinimumPostObservationPeriod)
@@ -176,10 +176,10 @@
 #'       add = errorMessages
 #'     )
 #'   }
-#' 
+#'
 #'   checkmate::reportAssertions(collection = errorMessages)
-#' 
-#' 
+#'
+#'
 #'   if (sum(
 #'     !is.null(filterByMinimumCohortPeriod),
 #'     !is.null(filterByMinimumPriorObservationPeriod),
@@ -187,7 +187,7 @@
 #'   ) > 1) {
 #'     stop("Multiple period criteria specified.")
 #'   }
-#' 
+#'
 #'   if (sum(
 #'     !is.null(filterByMinimumCohortPeriod),
 #'     !is.null(filterByMinimumPriorObservationPeriod),
@@ -195,12 +195,12 @@
 #'   ) == 0) {
 #'     stop("No period criteria specified.")
 #'   }
-#' 
+#'
 #'   if (is.null(connection)) {
 #'     connection <- DatabaseConnector::connect(connectionDetails)
 #'     on.exit(DatabaseConnector::disconnect(connection))
 #'   }
-#' 
+#'
 #'   if (!purgeConflicts) {
 #'     cohortIdsInCohortTable <-
 #'       getCohortIdsInCohortTable(
@@ -214,12 +214,12 @@
 #'         x = newCohortId,
 #'         y = cohortIdsInCohortTable |> unique()
 #'       )
-#' 
+#'
 #'     if (length(conflicitingCohortIdsInTargetCohortTable) > 0) {
 #'       stop("Target cohort id already in use in target cohort table")
 #'     }
 #'   }
-#' 
+#'
 #'   if (all(
 #'     paste0(sourceCohortDatabaseSchema, sourceCohortTable) ==
 #'       paste0(targetCohortDatabaseSchema, targetCohortTable),
@@ -227,7 +227,7 @@
 #'   )) {
 #'     tempTableName <- generateRandomString()
 #'     tempTable1 <- paste0("#", tempTableName, "1")
-#' 
+#'
 #'     DatabaseConnector::renderTranslateExecuteSql(
 #'       connection = connection,
 #'       sql = "
@@ -256,7 +256,7 @@
 #'     sourceCohortDatabaseSchema <- NULL
 #'     sourceCohortTable <- tempTable1
 #'   }
-#' 
+#'
 #'   if (!is.null(filterByMinimumCohortPeriod)) {
 #'     sql <- SqlRender::loadRenderTranslateSql(
 #'       sqlFilename = "FilterByCohortPeriod.sql",
@@ -279,7 +279,7 @@
 #'       reportOverallTime = FALSE
 #'     )
 #'   }
-#' 
+#'
 #'   if (!is.null(filterByMinimumPriorObservationPeriod)) {
 #'     sql <- SqlRender::loadRenderTranslateSql(
 #'       sqlFilename = "FilterByMinimumPriorObservationPeriod.sql",
@@ -303,8 +303,8 @@
 #'       reportOverallTime = FALSE
 #'     )
 #'   }
-#' 
-#' 
+#'
+#'
 #'   if (!is.null(filterByMinimumPostObservationPeriod)) {
 #'     sql <- SqlRender::loadRenderTranslateSql(
 #'       sqlFilename = "FilterByMinimumPostObservationPeriod.sql",
