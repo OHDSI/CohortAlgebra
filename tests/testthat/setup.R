@@ -77,7 +77,7 @@ connectionDetails <- DatabaseConnector::createConnectionDetails(
   pathToDriver = jdbcDriverFolder
 )
 
-if (cdmDatabaseSchema == "" || dbServer == "") {
+if (cdmDatabaseSchema == "" || dbServer == "oracle") {
   skipCdmTests <- TRUE
 }
 
