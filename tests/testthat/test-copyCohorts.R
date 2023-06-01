@@ -74,7 +74,7 @@ testthat::test_that("Testing cohort union", {
     sql = "SELECT * FROM @cohort_database_schema.@cohort
             ORDER BY cohort_definition_id, subject_id, cohort_start_date, cohort_end_date;",
     cohort_database_schema = cohortDatabaseSchema,
-    cohort = tableName2$cohortTable,
+    cohort = tableName2,
     snakeCaseToCamelCase = TRUE,
     tempEmulationSchema = tempEmulationSchema
   ) |>
@@ -99,8 +99,8 @@ testthat::test_that("Testing cohort union", {
       ),
       sourceCohortDatabaseSchema = cohortDatabaseSchema,
       targetCohortDatabaseSchema = cohortDatabaseSchema,
-      sourceCohortTable = tableName1$cohortTable,
-      targetCohortTable = tableName2$cohortTable,
+      sourceCohortTable = tableName1,
+      targetCohortTable = tableName2,
       purgeConflicts = FALSE,
       tempEmulationSchema = tempEmulationSchema
     )
@@ -114,8 +114,8 @@ testthat::test_that("Testing cohort union", {
     ),
     sourceCohortDatabaseSchema = cohortDatabaseSchema,
     targetCohortDatabaseSchema = cohortDatabaseSchema,
-    sourceCohortTable = tableName1$cohortTable,
-    targetCohortTable = tableName2$cohortTable,
+    sourceCohortTable = tableName1,
+    targetCohortTable = tableName2,
     purgeConflicts = FALSE,
     tempEmulationSchema = tempEmulationSchema
   )
@@ -128,8 +128,8 @@ testthat::test_that("Testing cohort union", {
     ),
     sourceCohortDatabaseSchema = cohortDatabaseSchema,
     targetCohortDatabaseSchema = cohortDatabaseSchema,
-    sourceCohortTable = tableName1$cohortTable,
-    targetCohortTable = tableName2$cohortTable,
+    sourceCohortTable = tableName1,
+    targetCohortTable = tableName2,
     purgeConflicts = TRUE,
     tempEmulationSchema = tempEmulationSchema
   )
@@ -144,8 +144,8 @@ testthat::test_that("Testing cohort union", {
     ),
     sourceCohortDatabaseSchema = cohortDatabaseSchema,
     targetCohortDatabaseSchema = cohortDatabaseSchema,
-    sourceCohortTable = tableName1$cohortTable,
-    targetCohortTable = tableName2$cohortTable,
+    sourceCohortTable = tableName1,
+    targetCohortTable = tableName2,
     purgeConflicts = FALSE,
     tempEmulationSchema = tempEmulationSchema
   )
@@ -159,8 +159,8 @@ testthat::test_that("Testing cohort union", {
       ),
       sourceCohortDatabaseSchema = cohortDatabaseSchema,
       targetCohortDatabaseSchema = cohortDatabaseSchema,
-      sourceCohortTable = tableName1$cohortTable,
-      targetCohortTable = tableName2$cohortTable,
+      sourceCohortTable = tableName1,
+      targetCohortTable = tableName2,
       purgeConflicts = FALSE,
       tempEmulationSchema = tempEmulationSchema
     )
@@ -175,8 +175,8 @@ testthat::test_that("Testing cohort union", {
       ),
       sourceCohortDatabaseSchema = cohortDatabaseSchema,
       targetCohortDatabaseSchema = cohortDatabaseSchema,
-      sourceCohortTable = tableName1$cohortTable,
-      targetCohortTable = tableName2$cohortTable,
+      sourceCohortTable = tableName1,
+      targetCohortTable = tableName2,
       purgeConflicts = FALSE,
       tempEmulationSchema = tempEmulationSchema
     )
@@ -191,8 +191,8 @@ testthat::test_that("Testing cohort union", {
       ),
       sourceCohortDatabaseSchema = cohortDatabaseSchema,
       targetCohortDatabaseSchema = cohortDatabaseSchema,
-      sourceCohortTable = tableName1$cohortTable,
-      targetCohortTable = tableName2$cohortTable,
+      sourceCohortTable = tableName1,
+      targetCohortTable = tableName2,
       purgeConflicts = FALSE,
       tempEmulationSchema = tempEmulationSchema
     )
@@ -207,8 +207,8 @@ testthat::test_that("Testing cohort union", {
       ),
       sourceCohortDatabaseSchema = cohortDatabaseSchema,
       targetCohortDatabaseSchema = cohortDatabaseSchema,
-      sourceCohortTable = tableName1$cohortTable,
-      targetCohortTable = tableName1$cohortTable,
+      sourceCohortTable = tableName1,
+      targetCohortTable = tableName1,
       purgeConflicts = FALSE,
       tempEmulationSchema = tempEmulationSchema
     )
