@@ -12,6 +12,7 @@ unionCohorts(
   targetCohortDatabaseSchema = NULL,
   targetCohortTable,
   oldToNewCohortId,
+  isTempTable = FALSE,
   tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
   purgeConflicts = FALSE
 )
@@ -45,6 +46,9 @@ The oldCohortId are the cohorts that are the input cohorts that need to be trans
 The newCohortId are the cohortIds of the corresponding output after transformation.
 If the oldCohortId = newCohortId then the data corresponding to oldCohortId
 will be replaced by the data from the newCohortId.}
+
+\item{isTempTable}{Is the output a temp table. If yes, a new temp table is created. This will required
+an active connection. Any old temp table is dropped and replaced.}
 
 \item{tempEmulationSchema}{Some database platforms like Oracle and Impala do not truly support
 temp tables. To emulate temp tables, provide a schema with write

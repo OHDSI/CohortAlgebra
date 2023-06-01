@@ -17,7 +17,9 @@
 #' Copy cohorts from one table to another
 #'
 #' @description
-#' Copy cohorts from one table to another table.
+#' Copy cohorts from one table to another table. If the new cohort table
+#' has any cohort id that matches the cohort id being copied, an error will
+#' be displayed.
 #'
 #' `r lifecycle::badge("stable")`
 #'
@@ -30,6 +32,8 @@
 #' @template PurgeConflicts
 #'
 #' @template TempEmulationSchema
+#'
+#' @template IsTempTable
 #'
 #' @param sourceCohortDatabaseSchema The database schema of the source cohort table.
 #'
@@ -64,8 +68,19 @@ copyCohorts <- function(connectionDetails = NULL,
                         targetCohortDatabaseSchema = sourceCohortDatabaseSchema,
                         sourceCohortTable,
                         targetCohortTable,
+                        isTempTable = FALSE,
                         purgeConflicts = FALSE,
                         tempEmulationSchema = getOption("sqlRenderTempEmulationSchema")) {
+  if (isTempTable) {
+    if (!all(
+      is.null(targetCohortDatabaseSchema),
+      tableNameIsCompatibleWithTempTableName(tableName = targetCohortTable),
+      !is.null(connection)
+    )) {
+      stop("Cannot output temp table - check input specifications")
+    }
+  }
+
   errorMessages <- checkmate::makeAssertCollection()
   checkmate::assertDataFrame(
     x = oldToNewCohortId,
@@ -133,15 +148,40 @@ copyCohorts <- function(connectionDetails = NULL,
       oldToNewCohortId$oldCohortId,
       oldToNewCohortId$newCohortId
     )) > 0) {
-      stop(
-        " Cannot copy same cohort to same table."
-      )
+      stop(" Cannot copy same cohort to same table.")
     }
   }
 
-  if (is.null(connection)) {
-    connection <- DatabaseConnector::connect(connectionDetails)
-    on.exit(DatabaseConnector::disconnect(connection))
+  if (!isTempTable) {
+    if (is.null(connection)) {
+      connection <- DatabaseConnector::connect(connectionDetails)
+      on.exit(DatabaseConnector::disconnect(connection))
+    }
+
+    if (!purgeConflicts) {
+      cohortIdsInCohortTable <-
+        getCohortIdsInCohortTable(
+          connection = connection,
+          cohortDatabaseSchema = targetCohortDatabaseSchema,
+          cohortTable = targetCohortTable,
+          tempEmulationSchema = tempEmulationSchema
+        )
+
+      conflicitingCohortIdsInTargetCohortTable <-
+        intersect(
+          x = oldToNewCohortId$newCohortId |> unique() |> sort(),
+          y = cohortIdsInCohortTable |> unique()
+        )
+
+      if (length(conflicitingCohortIdsInTargetCohortTable) > 0) {
+        stop(
+          paste0(
+            "The following cohortIds already exist in the target cohort table, causing conflicts :",
+            paste0(conflicitingCohortIdsInTargetCohortTable, collapse = ",")
+          )
+        )
+      }
+    }
   }
 
   DatabaseConnector::insertTable(
@@ -157,31 +197,6 @@ copyCohorts <- function(connectionDetails = NULL,
     data = oldToNewCohortId
   )
 
-  if (!purgeConflicts) {
-    cohortIdsInCohortTable <-
-      getCohortIdsInCohortTable(
-        connection = connection,
-        cohortDatabaseSchema = targetCohortDatabaseSchema,
-        cohortTable = targetCohortTable,
-        tempEmulationSchema = tempEmulationSchema
-      )
-
-    conflicitingCohortIdsInTargetCohortTable <-
-      intersect(
-        x = oldToNewCohortId$newCohortId %>% unique() %>% sort(),
-        y = cohortIdsInCohortTable %>% unique()
-      )
-
-    if (length(conflicitingCohortIdsInTargetCohortTable) > 0) {
-      stop(
-        paste0(
-          "The following cohortIds already exist in the target cohort table, causing conflicts :",
-          paste0(conflicitingCohortIdsInTargetCohortTable, collapse = ",")
-        )
-      )
-    }
-  }
-
   sql <- SqlRender::loadRenderTranslateSql(
     sqlFilename = "CopyCohorts.sql",
     packageName = utils::packageName(),
@@ -190,24 +205,8 @@ copyCohorts <- function(connectionDetails = NULL,
     target_cohort_database_schema = targetCohortDatabaseSchema,
     source_cohort_table = sourceCohortTable,
     target_cohort_table = targetCohortTable,
+    is_temp_table = isTempTable,
     tempEmulationSchema = tempEmulationSchema
-  )
-  ParallelLogger::logInfo(
-    paste0(
-      " Copying cohorts from ",
-      sourceCohortDatabaseSchema,
-      ".",
-      sourceCohortTable,
-      " (",
-      paste0(oldToNewCohortId$oldCohortId, collapse = ", "),
-      ") to ",
-      targetCohortDatabaseSchema,
-      ".",
-      targetCohortTable,
-      " (",
-      paste0(oldToNewCohortId$newCohortId, collapse = ", "),
-      ")"
-    )
   )
 
   DatabaseConnector::executeSql(

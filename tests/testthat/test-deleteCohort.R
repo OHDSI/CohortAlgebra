@@ -22,11 +22,11 @@ testthat::test_that("Testing cohort delete", {
   )
   cohort <- dplyr::bind_rows(
     cohort,
-    cohort %>% dplyr::mutate(subjectId = 2)
+    cohort |> dplyr::mutate(subjectId = 2)
   )
   cohort <- dplyr::bind_rows(
     cohort,
-    cohort %>% dplyr::mutate(cohortDefinitionId = 2)
+    cohort |> dplyr::mutate(cohortDefinitionId = 2)
   )
 
 
@@ -55,10 +55,10 @@ testthat::test_that("Testing cohort delete", {
       cohort_database_schema = cohortDatabaseSchema,
       table_name = tableName,
       snakeCaseToCamelCase = TRUE
-    ) %>%
+    ) |>
     dplyr::tibble()
   testthat::expect_equal(
-    object = dataInserted %>%
+    object = dataInserted |>
       nrow(),
     expected = 12
   )
@@ -79,10 +79,10 @@ testthat::test_that("Testing cohort delete", {
       cohort_database_schema = cohortDatabaseSchema,
       table_name = tableName,
       snakeCaseToCamelCase = TRUE
-    ) %>%
+    ) |>
     dplyr::tibble()
   testthat::expect_equal(
-    object = dataInsertedDeleteCohortId2 %>%
+    object = dataInsertedDeleteCohortId2 |>
       nrow(),
     expected = 0
   )
@@ -108,10 +108,10 @@ testthat::test_that("Testing cohort delete", {
       cohort_database_schema = cohortDatabaseSchema,
       table_name = tableName,
       snakeCaseToCamelCase = TRUE
-    ) %>%
+    ) |>
     dplyr::tibble()
   testthat::expect_equal(
-    object = dataInsertedDeleteCohortId3 %>%
+    object = dataInsertedDeleteCohortId3 |>
       nrow(),
     expected = 0
   )

@@ -104,11 +104,11 @@
 #       cohort_database_schema = cohortDatabaseSchema,
 #       table_name = tableName,
 #       snakeCaseToCamelCase = TRUE
-#     ) %>%
+#     ) |>
 #     dplyr::tibble()
 #
 #   testthat::expect_equal(
-#     object = cohortObserved %>%
+#     object = cohortObserved |>
 #       nrow(),
 #     expected = 1
 #   )
@@ -160,11 +160,11 @@
 #       cohort_database_schema = cohortDatabaseSchema,
 #       table_name = tableName,
 #       snakeCaseToCamelCase = TRUE
-#     ) %>%
+#     ) |>
 #     dplyr::tibble()
 #
 #   testthat::expect_equal(
-#     object = cohortObserved %>%
+#     object = cohortObserved |>
 #       nrow(),
 #     expected = 1
 #   )
@@ -202,11 +202,11 @@
 #       cohort_database_schema = cohortDatabaseSchema,
 #       table_name = tableName,
 #       snakeCaseToCamelCase = TRUE
-#     ) %>%
+#     ) |>
 #     dplyr::tibble()
 #
 #   testthat::expect_equal(
-#     object = cohortObserved %>%
+#     object = cohortObserved |>
 #       nrow(),
 #     expected = 1
 #   )
@@ -261,11 +261,11 @@
 #       cohort_database_schema = cohortDatabaseSchema,
 #       table_name = tableName,
 #       snakeCaseToCamelCase = TRUE
-#     ) %>%
+#     ) |>
 #     dplyr::tibble()
 #
 #   testthat::expect_equal(
-#     object = cohortObserved %>%
+#     object = cohortObserved |>
 #       nrow(),
 #     expected = 1
 #   )
@@ -303,11 +303,11 @@
 #       cohort_database_schema = cohortDatabaseSchema,
 #       table_name = tableName,
 #       snakeCaseToCamelCase = TRUE
-#     ) %>%
+#     ) |>
 #     dplyr::tibble()
 #
 #   testthat::expect_equal(
-#     object = cohortObserved %>%
+#     object = cohortObserved |>
 #       nrow(),
 #     expected = 1
 #   )
@@ -360,11 +360,11 @@
 #       cohort_database_schema = cohortDatabaseSchema,
 #       table_name = tableName,
 #       snakeCaseToCamelCase = TRUE
-#     ) %>%
+#     ) |>
 #     dplyr::tibble()
 #
 #   testthat::expect_equal(
-#     object = cohortObserved %>%
+#     object = cohortObserved |>
 #       nrow(),
 #     expected = 1
 #   )
@@ -403,11 +403,11 @@
 #       cohort_database_schema = cohortDatabaseSchema,
 #       table_name = tableName,
 #       snakeCaseToCamelCase = TRUE
-#     ) %>%
+#     ) |>
 #     dplyr::tibble()
 #
 #   testthat::expect_equal(
-#     object = cohortObserved %>%
+#     object = cohortObserved |>
 #       nrow(),
 #     expected = 1
 #   )
@@ -450,11 +450,11 @@
 #       cohort_database_schema = cohortDatabaseSchema,
 #       table_name = tableName,
 #       snakeCaseToCamelCase = TRUE
-#     ) %>%
+#     ) |>
 #     dplyr::tibble()
 #
 #   testthat::expect_equal(
-#     object = cohortObserved %>%
+#     object = cohortObserved |>
 #       nrow(),
 #     expected = 1
 #   )

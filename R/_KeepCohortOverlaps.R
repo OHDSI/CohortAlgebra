@@ -13,7 +13,7 @@
 #' # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #' # See the License for the specific language governing permissions and
 #' # limitations under the License.
-#' 
+#'
 #' #' Keep records in cohort that overlap with another cohort
 #' #'
 #' #' @description
@@ -156,18 +156,18 @@
 #'     add = errorMessages
 #'   )
 #'   checkmate::reportAssertions(collection = errorMessages)
-#' 
+#'
 #'   if (firstCohortId == secondCohortId) {
 #'     warning(
 #'       "During overlap operation, both first and second cohorts have the same cohort id. The result may be a NULL cohort."
 #'     )
 #'   }
-#' 
+#'
 #'   if (is.null(connection)) {
 #'     connection <- DatabaseConnector::connect(connectionDetails)
 #'     on.exit(DatabaseConnector::disconnect(connection))
 #'   }
-#' 
+#'
 #'   cohortIdsInCohortTable <-
 #'     getCohortIdsInCohortTable(
 #'       connection = connection,
@@ -175,13 +175,13 @@
 #'       cohortTable = cohortTable,
 #'       tempEmulationSchema = tempEmulationSchema
 #'     )
-#' 
+#'
 #'   conflicitingCohortIdsInTargetCohortTable <-
 #'     intersect(
-#'       x = newCohortId %>% unique(),
-#'       y = cohortIdsInCohortTable %>% unique()
+#'       x = newCohortId |> unique(),
+#'       y = cohortIdsInCohortTable |> unique()
 #'     )
-#' 
+#'
 #'   if (length(conflicitingCohortIdsInTargetCohortTable) > 0) {
 #'     if (!purgeConflicts) {
 #'       stop(
@@ -192,10 +192,10 @@
 #'       )
 #'     }
 #'   }
-#' 
+#'
 #'   tempTableName <- generateRandomString()
 #'   tempTable1 <- paste0("#", tempTableName, "1")
-#' 
+#'
 #'   sql <- SqlRender::loadRenderTranslateSql(
 #'     sqlFilename = "KeepErasWithOverlap.sql",
 #'     packageName = utils::packageName(),
@@ -222,13 +222,13 @@
 #'     progressBar = TRUE,
 #'     reportOverallTime = TRUE
 #'   )
-#' 
+#'
 #'   ParallelLogger::logInfo("Saving overlaps.")
 #'   DatabaseConnector::renderTranslateExecuteSql(
 #'     connection = connection,
 #'     sql = " DELETE FROM {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table}
 #'             WHERE cohort_definition_id IN (SELECT DISTINCT cohort_definition_id FROM @temp_table_1);
-#' 
+#'
 #'             INSERT INTO {@cohort_database_schema != ''} ? {@cohort_database_schema.@cohort_table} : {@cohort_table}
 #'             SELECT cohort_definition_id, subject_id, cohort_start_date, cohort_end_date
 #'             FROM @temp_table_1;
@@ -241,7 +241,7 @@
 #'     cohort_table = cohortTable,
 #'     temp_table_1 = tempTable1
 #'   )
-#' 
+#'
 #'   DatabaseConnector::renderTranslateExecuteSql(
 #'     connection = connection,
 #'     sql = " DROP TABLE IF EXISTS @temp_table_1;",

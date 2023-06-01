@@ -26,3 +26,11 @@ generateRandomString <- function() {
     ))
   return(randomStringTableName)
 }
+
+tableNameIsCompatibleWithTempTableName <- function(tableName) {
+  grepl(
+    pattern = "#",
+    x = tableName,
+    fixed = TRUE
+  )
+}

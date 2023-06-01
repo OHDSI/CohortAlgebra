@@ -68,11 +68,11 @@ testthat::test_that("Testing Remove Subjects from cohorts", {
       cohort_database_schema = cohortDatabaseSchema,
       table_name = tableName,
       snakeCaseToCamelCase = TRUE
-    ) %>%
+    ) |>
     dplyr::tibble()
 
   testthat::expect_equal(
-    object = cohortObserved %>%
+    object = cohortObserved |>
       nrow(),
     expected = 1
   )
@@ -92,7 +92,7 @@ testthat::test_that("Testing Remove Subjects from cohorts", {
     cohortTable = tableName
   )
 
-  cohortExpected <- cohort %>%
+  cohortExpected <- cohort |>
     dplyr::filter(cohortDefinitionId == 1)
 
   cohortObserved <-
@@ -106,17 +106,17 @@ testthat::test_that("Testing Remove Subjects from cohorts", {
       cohort_database_schema = cohortDatabaseSchema,
       table_name = tableName,
       snakeCaseToCamelCase = TRUE
-    ) %>%
+    ) |>
     dplyr::tibble()
 
   testthat::expect_equal(
-    object = cohortObserved %>%
+    object = cohortObserved |>
       nrow(),
     expected = 2
   )
   testthat::expect_true(object = all.equal(
     target = cohortExpected,
-    current = cohortObserved %>%
+    current = cohortObserved |>
       dplyr::mutate(cohortDefinitionId = 1)
   ))
 
@@ -164,11 +164,11 @@ testthat::test_that("Testing Remove Subjects from cohorts", {
       cohort_database_schema = cohortDatabaseSchema,
       table_name = tableName,
       snakeCaseToCamelCase = TRUE
-    ) %>%
+    ) |>
     dplyr::tibble()
 
   testthat::expect_equal(
-    object = cohortObserved %>%
+    object = cohortObserved |>
       nrow(),
     expected = 1
   )
@@ -188,7 +188,7 @@ testthat::test_that("Testing Remove Subjects from cohorts", {
     cohortTable = tableName
   )
 
-  cohortExpected <- cohort %>%
+  cohortExpected <- cohort |>
     dplyr::slice(0)
 
   cohortObserved <-
@@ -200,11 +200,11 @@ testthat::test_that("Testing Remove Subjects from cohorts", {
       cohort_database_schema = cohortDatabaseSchema,
       table_name = tableName,
       snakeCaseToCamelCase = TRUE
-    ) %>%
+    ) |>
     dplyr::tibble()
 
   testthat::expect_equal(
-    object = cohortObserved %>%
+    object = cohortObserved |>
       nrow(),
     expected = 0
   )

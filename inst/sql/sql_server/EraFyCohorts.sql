@@ -67,22 +67,33 @@ GROUP BY
 DROP TABLE IF EXISTS #cte_ends;
 DROP TABLE IF EXISTS #cohort_rows;
 
-DELETE FROM 
-{@target_cohort_database_schema != ''} ? {
-  @target_cohort_database_schema.@target_cohort_table
-} : {@target_cohort_table} 
-WHERE cohort_definition_id = @new_cohort_id;
-	
-INSERT INTO 
-{@target_cohort_database_schema != ''} ? {
-  @target_cohort_database_schema.@target_cohort_table
-} : {@target_cohort_table} 
-SELECT @new_cohort_id cohort_definition_id,
-      subject_id,
-      cohort_start_date, 
-      cohort_end_date
-FROM    
---HINT DISTRIBUTE ON KEY (subject_id)	
+{@is_temp_table} ? {
+  DROP TABLE IF EXISTS @target_cohort_table;
+  
+  SELECT @new_cohort_id cohort_definition_id,
+        subject_id,
+        cohort_start_date, 
+        cohort_end_date
+  INTO @target_cohort_table
+} : {
+  DELETE FROM 
+  {@target_cohort_database_schema != ''} ? {
+    @target_cohort_database_schema.@target_cohort_table
+  } : {@target_cohort_table} 
+  WHERE cohort_definition_id = @new_cohort_id;
+  	
+  INSERT INTO 
+  {@target_cohort_database_schema != ''} ? {
+    @target_cohort_database_schema.@target_cohort_table
+  } : {@target_cohort_table} 
+  SELECT @new_cohort_id cohort_definition_id,
+        subject_id,
+        cohort_start_date, 
+        cohort_end_date
+}
+
+  FROM    
+  --HINT DISTRIBUTE ON KEY (subject_id)	
 {@cdm_database_schema != ''} ?
 {
     (

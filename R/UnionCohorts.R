@@ -38,6 +38,8 @@
 #'
 #' @template PurgeConflicts
 #'
+#' @template IsTempTable
+#'
 #' @template TempEmulationSchema
 #'
 #' @return
@@ -62,8 +64,19 @@ unionCohorts <- function(connectionDetails = NULL,
                          targetCohortDatabaseSchema = NULL,
                          targetCohortTable,
                          oldToNewCohortId,
+                         isTempTable = FALSE,
                          tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
                          purgeConflicts = FALSE) {
+  if (isTempTable) {
+    if (!all(
+      is.null(targetCohortDatabaseSchema),
+      tableNameIsCompatibleWithTempTableName(tableName = targetCohortTable),
+      !is.null(connection)
+    )) {
+      stop("Cannot output temp table - check input specifications")
+    }
+  }
+
   errorMessages <- checkmate::makeAssertCollection()
   checkmate::assertDataFrame(
     x = oldToNewCohortId,
@@ -122,25 +135,69 @@ unionCohorts <- function(connectionDetails = NULL,
     add = errorMessages
   )
   checkmate::reportAssertions(collection = errorMessages)
-  newCohortIds <- oldToNewCohortId$newCohortId %>% unique()
+
+  newCohortIds <- oldToNewCohortId$newCohortId |> unique()
+
+  if (!isTempTable) {
+    if (is.null(connection)) {
+      connection <- DatabaseConnector::connect(connectionDetails)
+      on.exit(DatabaseConnector::disconnect(connection))
+    }
+
+    if (!purgeConflicts) {
+      cohortIdsInCohortTable <-
+        getCohortIdsInCohortTable(
+          connection = connection,
+          cohortDatabaseSchema = targetCohortDatabaseSchema,
+          cohortTable = targetCohortTable,
+          tempEmulationSchema = tempEmulationSchema
+        )
+
+      conflicitingCohortIdsInTargetCohortTable <-
+        intersect(
+          x = newCohortIds,
+          y = cohortIdsInCohortTable |> unique()
+        )
+      if (length(conflicitingCohortIdsInTargetCohortTable) > 0) {
+        stop("Target cohort id already in use in target cohort table")
+      }
+    }
+  }
+
+  tempTables <- c()
 
   for (i in (1:length(newCohortIds))) {
+    tempTableName <- paste0("#", generateRandomString())
+    tempTables <- c(tempTables, tempTableName)
+
     eraFyCohorts(
-      connectionDetails = connectionDetails,
       connection = connection,
       sourceCohortDatabaseSchema = sourceCohortDatabaseSchema,
       sourceCohortTable = sourceCohortTable,
-      targetCohortDatabaseSchema = targetCohortDatabaseSchema,
-      targetCohortTable = targetCohortTable,
-      oldCohortIds = oldToNewCohortId %>%
-        dplyr::filter(.data$newCohortId == newCohortIds[[i]]) %>%
-        dplyr::pull("oldCohortId") %>%
+      targetCohortDatabaseSchema = NULL,
+      targetCohortTable = tempTableName,
+      oldCohortIds = oldToNewCohortId |>
+        dplyr::filter(.data$newCohortId == newCohortIds[[i]]) |>
+        dplyr::pull("oldCohortId") |>
         unique(),
       newCohortId = newCohortIds[[i]],
       eraconstructorpad = 0,
       cdmDatabaseSchema = NULL,
+      isTempTable = TRUE,
       tempEmulationSchema = tempEmulationSchema,
-      purgeConflicts = purgeConflicts
+      purgeConflicts = FALSE
     )
   }
+
+  appendCohortTables(
+    connection = connection,
+    sourceTables = dplyr::tibble(
+      sourceCohortDatabaseSchema = NA,
+      sourceCohortTableName = tempTables
+    ),
+    targetCohortDatabaseSchema = targetCohortDatabaseSchema,
+    targetCohortTable = targetCohortTable,
+    tempEmulationSchema = tempEmulationSchema,
+    isTempTable = isTempTable
+  )
 }

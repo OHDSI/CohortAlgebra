@@ -19,7 +19,7 @@ cohort union operator to create new cohorts.
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">CohortAlgebra</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.2</span>
       </span>
     </div>
 
@@ -78,6 +78,7 @@ cohort union operator to create new cohorts.</p>
 <span>  targetCohortDatabaseSchema <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">targetCohortTable</span>,</span>
 <span>  <span class="va">oldToNewCohortId</span>,</span>
+<span>  isTempTable <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  tempEmulationSchema <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"sqlRenderTempEmulationSchema"</span><span class="op">)</span>,</span>
 <span>  purgeConflicts <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -128,6 +129,11 @@ If the oldCohortId = newCohortId then the data corresponding to oldCohortId
 will be replaced by the data from the newCohortId.</p></dd>
 
 
+<dt>isTempTable</dt>
+<dd><p>Is the output a temp table. If yes, a new temp table is created. This will required
+an active connection. Any old temp table is dropped and replaced.</p></dd>
+
+
 <dt>tempEmulationSchema</dt>
 <dd><p>Some database platforms like Oracle and Impala do not truly support
 temp tables. To emulate temp tables, provide a schema with write
@@ -167,7 +173,7 @@ with transformed. By default - it will not be replaced, and an error message is 
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

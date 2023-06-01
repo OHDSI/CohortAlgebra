@@ -13,9 +13,9 @@
 #' # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #' # See the License for the specific language governing permissions and
 #' # limitations under the License.
-#' 
-#' 
-#' 
+#'
+#'
+#'
 #' #' Base cohort, cohort definition set.
 #' #'
 #' #' @description
@@ -39,10 +39,10 @@
 #'       "10 Visits Emergency Room with 365 days prior continuous observation days"
 #'     )
 #'   )
-#' 
+#'
 #'   cohorts <- c()
 #'   for (i in (1:nrow(specifications))) {
-#'     cohorts[[i]] <- specifications[i, ] %>%
+#'     cohorts[[i]] <- specifications[i, ] |>
 #'       dplyr::mutate(sqlFileName = paste0(paste(
 #'         "BaseCohort", formatC(
 #'           abs(specifications[i, ]$cohortId),
@@ -52,8 +52,8 @@
 #'         ),
 #'         sep = ""
 #'       ), ".sql"))
-#' 
-#' 
+#'
+#'
 #'     sqlFileName <- cohorts[[i]]$sqlFileName
 #'     pathToSql <-
 #'       system.file(file.path("sql", "sql_server", sqlFileName),
@@ -61,7 +61,7 @@
 #'       )
 #'     cohorts[[i]]$sql <- SqlRender::readSql(sourceFile = pathToSql)
 #'   }
-#' 
+#'
 #'   cohortDefinitionSet <- dplyr::bind_rows(cohorts)
 #'   cohortDefinitionSet$checksum <-
 #'     CohortGenerator::computeChecksum(
@@ -71,13 +71,13 @@
 #'         cohortDefinitionSet$sql
 #'       )
 #'     )
-#' 
-#'   return(cohortDefinitionSet %>%
+#'
+#'   return(cohortDefinitionSet |>
 #'     dplyr::tibble())
 #' }
-#' 
-#' 
-#' 
+#'
+#'
+#'
 #' #' Generate Base Cohorts
 #' #'
 #' #' @description
@@ -154,9 +154,9 @@
 #'     add = errorMessages
 #'   )
 #'   checkmate::reportAssertions(collection = errorMessages)
-#' 
+#'
 #'   cohortDefinitionSet <- getBaseCohortDefinitionSet()
-#' 
+#'
 #'   if (incremental) {
 #'     if (is.null(incrementalFolder)) {
 #'       stop("Must specify incrementalFolder when incremental = TRUE")
@@ -165,12 +165,12 @@
 #'       dir.create(incrementalFolder, recursive = TRUE)
 #'     }
 #'   }
-#' 
+#'
 #'   taskRequired <- TRUE
 #'   if (incremental) {
 #'     recordKeepingFile <-
 #'       file.path(incrementalFolder, "GeneratedCohorts.csv")
-#' 
+#'
 #'     if (file.exists(recordKeepingFile)) {
 #'       taskRequired <-
 #'         CohortGenerator::isTaskRequired(
@@ -180,24 +180,24 @@
 #'         )
 #'     }
 #'   }
-#' 
+#'
 #'   if (!taskRequired) {
 #'     ParallelLogger::logTrace(
 #'       "Skipping Base Cohort generation as it has already been generated according to incremental log"
 #'     )
 #'     return(NULL)
 #'   }
-#' 
+#'
 #'   baseCohortTableNames <-
 #'     CohortGenerator::getCohortTableNames(cohortTable = cohortTable)
-#' 
+#'
 #'   CohortGenerator::createCohortTables(
 #'     connectionDetails = connectionDetails,
 #'     cohortTableNames = baseCohortTableNames,
 #'     cohortDatabaseSchema = cohortDatabaseSchema,
 #'     incremental = incremental
 #'   )
-#' 
+#'
 #'   CohortGenerator::generateCohortSet(
 #'     connectionDetails = connectionDetails,
 #'     cdmDatabaseSchema = cdmDatabaseSchema,
@@ -208,13 +208,13 @@
 #'     incrementalFolder = incrementalFolder,
 #'     tempEmulationSchema = tempEmulationSchema
 #'   )
-#' 
+#'
 #'   CohortGenerator::dropCohortStatsTables(
 #'     connectionDetails = connectionDetails,
 #'     cohortDatabaseSchema = cohortDatabaseSchema,
 #'     cohortTableNames = baseCohortTableNames
 #'   )
-#' 
+#'
 #'   ParallelLogger::logTrace(" Era fy base cohorts.")
 #'   for (i in (1:nrow(cohortDefinitionSet))) {
 #'     ParallelLogger::logInfo(paste0("  Working on ", cohortDefinitionSet[i, ]$cohortName))

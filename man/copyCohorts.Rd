@@ -12,6 +12,7 @@ copyCohorts(
   targetCohortDatabaseSchema = sourceCohortDatabaseSchema,
   sourceCohortTable,
   targetCohortTable,
+  isTempTable = FALSE,
   purgeConflicts = FALSE,
   tempEmulationSchema = getOption("sqlRenderTempEmulationSchema")
 )
@@ -42,6 +43,9 @@ will be replaced by the data from the newCohortId.}
 
 \item{targetCohortTable}{The name of the target cohort table.}
 
+\item{isTempTable}{Is the output a temp table. If yes, a new temp table is created. This will required
+an active connection. Any old temp table is dropped and replaced.}
+
 \item{purgeConflicts}{If there are conflicts in the target cohort table i.e. the target cohort table
 already has records with newCohortId, do you want to purge and replace them
 with transformed. By default - it will not be replaced, and an error message is thrown.}
@@ -51,7 +55,9 @@ temp tables. To emulate temp tables, provide a schema with write
 privileges where temp tables can be created.}
 }
 \description{
-Copy cohorts from one table to another table.
+Copy cohorts from one table to another table. If the new cohort table
+has any cohort id that matches the cohort id being copied, an error will
+be displayed.
 
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}
 }
