@@ -12,6 +12,7 @@ copyCohorts(
   targetCohortDatabaseSchema = sourceCohortDatabaseSchema,
   sourceCohortTable,
   targetCohortTable,
+  isTempTable = FALSE,
   purgeConflicts = FALSE,
   tempEmulationSchema = getOption("sqlRenderTempEmulationSchema")
 )
@@ -41,6 +42,9 @@ will be replaced by the data from the newCohortId.}
 \item{sourceCohortTable}{The name of the source cohort table.}
 
 \item{targetCohortTable}{The name of the target cohort table.}
+
+\item{isTempTable}{Is the output a temp table. If yes, a new temp table is created. This will required
+an active connection. Any old temp table is dropped and replaced.}
 
 \item{purgeConflicts}{If there are conflicts in the target cohort table i.e. the target cohort table
 already has records with newCohortId, do you want to purge and replace them
