@@ -80,6 +80,7 @@ be displayed.</p>
 <span>  targetCohortDatabaseSchema <span class="op">=</span> <span class="va">sourceCohortDatabaseSchema</span>,</span>
 <span>  <span class="va">sourceCohortTable</span>,</span>
 <span>  <span class="va">targetCohortTable</span>,</span>
+<span>  isTempTable <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  purgeConflicts <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  tempEmulationSchema <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"sqlRenderTempEmulationSchema"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -124,6 +125,11 @@ will be replaced by the data from the newCohortId.</p></dd>
 
 <dt>targetCohortTable</dt>
 <dd><p>The name of the target cohort table.</p></dd>
+
+
+<dt>isTempTable</dt>
+<dd><p>Is the output a temp table. If yes, a new temp table is created. This will required
+an active connection. Any old temp table is dropped and replaced.</p></dd>
 
 
 <dt>purgeConflicts</dt>

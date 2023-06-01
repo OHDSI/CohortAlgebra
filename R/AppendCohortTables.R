@@ -40,9 +40,11 @@
 #'
 #' @examples
 #' \dontrun{
-#' sourceTables <- dplyr::tibble(sourceCohortDatabaseSchema = "main", 
-#'   sourceCohortTableName = "cohort")
-#'   
+#' sourceTables <- dplyr::tibble(
+#'   sourceCohortDatabaseSchema = "main",
+#'   sourceCohortTableName = "cohort"
+#' )
+#'
 #' appendCohortTables(
 #'   connectionDetails = Eunomia::getEunomiaConnectionDetails(),
 #'   sourceTables = sourceTables,

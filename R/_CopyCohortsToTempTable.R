@@ -13,7 +13,7 @@
 #' # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #' # See the License for the specific language governing permissions and
 #' # limitations under the License.
-#' 
+#'
 #' #' Copy cohorts to temp table
 #' #'
 #' #' @description
@@ -48,7 +48,7 @@
 #'   if (length(oldToNewCohortId$oldCohortId |> unique()) != nrow(oldToNewCohortId)) {
 #'     stop("oldCohortId is repeated")
 #'   }
-#' 
+#'
 #'   DatabaseConnector::insertTable(
 #'     connection = connection,
 #'     tableName = "#old_to_new_cohort_id",
@@ -61,7 +61,7 @@
 #'     camelCaseToSnakeCase = TRUE,
 #'     data = oldToNewCohortId
 #'   )
-#' 
+#'
 #'   sql <- SqlRender::loadRenderTranslateSql(
 #'     sqlFilename = "CopyCohortsTempTable.sql",
 #'     packageName = utils::packageName(),
@@ -71,7 +71,7 @@
 #'     target_cohort_table = targetCohortTable,
 #'     tempEmulationSchema = tempEmulationSchema
 #'   )
-#' 
+#'
 #'   DatabaseConnector::executeSql(
 #'     connection = connection,
 #'     sql = sql,
