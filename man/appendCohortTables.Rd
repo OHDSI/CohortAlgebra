@@ -34,12 +34,12 @@ this should include both the database and schema name, for example
 
 \item{targetCohortTable}{The name of the target cohort table.}
 
+\item{isTempTable}{Is the output a temp table. If yes, a new temp table is created. This will required
+an active connection. Any old temp table is dropped and replaced.}
+
 \item{tempEmulationSchema}{Some database platforms like Oracle and Impala do not truly support
 temp tables. To emulate temp tables, provide a schema with write
 privileges where temp tables can be created.}
-
-\item{IsTempTable}{Is the output a temp table. If yes, a new temp table is created. This will required
-an active connection. Any old temp table is dropped and replaced.}
 }
 \description{
 Append cohort data from multiple cohort tables.

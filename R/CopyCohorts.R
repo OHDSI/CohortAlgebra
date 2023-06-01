@@ -17,7 +17,9 @@
 #' Copy cohorts from one table to another
 #'
 #' @description
-#' Copy cohorts from one table to another table.
+#' Copy cohorts from one table to another table. If the new cohort table 
+#' has any cohort id that matches the cohort id being copied, an error will
+#' be displayed.
 #'
 #' `r lifecycle::badge("stable")`
 #'

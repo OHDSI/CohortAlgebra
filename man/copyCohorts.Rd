@@ -51,7 +51,9 @@ temp tables. To emulate temp tables, provide a schema with write
 privileges where temp tables can be created.}
 }
 \description{
-Copy cohorts from one table to another table.
+Copy cohorts from one table to another table. If the new cohort table
+has any cohort id that matches the cohort id being copied, an error will
+be displayed.
 
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}
 }
