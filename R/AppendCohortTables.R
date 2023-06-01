@@ -102,7 +102,10 @@ appendCohortTables <- function(connectionDetails = NULL,
         ".",
         sourceTables[i,]$sourceCohortTableName
       )
+    } else {
+      tableName <- sourceTables[i,]$sourceCohortTableName
     }
+    
     sqlNest[[i]] <- paste0(
       "SELECT cohort_definition_id,
                subject_id,
@@ -119,10 +122,10 @@ appendCohortTables <- function(connectionDetails = NULL,
   if (isTempTable) {
     sql <- paste0(
       "SELECT cohort_definition_id,
-      subject_id,
-      cohort_start_date,
-      cohort_end_date
-      INTO@temp_table_name
+          subject_id,
+          cohort_start_date,
+          cohort_end_date
+          INTO @temp_table_name
       FROM (",
       paste0(paste0(sqlNest, collapse = " union all "), "
             "),
@@ -149,9 +152,9 @@ appendCohortTables <- function(connectionDetails = NULL,
         @target_cohort_table
       }
       SELECT cohort_definition_id,
-      subject_id,
-      cohort_start_date,
-      cohort_end_date
+          subject_id,
+          cohort_start_date,
+          cohort_end_date
       FROM (",
       paste0(paste0(sqlNest, collapse = " union all ")),
       ") f
