@@ -2,10 +2,8 @@ testthat::test_that("Testing cohort union", {
   # generate unique name for a cohort table
   sysTime <- as.numeric(Sys.time()) * 100000
   tableName <- paste0("cr", sysTime)
-  tableName1 <-
-    CohortGenerator::getCohortTableNames(cohortTable = paste0(tableName, 1))
-  tableName2 <-
-    CohortGenerator::getCohortTableNames(cohortTable = paste0(tableName, 2))
+  tableName1 <- paste0(tableName, 1)
+  tableName2 <- paste0(tableName, 2)
 
   # make up date for a cohort table
   cohort <- dplyr::tibble(
@@ -33,34 +31,25 @@ testthat::test_that("Testing cohort union", {
   connection <-
     DatabaseConnector::connect(connectionDetails = connectionDetails)
 
-  CohortGenerator::createCohortTables(
-    connection = connection,
-    cohortDatabaseSchema = cohortDatabaseSchema,
-    cohortTableNames = tableName1
-  )
-  CohortGenerator::dropCohortStatsTables(
-    connection = connection,
-    cohortDatabaseSchema = cohortDatabaseSchema,
-    cohortTableNames = tableName1
-  )
-  CohortGenerator::createCohortTables(
-    connection = connection,
-    cohortDatabaseSchema = cohortDatabaseSchema,
-    cohortTableNames = tableName2
-  )
-  CohortGenerator::dropCohortStatsTables(
-    connection = connection,
-    cohortDatabaseSchema = cohortDatabaseSchema,
-    cohortTableNames = tableName2
-  )
-
   DatabaseConnector::insertTable(
     connection = connection,
     databaseSchema = cohortDatabaseSchema,
-    tableName = tableName1$cohortTable,
+    tableName = tableName1,
     data = cohort,
-    dropTableIfExists = FALSE,
-    createTable = FALSE,
+    dropTableIfExists = TRUE,
+    createTable = TRUE,
+    tempTable = FALSE,
+    camelCaseToSnakeCase = TRUE,
+    progressBar = FALSE
+  )
+  
+  DatabaseConnector::insertTable(
+    connection = connection,
+    databaseSchema = cohortDatabaseSchema,
+    tableName = tableName2,
+    data = cohort,
+    dropTableIfExists = TRUE,
+    createTable = TRUE,
     tempTable = FALSE,
     camelCaseToSnakeCase = TRUE,
     progressBar = FALSE
@@ -74,9 +63,9 @@ testthat::test_that("Testing cohort union", {
     ),
     sourceCohortDatabaseSchema = cohortDatabaseSchema,
     targetCohortDatabaseSchema = cohortDatabaseSchema,
-    sourceCohortTable = tableName1$cohortTable,
-    targetCohortTable = tableName2$cohortTable,
-    purgeConflicts = FALSE,
+    sourceCohortTable = tableName1,
+    targetCohortTable = tableName2,
+    purgeConflicts = TRUE,
     tempEmulationSchema = tempEmulationSchema
   )
 
