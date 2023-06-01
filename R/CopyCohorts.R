@@ -150,19 +150,6 @@ copyCohorts <- function(connectionDetails = NULL,
     }
   }
   
-  DatabaseConnector::insertTable(
-    connection = connection,
-    tableName = "#old_to_new_cohort_id",
-    createTable = TRUE,
-    dropTableIfExists = TRUE,
-    tempTable = TRUE,
-    tempEmulationSchema = tempEmulationSchema,
-    progressBar = FALSE,
-    bulkLoad = (Sys.getenv("bulkLoad") == TRUE),
-    camelCaseToSnakeCase = TRUE,
-    data = oldToNewCohortId
-  )
-  
   if (!isTempTable) {
     if (is.null(connection)) {
       connection <- DatabaseConnector::connect(connectionDetails)
@@ -192,6 +179,19 @@ copyCohorts <- function(connectionDetails = NULL,
       }
     }
   }
+  
+  DatabaseConnector::insertTable(
+    connection = connection,
+    tableName = "#old_to_new_cohort_id",
+    createTable = TRUE,
+    dropTableIfExists = TRUE,
+    tempTable = TRUE,
+    tempEmulationSchema = tempEmulationSchema,
+    progressBar = FALSE,
+    bulkLoad = (Sys.getenv("bulkLoad") == TRUE),
+    camelCaseToSnakeCase = TRUE,
+    data = oldToNewCohortId
+  )
   
   sql <- SqlRender::loadRenderTranslateSql(
     sqlFilename = "CopyCohorts.sql",
