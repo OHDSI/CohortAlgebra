@@ -43,7 +43,9 @@
 #' @template PurgeConflicts
 #'
 #' @template TempEmulationSchema
-#'
+#'  
+#' @template IsTempTable
+#' 
 #' @param eraconstructorpad   Optional value to pad cohort era construction logic. Default = 0. i.e. no padding.
 #'
 #' @template CdmDatabaseSchema
@@ -62,6 +64,7 @@ eraFyCohorts <- function(connectionDetails = NULL,
                          eraconstructorpad = 0,
                          cdmDatabaseSchema = NULL,
                          purgeConflicts = FALSE,
+                         isTempTable = FALSE,
                          tempEmulationSchema = getOption("sqlRenderTempEmulationSchema")) {
   errorMessages <- checkmate::makeAssertCollection()
   checkmate::assertIntegerish(
@@ -123,7 +126,23 @@ eraFyCohorts <- function(connectionDetails = NULL,
     null.ok = FALSE,
     add = errorMessages
   )
+  checkmate::assertLogical(
+    x = isTempTable,
+    len = 1,
+    null.ok = FALSE, 
+    add = errorMessages
+  )
   checkmate::reportAssertions(collection = errorMessages)
+  
+  if (isTempTable) {
+    if(!all(
+      is.null(targetCohortDatabaseSchema),
+      tableNameIsCompatibleWithTempTableName(tableName = targetCohortTable),
+      !is.null(connection)
+    )) {
+      stop("Cannot output temp table - check input specifications")
+    }
+  }
 
   if (is.null(cdmDatabaseSchema)) {
     if (eraconstructorpad > 0) {
@@ -133,27 +152,27 @@ eraFyCohorts <- function(connectionDetails = NULL,
     }
   }
 
-  if (is.null(connection)) {
-    connection <- DatabaseConnector::connect(connectionDetails)
-    on.exit(DatabaseConnector::disconnect(connection))
-  }
-
-  if (!purgeConflicts) {
-    cohortIdsInCohortTable <-
-      getCohortIdsInCohortTable(
-        connection = connection,
-        cohortDatabaseSchema = targetCohortDatabaseSchema,
-        cohortTable = targetCohortTable,
-        tempEmulationSchema = tempEmulationSchema
-      )
-
-    conflicitingCohortIdsInTargetCohortTable <-
-      intersect(
-        x = newCohortId,
-        y = cohortIdsInCohortTable %>% unique()
-      )
-    if (length(conflicitingCohortIdsInTargetCohortTable) > 0) {
-      stop("Target cohort id already in use in target cohort table")
+  if (!isTempTable) {
+    if (is.null(connection)) {
+      connection <- DatabaseConnector::connect(connectionDetails)
+      on.exit(DatabaseConnector::disconnect(connection))
+    }
+    
+    if (!purgeConflicts) {
+      cohortIdsInCohortTable <-
+        getCohortIdsInCohortTable(
+          connection = connection,
+          cohortDatabaseSchema = targetCohortDatabaseSchema,
+          cohortTable = targetCohortTable,
+          tempEmulationSchema = tempEmulationSchema
+        )
+      
+      conflicitingCohortIdsInTargetCohortTable <-
+        intersect(x = newCohortId,
+                  y = cohortIdsInCohortTable %>% unique())
+      if (length(conflicitingCohortIdsInTargetCohortTable) > 0) {
+        stop("Target cohort id already in use in target cohort table")
+      }
     }
   }
 
@@ -169,7 +188,8 @@ eraFyCohorts <- function(connectionDetails = NULL,
     target_cohort_database_schema = targetCohortDatabaseSchema,
     target_cohort_table = targetCohortTable,
     old_cohort_ids = oldCohortIds,
-    new_cohort_id = newCohortId
+    new_cohort_id = newCohortId,
+    is_temp_table = isTempTable
   )
   DatabaseConnector::executeSql(
     connection = connection,

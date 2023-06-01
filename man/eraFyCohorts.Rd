@@ -16,6 +16,7 @@ eraFyCohorts(
   eraconstructorpad = 0,
   cdmDatabaseSchema = NULL,
   purgeConflicts = FALSE,
+  isTempTable = FALSE,
   tempEmulationSchema = getOption("sqlRenderTempEmulationSchema")
 )
 }
@@ -61,6 +62,9 @@ with transformed. By default - it will not be replaced, and an error message is 
 \item{tempEmulationSchema}{Some database platforms like Oracle and Impala do not truly support
 temp tables. To emulate temp tables, provide a schema with write
 privileges where temp tables can be created.}
+
+\item{IsTempTable}{Is the output a temp table. If yes, a new temp table is created. This will required
+an active connection. Any old temp table is dropped and replaced.}
 }
 \description{
 Given a table with cohort_definition_id, subject_id, cohort_start_date,
