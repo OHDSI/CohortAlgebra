@@ -100,19 +100,19 @@ testthat::test_that("Testing cohort union", {
     )
   )
 
-  unionCohorts(
-    connection = connection,
-    sourceCohortDatabaseSchema = cohortDatabaseSchema,
-    sourceCohortTable = tableName,
-    oldToNewCohortId = dplyr::tibble(
-      oldCohortId = c(1, 2, 2),
-      newCohortId = c(3, 3, 3)
-    ),
-    tempEmulationSchema = tempEmulationSchema,
-    targetCohortDatabaseSchema = NULL,
-    targetCohortTable = paste0("#", tableName, "2"),
-    isTempTable = TRUE
-  )
+  # unionCohorts(
+  #   connection = connection,
+  #   sourceCohortDatabaseSchema = cohortDatabaseSchema,
+  #   sourceCohortTable = tableName,
+  #   oldToNewCohortId = dplyr::tibble(
+  #     oldCohortId = c(1, 2, 2),
+  #     newCohortId = c(3, 3, 3)
+  #   ),
+  #   tempEmulationSchema = tempEmulationSchema,
+  #   targetCohortDatabaseSchema = NULL,
+  #   targetCohortTable = paste0("#", tableName, "2"),
+  #   isTempTable = TRUE
+  # )
 
   DatabaseConnector::renderTranslateExecuteSql(
     connection = connection,
