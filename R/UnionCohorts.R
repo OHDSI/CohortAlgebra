@@ -189,20 +189,22 @@ unionCohorts <- function(connectionDetails = NULL,
     )
   }
   
-  # remove cohort data in target cohort for newCohortIds. 
+  # remove cohort data in target cohort for newCohortIds.
   # if purgeConflicts is FALSE, and there was a conflict - there would be an error message
-  DatabaseConnector::renderTranslateExecuteSql(
-    connection = connection,
-    sql = "
-    DELETE FROM @cohort_database_schema.@cohort_table
-    WHERE cohort_definition_id IN (@cohort_definition_id);",
-    cohort_database_schema = targetCohortDatabaseSchema,
-    cohort_table = targetCohortTable,
-    cohort_definition_id = newCohortIds,
-    profile = FALSE,
-    progressBar = FALSE,
-    reportOverallTime = FALSE
-  )
+  if (!isTempTable) {
+    DatabaseConnector::renderTranslateExecuteSql(
+      connection = connection,
+      sql = "
+      DELETE FROM @cohort_database_schema.@cohort_table
+      WHERE cohort_definition_id IN (@cohort_definition_id);",
+      cohort_database_schema = targetCohortDatabaseSchema,
+      cohort_table = targetCohortTable,
+      cohort_definition_id = newCohortIds,
+      profile = FALSE,
+      progressBar = FALSE,
+      reportOverallTime = FALSE
+    )
+  }
 
   appendCohortTables(
     connection = connection,
