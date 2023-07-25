@@ -40,7 +40,6 @@ testthat::test_that("Testing nearest interval", {
   )
   # disconnecting - as this is a test for a non temp cohort table
   DatabaseConnector::disconnect(connection)
-  debug(nearestInterval)
   # should not throw error
   nearestInterval(
     connectionDetails = connectionDetails,

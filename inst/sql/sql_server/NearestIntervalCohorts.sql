@@ -24,50 +24,39 @@ SELECT DISTINCT i.subject_id,
 INTO #nearest_interval_1
 FROM #nearest_interval_t1 t
 INNER JOIN {@source_cohort_database_schema != '' } ? {@source_cohort_database_schema.@source_cohort_table} : {@source_cohort_table} i ON t.subject_id = i.subject_id
-	AND t.cohort_start_date <= i.cohort_end_date
-	AND t.cohort_end_date >= i.cohort_start_date
+	AND i.cohort_start_date <= t.cohort_start_date
+	AND i.cohort_end_date >= t.cohort_start_date
 WHERE i.cohort_definition_id IN (@interval_cohort_ids);
 
 SELECT DISTINCT i.subject_id,
 	i.cohort_start_date,
 	i.cohort_end_date,
-	MIN(DATEDIFF(DAY, t.cohort_start_date, i.cohort_start_date)) st_st,
-	MIN(DATEDIFF(DAY, t.cohort_start_date, i.cohort_end_date)) st_end,
-	MIN(DATEDIFF(DAY, t.cohort_end_date, i.cohort_start_date)) end_st,
-	MIN(DATEDIFF(DAY, t.cohort_end_date, i.cohort_end_date)) end_end
+	DATEDIFF(DAY, t.cohort_start_date, i.cohort_start_date) st_st,
+	DATEDIFF(DAY, t.cohort_start_date, i.cohort_end_date) st_end
 INTO #nearest_interval_2
 FROM #nearest_interval_t1 t
 INNER JOIN {@source_cohort_database_schema != '' } ? {@source_cohort_database_schema.@source_cohort_table} : {@source_cohort_table} i ON t.subject_id = i.subject_id
-WHERE i.cohort_definition_id IN (@interval_cohort_ids)
-GROUP BY i.subject_id,
-	i.cohort_start_date,
-	i.cohort_end_date;
+WHERE i.cohort_definition_id IN (@interval_cohort_ids);
 
 SELECT subject_id,
 	cohort_start_date,
 	cohort_end_date,
-	CASE 
-		WHEN st_st < 0
-			THEN st_st * - 1
-		ELSE st_st
-		END st_st,
-	CASE 
-		WHEN st_end < 0
-			THEN st_end * - 1
-		ELSE st_end
-		END st_end,
-	CASE 
-		WHEN end_st < 0
-			THEN end_st * - 1
-		ELSE end_st
-		END end_st,
-	CASE 
-		WHEN end_end < 0
-			THEN end_end * - 1
-		ELSE end_end
-		END end_end
+	MIN(CASE 
+  		WHEN st_st < 0
+  			THEN st_st * - 1
+  		ELSE st_st
+  		END) st_st,
+	MIN(CASE 
+  		WHEN st_end < 0
+  			THEN st_end * - 1
+  		ELSE st_end
+  		END) st_end
 INTO #nearest_interval_3
-FROM #nearest_interval_2;
+FROM #nearest_interval_2
+GROUP BY 
+        subject_id,
+        cohort_start_date,
+        cohort_end_date;
 
 SELECT subject_id,
 	cohort_start_date,
@@ -87,22 +76,6 @@ FROM (
 		cohort_start_date,
 		cohort_end_date,
 		st_end priority
-	FROM #nearest_interval_3
-	
-	UNION
-	
-	SELECT subject_id,
-		cohort_start_date,
-		cohort_end_date,
-		end_st priority
-	FROM #nearest_interval_3
-	
-	UNION
-	
-	SELECT subject_id,
-		cohort_start_date,
-		cohort_end_date,
-		end_end priority
 	FROM #nearest_interval_3
 	
 	UNION
