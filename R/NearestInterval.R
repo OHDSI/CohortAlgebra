@@ -166,7 +166,7 @@ nearestInterval <- function(connectionDetails = NULL,
   DatabaseConnector::executeSql(
     connection = connection,
     sql = sql,
-    progressBar = FALSE,
+    progressBar = TRUE,
     profile = FALSE
   )
 }

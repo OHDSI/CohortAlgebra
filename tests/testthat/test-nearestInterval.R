@@ -72,15 +72,16 @@ testthat::test_that("Testing nearest interval", {
     dplyr::tibble()
   
   testthat::expect_equal(object = nrow(dataPost),
-                         expected = 1) # should have 1 rows
+                         expected = 2) # should have 2 rows
   
   # create the expected output data frame object to compare
   cohortExpected <- dplyr::tibble(
-    cohortDefinitionId = c(0),
-    subjectId = c(1),
-    cohortStartDate = c(as.Date("2022-01-11")),
-    cohortEndDate = c(as.Date("2022-01-11"))
-  )
+    cohortDefinitionId = c(0, 0),
+    subjectId = c(1, 1),
+    cohortStartDate = c(as.Date("2022-01-11"), as.Date("2022-05-10")),
+    cohortEndDate = c(as.Date("2022-01-11"), as.Date("2022-12-30"))
+  ) |> 
+    dplyr::arrange(cohortDefinitionId, subjectId, cohortStartDate)
   
   testthat::expect_true(object = all(dataPost == cohortExpected))
   

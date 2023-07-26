@@ -1,131 +1,133 @@
-DROP TABLE IF EXISTS #nearest_interval_t1;
-DROP TABLE IF EXISTS #nearest_interval_1;
-DROP TABLE IF EXISTS #nearest_interval_2;
-DROP TABLE IF EXISTS #nearest_interval_3;
-DROP TABLE IF EXISTS #nearest_interval_4;
-DROP TABLE IF EXISTS #nearest_interval_5;
-DROP TABLE IF EXISTS #nearest_interval_6;
+DROP TABLE IF EXISTS #overlaps_ts;
+DROP TABLE IF EXISTS #ends_before_ts;
+DROP TABLE IF EXISTS #starts_after_ts;
+DROP TABLE IF EXISTS #nearest;
 
+-----------
 
-SELECT t.cohort_definition_id,
-        t.subject_id,
-        min(cohort_start_date) cohort_start_date,
-        min(cohort_end_date) cohort_end_date
-INTO #nearest_interval_t1
+SELECT DISTINCT t.subject_id,
+  t.cohort_start_date target_cohort_start_date,
+	i.cohort_start_date interval_cohort_start_date,
+	i.cohort_end_date interval_cohort_end_date,
+	0 DAYS_DIFF
+INTO #overlaps_ts
 FROM {@source_cohort_database_schema != '' } ? {@source_cohort_database_schema.@source_cohort_table} : {@source_cohort_table} t
-WHERE cohort_definition_id IN (@target_cohort_id)
-GROUP BY t.cohort_definition_id,
-        t.subject_id;
+INNER JOIN {@source_cohort_database_schema != '' } ? {@source_cohort_database_schema.@source_cohort_table} : {@source_cohort_table} i
+	ON t.subject_id = i.subject_id
+		AND i.cohort_start_date <= t.cohort_start_date
+		AND i.cohort_end_date >= t.cohort_start_date
+WHERE i.cohort_definition_id IN (@interval_cohort_ids)
+	AND t.cohort_definition_id = @target_cohort_id;
 
-SELECT DISTINCT i.subject_id,
-	0 priority,
-	i.cohort_start_date,
-	i.cohort_end_date
-INTO #nearest_interval_1
-FROM #nearest_interval_t1 t
-INNER JOIN {@source_cohort_database_schema != '' } ? {@source_cohort_database_schema.@source_cohort_table} : {@source_cohort_table} i ON t.subject_id = i.subject_id
-	AND i.cohort_start_date <= t.cohort_start_date
-	AND i.cohort_end_date >= t.cohort_start_date
-WHERE i.cohort_definition_id IN (@interval_cohort_ids);
-
-SELECT DISTINCT i.subject_id,
-	i.cohort_start_date,
-	i.cohort_end_date,
-	DATEDIFF(DAY, t.cohort_start_date, i.cohort_start_date) st_st,
-	DATEDIFF(DAY, t.cohort_start_date, i.cohort_end_date) st_end
-INTO #nearest_interval_2
-FROM #nearest_interval_t1 t
-INNER JOIN {@source_cohort_database_schema != '' } ? {@source_cohort_database_schema.@source_cohort_table} : {@source_cohort_table} i ON t.subject_id = i.subject_id
-WHERE i.cohort_definition_id IN (@interval_cohort_ids);
-
+-----------
 SELECT subject_id,
-	cohort_start_date,
-	cohort_end_date,
-	MIN(CASE 
-  		WHEN st_st < 0
-  			THEN st_st * - 1
-  		ELSE st_st
-  		END) st_st,
-	MIN(CASE 
-  		WHEN st_end < 0
-  			THEN st_end * - 1
-  		ELSE st_end
-  		END) st_end
-INTO #nearest_interval_3
-FROM #nearest_interval_2
-GROUP BY 
-        subject_id,
-        cohort_start_date,
-        cohort_end_date;
-
-SELECT subject_id,
-	cohort_start_date,
-	cohort_end_date,
-	min(priority) priority
-INTO #nearest_interval_4
+	target_cohort_start_date,
+	interval_cohort_start_date,
+	interval_cohort_end_date,
+	DATEDIFF(DAY, interval_cohort_end_date, target_cohort_start_date) DAYS_DIFF
+INTO #ends_before_ts
 FROM (
-	SELECT subject_id,
-		cohort_start_date,
-		cohort_end_date,
-		st_st priority
-	FROM #nearest_interval_3
-	
-	UNION
-	
-	SELECT subject_id,
-		cohort_start_date,
-		cohort_end_date,
-		st_end priority
-	FROM #nearest_interval_3
-	
-	UNION
-	
-	SELECT subject_id,
-		cohort_start_date,
-		cohort_end_date,
-		priority
-	FROM #nearest_interval_1
-	) as a
-GROUP BY subject_id,
-	cohort_start_date,
-	cohort_end_date;
+	SELECT t.subject_id,
+		t.cohort_start_date target_cohort_start_date,
+		ROW_NUMBER() OVER (
+			PARTITION BY t.subject_id,
+			t.cohort_start_date 
+			ORDER BY i.cohort_end_date DESC
+			) rn,
+		i.cohort_start_date interval_cohort_start_date,
+		i.cohort_end_date interval_cohort_end_date
+	FROM {@source_cohort_database_schema != '' } ? {@source_cohort_database_schema.@source_cohort_table} : {@source_cohort_table} t
+	INNER JOIN {@source_cohort_database_schema != '' } ? {@source_cohort_database_schema.@source_cohort_table} : {@source_cohort_table} i
+		ON t.subject_id = i.subject_id
+			AND i.cohort_end_date < t.cohort_start_date
+	WHERE i.cohort_definition_id IN (@interval_cohort_ids)
+	    AND t.cohort_definition_id IN (@target_cohort_id)
+	) a
+WHERE rn = 1;
 
+-----------
 SELECT subject_id,
-	ROW_NUMBER() OVER (
-		PARTITION BY subject_id ORDER BY priority ASC
-		) priority,
-	cohort_start_date,
-	cohort_end_date
-INTO #nearest_interval_5
-FROM #nearest_interval_4;
+	target_cohort_start_date,
+	interval_cohort_start_date,
+	interval_cohort_end_date,
+	DATEDIFF(DAY, target_cohort_start_date, interval_cohort_start_date) DAYS_DIFF
+INTO #starts_after_ts
+FROM (
+	SELECT t.subject_id,
+		t.cohort_start_date target_cohort_start_date,
+		ROW_NUMBER() OVER (
+			PARTITION BY t.subject_id,
+			t.cohort_start_date 
+			ORDER BY i.cohort_start_date
+			) rn,
+		i.cohort_start_date interval_cohort_start_date,
+		i.cohort_end_date interval_cohort_end_date
+	FROM {@source_cohort_database_schema != '' } ? {@source_cohort_database_schema.@source_cohort_table} : {@source_cohort_table} t
+	INNER JOIN {@source_cohort_database_schema != '' } ? {@source_cohort_database_schema.@source_cohort_table} : {@source_cohort_table} i
+		ON t.subject_id = i.subject_id
+			AND i.cohort_start_date > t.cohort_start_date
+	WHERE i.cohort_definition_id IN (@interval_cohort_ids)
+	    AND t.cohort_definition_id IN (@target_cohort_id)
+	) a
+WHERE rn = 1;
 
-SELECT DISTINCT a.subject_id,
-	a.cohort_start_date,
-	a.cohort_end_date
-INTO #nearest_interval_6
-FROM #nearest_interval_5 a
-INNER JOIN (
-	SELECT subject_id,
-		min(priority) priority
-	FROM #nearest_interval_5
-	GROUP BY subject_id
-	) b ON a.subject_id = b.subject_id
-	AND a.priority = b.priority
-ORDER BY a.subject_id,
-	a.cohort_start_date,
-	a.cohort_end_date;
+SELECT DISTINCT subject_id,
+          interval_cohort_start_date cohort_start_date,
+          interval_cohort_end_date cohort_end_date
+INTO #nearest
+FROM
+(
+  SELECT subject_id,
+  	target_cohort_start_date,
+  	interval_cohort_start_date,
+  	interval_cohort_end_date,
+  	ROW_NUMBER() OVER (
+  		PARTITION BY subject_id,
+  		target_cohort_start_date
+  		ORDER BY days_diff
+  		) rn
+  FROM (
+  
+    SELECT subject_id,
+  		target_cohort_start_date,
+  		interval_cohort_start_date,
+  		interval_cohort_end_date,
+  		days_diff
+  	FROM #overlaps_ts c1
+  	
+  	UNION
+  	
+  	SELECT subject_id,
+  		target_cohort_start_date,
+  		interval_cohort_start_date,
+  		interval_cohort_end_date,
+  		days_diff
+  	FROM #ends_before_ts c2
+  	
+  	UNION
+  	
+  	SELECT subject_id,
+  		target_cohort_start_date,
+  		interval_cohort_start_date,
+  		interval_cohort_end_date,
+  		days_diff
+  	FROM #starts_after_ts c3
+  	) f
+) ff
+WHERE rn = 1;
+
+DELETE
+FROM {@target_cohort_database_schema != '' } ? {@target_cohort_database_schema.@target_cohort_table} : {@target_cohort_table}
+WHERE cohort_definition_id = @new_cohort_id;
 
 INSERT INTO {@target_cohort_database_schema != '' } ? {@target_cohort_database_schema.@target_cohort_table} : {@target_cohort_table}
-SELECT @new_cohort_id cohort_definition_id,
+SELECT DISTINCT @new_cohort_id cohort_definition_id,
 	subject_id,
 	cohort_start_date,
 	cohort_end_date
-FROM #nearest_interval_6;
+FROM #nearest;
 
-DROP TABLE IF EXISTS #nearest_interval_t1;
-DROP TABLE IF EXISTS #nearest_interval_1;
-DROP TABLE IF EXISTS #nearest_interval_2;
-DROP TABLE IF EXISTS #nearest_interval_3;
-DROP TABLE IF EXISTS #nearest_interval_4;
-DROP TABLE IF EXISTS #nearest_interval_5;
-DROP TABLE IF EXISTS #nearest_interval_6;
+DROP TABLE IF EXISTS #overlaps_ts;
+DROP TABLE IF EXISTS #ends_before_ts;
+DROP TABLE IF EXISTS #starts_after_ts;
+DROP TABLE IF EXISTS #nearest;
