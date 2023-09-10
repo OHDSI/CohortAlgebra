@@ -4,11 +4,11 @@
 \name{CohortAlgebra-package}
 \alias{CohortAlgebra}
 \alias{CohortAlgebra-package}
-\title{CohortAlgebra: Cohort Algebra to create new cohort(s) from existing cohorts}
+\title{CohortAlgebra: Use of interval Algebra to create new cohort(s) from existing cohorts}
 \description{
-An R package that creates new cohort(s) from previously instantiated cohorts.
+This software tool is designed to create new cohort(s) from previously instantiated cohorts. It uses interval algebra operators of UNION, Intersect and Minus on the instantiated cohorts. Cohorts are definied in the Observational Medical Outcomes Partnership (OMOP) data model format as a table with the fields cohort_definition_id, subject_id, cohort_start_date and cohort_end_date.
 
-An R package that creates new cohort(s) from previously instantiated cohorts.
+This software tool is designed to create new cohort(s) from previously instantiated cohorts. It uses interval algebra operators of UNION, Intersect and Minus on the instantiated cohorts. Cohorts are definied in the Observational Medical Outcomes Partnership (OMOP) data model format as a table with the fields cohort_definition_id, subject_id, cohort_start_date and cohort_end_date.
 }
 \seealso{
 Useful links:

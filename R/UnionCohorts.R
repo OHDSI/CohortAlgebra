@@ -188,7 +188,7 @@ unionCohorts <- function(connectionDetails = NULL,
       purgeConflicts = FALSE
     )
   }
-  
+
   # remove cohort data in target cohort for newCohortIds.
   # if purgeConflicts is FALSE, and there was a conflict - there would be an error message
   if (!isTempTable) {
