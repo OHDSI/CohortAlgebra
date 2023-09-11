@@ -45,27 +45,6 @@ This package allows the creation of new cohorts from previously instantiated coh
 remotes::install_github("OHDSI/CohortAlgebra")
 ```
 
-```{r tidy=FALSE,eval=TRUE, echo=FALSE}
-library(dplyr)
-
-jdbcDriverFolder <- tempfile("jdbcDrivers")
-dir.create(jdbcDriverFolder, showWarnings = FALSE)
-DatabaseConnector::downloadJdbcDrivers("postgresql", pathToDriver = jdbcDriverFolder)
-
-connectionDetails <- DatabaseConnector::createConnectionDetails(
-  dbms = "postgresql",
-  user = Sys.getenv("CDM5_POSTGRESQL_USER"),
-  password = Sys.getenv("CDM5_POSTGRESQL_PASSWORD"),
-  server = Sys.getenv("CDM5_POSTGRESQL_SERVER"),
-  pathToDriver = jdbcDriverFolder
-)
-cohortDatabaseSchema <- Sys.getenv("CDM5_POSTGRESQL_OHDSI_SCHEMA")
-
-# generate unique name for a cohort table
-sysTime <- as.numeric(Sys.time()) * 100000
-tableName <- paste0("cr", sysTime)
-tempTableName <- paste0("#", tableName, "_1")
-```
 
 ## Cohort UNION
 - Given two or more cohorts, an UNION operator on these cohorts creates a new cohort with continuous days the persons was present in any of the cohorts. For example: given a cohort table as follows
@@ -91,22 +70,6 @@ cohort <- dplyr::tibble(
 cohort
 ```
 
-```{r tidy=FALSE,eval=TRUE, echo=FALSE}
-# upload table
-connection <-
-  DatabaseConnector::connect(connectionDetails = connectionDetails)
-DatabaseConnector::insertTable(
-  connection = connection,
-  databaseSchema = cohortDatabaseSchema,
-  tableName = tableName,
-  data = cohort,
-  dropTableIfExists = TRUE,
-  createTable = TRUE,
-  tempTable = FALSE,
-  camelCaseToSnakeCase = TRUE,
-  progressBar = FALSE
-)
-```
 
 The union of the two cohorts is expected to give us
 
@@ -128,7 +91,7 @@ cohortExpected
 To perform Cohort Union, we use the unionCohorts function. This function requires as an input a data.frame called oldToNewCohortId. Here we specify the cohort id's of the cohorts we want to union. The newCohortId is the cohortId of the resultant cohort. The oldCohortId are cohorts that are already in the cohort table. 
 
 
-```{r tidy=FALSE,eval=TRUE}
+```{r tidy=FALSE,eval=FALSE}
 oldToNewCohortId <-
   dplyr::tibble(
     oldCohortId = c(1, 2, 2),
@@ -147,7 +110,7 @@ CohortAlgebra::unionCohorts(
 
 Now we will have a new cohortId '3' which is the union of cohortIds 1 and 2.
 
-```{r tidy=FALSE,eval=TRUE, echo=FALSE}
+```{r tidy=FALSE,eval=FALSE, echo=FALSE}
 data <-
   DatabaseConnector::renderTranslateQuerySql(
     connection = connection,
@@ -163,8 +126,12 @@ data <-
   dplyr::tibble()
 ```
 
-```{r tidy=FALSE,eval=TRUE, echo=TRUE}
+```{r tidy=FALSE,eval=FALSE, echo=TRUE}
 data
+```
+
+```{r tidy=FALSE,eval=TRUE, echo=FALSE}
+cohortExpected
 ```
 
 Note: if the target cohort table had a cohort with cohortId = 3, before running the union function - this would cause a conflict. In those cases, the union function would not run. We can purge all records for cohortId = 3 from the target cohort table. The parameter purgeConflicts will delete any cohort records in the cohort table where cohortId is the cohortId of the newCohort.
@@ -197,21 +164,7 @@ cohort
 ```
 
 
-```{r tidy=FALSE,eval=TRUE, echo=FALSE}
-DatabaseConnector::insertTable(
-  connection = connection,
-  databaseSchema = cohortDatabaseSchema,
-  tableName = tableName,
-  data = cohort,
-  dropTableIfExists = TRUE,
-  createTable = TRUE,
-  tempTable = FALSE,
-  camelCaseToSnakeCase = TRUE,
-  progressBar = FALSE
-)
-```
-
-```{r tidy=FALSE,eval=TRUE, echo=TRUE}
+```{r tidy=FALSE,eval=FALSE, echo=TRUE}
 CohortAlgebra::intersectCohorts(
   connection = connection,
   sourceCohortDatabaseSchema = cohortDatabaseSchema,
@@ -227,7 +180,7 @@ CohortAlgebra::intersectCohorts(
 
 Output
 
-```{r tidy=FALSE,eval=TRUE, echo=FALSE}
+```{r tidy=FALSE,eval=FALSE, echo=FALSE}
 data <-
   DatabaseConnector::renderTranslateQuerySql(
     connection = connection,
@@ -243,10 +196,6 @@ data <-
   dplyr::tibble()
 ```
 
-
-```{r tidy=FALSE,eval=TRUE, echo=FALSE}
-data
-```
 
 ### Intersect cohort example 2
 
@@ -274,21 +223,7 @@ cohort
 ```
 
 
-```{r tidy=FALSE,eval=TRUE, echo=FALSE}
-DatabaseConnector::insertTable(
-  connection = connection,
-  databaseSchema = cohortDatabaseSchema,
-  tableName = tableName,
-  data = cohort,
-  dropTableIfExists = TRUE,
-  createTable = TRUE,
-  tempTable = FALSE,
-  camelCaseToSnakeCase = TRUE,
-  progressBar = FALSE
-)
-```
-
-```{r tidy=FALSE,eval=TRUE, echo=TRUE}
+```{r tidy=FALSE,eval=FALSE, echo=TRUE}
 CohortAlgebra::intersectCohorts(
   connection = connection,
   sourceCohortDatabaseSchema = cohortDatabaseSchema,
@@ -304,7 +239,7 @@ CohortAlgebra::intersectCohorts(
 
 Output
 
-```{r tidy=FALSE,eval=TRUE, echo=FALSE}
+```{r tidy=FALSE,eval=FALSE, echo=FALSE}
 data <-
   DatabaseConnector::renderTranslateQuerySql(
     connection = connection,
@@ -321,9 +256,6 @@ data <-
 ```
 
 
-```{r tidy=FALSE,eval=TRUE, echo=FALSE}
-data
-```
 
 
 ### Intersect cohort example 3
@@ -352,7 +284,7 @@ cohort
 ```
 
 
-```{r tidy=FALSE,eval=TRUE, echo=FALSE}
+```{r tidy=FALSE,eval=FALSE, echo=FALSE}
 DatabaseConnector::insertTable(
   connection = connection,
   databaseSchema = cohortDatabaseSchema,
@@ -366,7 +298,7 @@ DatabaseConnector::insertTable(
 )
 ```
 
-```{r tidy=FALSE,eval=TRUE, echo=TRUE}
+```{r tidy=FALSE,eval=FALSE, echo=TRUE}
 CohortAlgebra::intersectCohorts(
   connection = connection,
   sourceCohortDatabaseSchema = cohortDatabaseSchema,
@@ -382,7 +314,7 @@ CohortAlgebra::intersectCohorts(
 
 Output
 
-```{r tidy=FALSE,eval=TRUE, echo=FALSE}
+```{r tidy=FALSE,eval=FALSE, echo=FALSE}
 data <-
   DatabaseConnector::renderTranslateQuerySql(
     connection = connection,
@@ -400,16 +332,12 @@ data <-
 
 
 
-```{r tidy=FALSE,eval=TRUE, echo=FALSE, echo=TRUE}
-data
-```
-
 
 ### Intersect cohort example 4
 
 Input:
 
-```{r tidy=FALSE,eval=TRUE, echo=FALSE}
+```{r tidy=FALSE,eval=FALSE, echo=FALSE}
 cohort <- dplyr::tibble(
   cohortDefinitionId = c(1, 2),
   subjectId = c(1, 1),
@@ -430,21 +358,8 @@ cohort <- dplyr::tibble(
 cohort
 ```
 
-```{r tidy=FALSE,eval=TRUE, echo=FALSE}
-DatabaseConnector::insertTable(
-  connection = connection,
-  databaseSchema = cohortDatabaseSchema,
-  tableName = tableName,
-  data = cohort,
-  dropTableIfExists = TRUE,
-  createTable = TRUE,
-  tempTable = FALSE,
-  camelCaseToSnakeCase = TRUE,
-  progressBar = FALSE
-)
-```
 
-```{r tidy=FALSE,eval=TRUE, echo=TRUE}
+```{r tidy=FALSE,eval=FALSE, echo=TRUE}
 CohortAlgebra::intersectCohorts(
   connection = connection,
   sourceCohortDatabaseSchema = cohortDatabaseSchema,
@@ -460,7 +375,7 @@ CohortAlgebra::intersectCohorts(
 
 Output
 
-```{r tidy=FALSE,eval=TRUE, echo=FALSE}
+```{r tidy=FALSE,eval=FALSE, echo=FALSE}
 data <-
   DatabaseConnector::renderTranslateQuerySql(
     connection = connection,
@@ -476,10 +391,6 @@ data <-
   dplyr::tibble()
 ```
 
-
-```{r tidy=FALSE,eval=TRUE, echo=TRUE}
-data
-```
 
 ### Intersect cohort example 5
 
@@ -507,7 +418,7 @@ cohort
 ```
 
 
-```{r tidy=FALSE,eval=TRUE, echo=FALSE}
+```{r tidy=FALSE,eval=FALSE, echo=FALSE}
 DatabaseConnector::insertTable(
   connection = connection,
   databaseSchema = cohortDatabaseSchema,
@@ -521,23 +432,12 @@ DatabaseConnector::insertTable(
 )
 ```
 
-```{r tidy=FALSE,eval=TRUE, echo=TRUE}
-CohortAlgebra::intersectCohorts(
-  connection = connection,
-  sourceCohortDatabaseSchema = cohortDatabaseSchema,
-  sourceCohortTable = tableName,
-  targetCohortDatabaseSchema = cohortDatabaseSchema,
-  targetCohortTable = tableName,
-  cohortIds = c(1, 2),
-  newCohortId = 3
-)
-```
 
 ![Cohort Intersect 5](IntersectExample5.PNG)
 
 Output
 
-```{r tidy=FALSE,eval=TRUE, echo=FALSE}
+```{r tidy=FALSE,eval=FALSE, echo=FALSE}
 data <-
   DatabaseConnector::renderTranslateQuerySql(
     connection = connection,
@@ -551,12 +451,6 @@ data <-
     snakeCaseToCamelCase = TRUE
   ) |>
   dplyr::tibble()
-```
-
-
-
-```{r tidy=FALSE,eval=TRUE, echo=TRUE}
-data
 ```
 
 ## Minus Cohort
@@ -585,21 +479,7 @@ cohort
 ```
 
 
-```{r tidy=FALSE,eval=TRUE, echo=FALSE}
-DatabaseConnector::insertTable(
-  connection = connection,
-  databaseSchema = cohortDatabaseSchema,
-  tableName = tableName,
-  data = cohort,
-  dropTableIfExists = TRUE,
-  createTable = TRUE,
-  tempTable = FALSE,
-  camelCaseToSnakeCase = TRUE,
-  progressBar = FALSE
-)
-```
-
-```{r tidy=FALSE,eval=TRUE, echo=TRUE}
+```{r tidy=FALSE,eval=FALSE, echo=TRUE}
 CohortAlgebra::minusCohorts(
   connection = connection,
   sourceCohortDatabaseSchema = cohortDatabaseSchema,
@@ -616,7 +496,7 @@ CohortAlgebra::minusCohorts(
 
 Output for example 1
 
-```{r tidy=FALSE,eval=TRUE, echo=FALSE}
+```{r tidy=FALSE,eval=FALSE, echo=FALSE}
 data <-
   DatabaseConnector::renderTranslateQuerySql(
     connection = connection,
@@ -633,14 +513,10 @@ data <-
 ```
 
 
-```{r tidy=FALSE,eval=TRUE, echo=TRUE}
-data
-```
-
 But if the cohorts are switched, i.e. minus cohort 1 from Cohort 2
 
 
-```{r tidy=FALSE,eval=TRUE, echo=TRUE}
+```{r tidy=FALSE,eval=FALSE, echo=TRUE}
 CohortAlgebra::minusCohorts(
   connection = connection,
   sourceCohortDatabaseSchema = cohortDatabaseSchema,
@@ -657,7 +533,7 @@ CohortAlgebra::minusCohorts(
 
 Output
 
-```{r tidy=FALSE,eval=TRUE, echo=FALSE}
+```{r tidy=FALSE,eval=FALSE, echo=FALSE}
 data <-
   DatabaseConnector::renderTranslateQuerySql(
     connection = connection,
@@ -673,20 +549,5 @@ data <-
   dplyr::tibble()
 ```
 
-```{r tidy=FALSE,eval=TRUE, echo=TRUE}
-data
-```
-
 Sequence of cohorts are important for minusCohort
-
-```{r tidy=FALSE,eval=TRUE, echo=FALSE}
-unlink(jdbcDriverFolder)
-DatabaseConnector::renderTranslateExecuteSql(
-  connection = connection,
-  sql = "DROP TABLE IF EXISTS @cohort_table;",
-  cohort_table = tableName,
-  progressBar = FALSE,
-  reportOverallTime = FALSE
-)
-```
 
