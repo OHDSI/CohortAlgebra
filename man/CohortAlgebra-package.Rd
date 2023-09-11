@@ -13,7 +13,6 @@ This software tool is designed to generate new cohorts utilizing data from previ
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://ohdsi.github.io/CohortAlgebra/}
   \item \url{https://github.com/OHDSI/CohortAlgebra}
   \item Report bugs at \url{https://github.com/OHDSI/CohortAlgebra/issues}
 }
@@ -21,7 +20,6 @@ Useful links:
 
 Useful links:
 \itemize{
-  \item \url{https://ohdsi.github.io/CohortAlgebra/}
   \item \url{https://github.com/OHDSI/CohortAlgebra}
   \item Report bugs at \url{https://github.com/OHDSI/CohortAlgebra/issues}
 }
