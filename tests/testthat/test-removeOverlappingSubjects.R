@@ -1,4 +1,7 @@
 testthat::test_that("Testing Remove Subjects from cohorts", {
+  
+  testthat::skip_if(condition = skipCdmTests)
+  
   # make up date for a cohort table
   cohort <- dplyr::tibble(
     cohortDefinitionId = c(1, 1, 3, 5),
