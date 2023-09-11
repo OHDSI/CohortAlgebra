@@ -123,7 +123,7 @@ testthat::test_that("Testing cohort union", {
     table_temp = cohortTableName,
     cohort_database_schema = cohortDatabaseSchema,
     cdm_database_schema = cohortDatabaseSchema,
-    temp_table = tempCohortTableName1,
+    temp_temp_1 = tempCohortTableName1,
     progressBar = FALSE,
     reportOverallTime = FALSE
   )
