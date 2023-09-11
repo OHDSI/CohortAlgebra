@@ -16,11 +16,11 @@ Depends:
 	DatabaseConnector (>= 5.0.0),
 	R (>= 4.0.0)
 Imports:
-    checkmate,
-    dplyr,
-    lifecycle,
-    rlang,
-    SqlRender
+  checkmate,
+  dplyr,
+  lifecycle,
+  rlang,
+  SqlRender
 Suggests:
   knitr,
 	testthat,
