@@ -28,6 +28,9 @@ this should include both the database and schema name, for example
 temp tables. To emulate temp tables, provide a schema with write
 privileges where temp tables can be created.}
 }
+\value{
+An array of integers called cohort id.
+}
 \description{
 Get cohort ids in table
 

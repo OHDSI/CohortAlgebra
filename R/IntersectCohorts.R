@@ -44,13 +44,12 @@
 #'
 #' @template TempEmulationSchema
 #'
-#' @return
-#' NULL
+#' @return   Nothing is returned
 #'
 #' @examples
 #' \dontrun{
 #' intersectCohorts(
-#'   connectionDetails = Eunomia::getEunomiaConnectionDetails(),
+#'   connectionDetails = connectionDetails,
 #'   sourceCohortDatabaseSchema = "main",
 #'   sourceCohortTable = "cohort",
 #'   cohortIds = c(1, 2, 3),
@@ -174,7 +173,7 @@ intersectCohorts <- function(connectionDetails = NULL,
     target_cohort_database_schema = NULL
   )
 
-  ParallelLogger::logInfo(" Intersecting cohorts.")
+  message(" Intersecting cohorts.")
   DatabaseConnector::executeSql(
     connection = connection,
     sql = sql,
@@ -182,7 +181,7 @@ intersectCohorts <- function(connectionDetails = NULL,
     progressBar = FALSE,
     reportOverallTime = FALSE
   )
-  ParallelLogger::logInfo(" Generating eras and saving.")
+  message(" Generating eras and saving.")
   eraFyCohorts(
     connection = connection,
     sourceCohortDatabaseSchema = NULL,

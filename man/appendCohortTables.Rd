@@ -41,6 +41,9 @@ an active connection. Any old temp table is dropped and replaced.}
 temp tables. To emulate temp tables, provide a schema with write
 privileges where temp tables can be created.}
 }
+\value{
+Nothing is returned
+}
 \description{
 Append cohort data from multiple cohort tables.
 
@@ -54,7 +57,7 @@ sourceTables <- dplyr::tibble(
 )
 
 appendCohortTables(
-  connectionDetails = Eunomia::getEunomiaConnectionDetails(),
+  connectionDetails = connectionDetails,
   sourceTables = sourceTables,
   targetCohortDatabaseSchema = "main",
   targetCohortTable = "target"

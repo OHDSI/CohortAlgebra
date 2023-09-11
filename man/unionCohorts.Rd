@@ -58,6 +58,9 @@ privileges where temp tables can be created.}
 already has records with newCohortId, do you want to purge and replace them
 with transformed. By default - it will not be replaced, and an error message is thrown.}
 }
+\value{
+Nothing is returned
+}
 \description{
 Given a specified array of cohortIds in a cohort table, perform
 cohort union operator to create new cohorts.
@@ -67,7 +70,7 @@ cohort union operator to create new cohorts.
 \examples{
 \dontrun{
 unionCohorts(
-  connectionDetails = Eunomia::getEunomiaConnectionDetails(),
+  connectionDetails = connectionDetails,
   sourceDatabaseSchema = "main",
   sourceCohortTable = "cohort",
   oldToNewCohortId = dplyr::tibble(oldCohortId = c(1, 2), newCohortId = 4),

@@ -53,6 +53,9 @@ with transformed. By default - it will not be replaced, and an error message is 
 temp tables. To emulate temp tables, provide a schema with write
 privileges where temp tables can be created.}
 }
+\value{
+Nothing is returned
+}
 \description{
 Find the common cohort period for persons present in all the cohorts. Note: if
 subject is not found in any of the cohorts, then they will not
@@ -63,7 +66,7 @@ be in the final cohort.
 \examples{
 \dontrun{
 intersectCohorts(
-  connectionDetails = Eunomia::getEunomiaConnectionDetails(),
+  connectionDetails = connectionDetails,
   sourceCohortDatabaseSchema = "main",
   sourceCohortTable = "cohort",
   cohortIds = c(1, 2, 3),

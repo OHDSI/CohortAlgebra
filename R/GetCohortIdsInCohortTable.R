@@ -29,8 +29,7 @@
 #'
 #' @template TempEmulationSchema
 #'
-#' @return
-#' NULL
+#' @returns  An array of integers called cohort id.
 #'
 getCohortIdsInCohortTable <- function(connection = NULL,
                                       cohortDatabaseSchema = NULL,

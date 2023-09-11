@@ -50,8 +50,7 @@
 #'
 #' @template CdmDatabaseSchema
 #'
-#' @return
-#' NULL
+#' @returns   Nothing is returned
 #'
 eraFyCohorts <- function(connectionDetails = NULL,
                          connection = NULL,

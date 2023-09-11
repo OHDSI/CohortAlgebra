@@ -35,8 +35,7 @@
 #'
 #' @template TempEmulationSchema
 #'
-#' @return
-#' NULL
+#' @return   Nothing is returned
 #'
 #' @examples
 #' \dontrun{
@@ -46,7 +45,7 @@
 #' )
 #'
 #' appendCohortTables(
-#'   connectionDetails = Eunomia::getEunomiaConnectionDetails(),
+#'   connectionDetails = connectionDetails,
 #'   sourceTables = sourceTables,
 #'   targetCohortDatabaseSchema = "main",
 #'   targetCohortTable = "target"
