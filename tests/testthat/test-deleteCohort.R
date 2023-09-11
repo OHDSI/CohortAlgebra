@@ -1,5 +1,4 @@
 testthat::test_that("Testing cohort delete", {
-  
   testthat::skip_if(condition = skipCdmTests)
   # make up date for a cohort table
   # this cohort table will have two subjects * two cohorts, within the same cohort

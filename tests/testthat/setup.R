@@ -1,8 +1,10 @@
 library(testthat)
 library(dplyr)
 
-cohortTableName <- paste0("ct_",
-                          paste(sample(letters, 10), collapse = ""))
+cohortTableName <- paste0(
+  "ct_",
+  paste(sample(letters, 10), collapse = "")
+)
 
 dbms <- getOption("dbms", default = "postgresql")
 
@@ -14,15 +16,17 @@ if (dir.exists(Sys.getenv("DATABASECONNECTOR_JAR_FOLDER"))) {
   jdbcDriverFolder <- "~/.jdbcDrivers"
   dir.create(jdbcDriverFolder, showWarnings = FALSE)
   DatabaseConnector::downloadJdbcDrivers("postgresql", pathToDriver = jdbcDriverFolder)
-  
+
   if (!dbms %in% c("postgresql", "sqlite")) {
     DatabaseConnector::downloadJdbcDrivers(dbms, pathToDriver = jdbcDriverFolder)
   }
-  
-  withr::defer({
-    unlink(jdbcDriverFolder, recursive = TRUE, force = TRUE)
-  },
-  testthat::teardown_env())
+
+  withr::defer(
+    {
+      unlink(jdbcDriverFolder, recursive = TRUE, force = TRUE)
+    },
+    testthat::teardown_env()
+  )
 }
 
 folder <- tempfile()
@@ -87,20 +91,22 @@ sql <-
   "IF OBJECT_ID('@cohort_database_schema.@cohort_table', 'U') IS NOT NULL
               DROP TABLE @cohort_database_schema.@cohort_table;"
 
-withr::defer({
-  if (!skipCdmTests) {
-    connection <- DatabaseConnector::connect(connectionDetails)
-    DatabaseConnector::renderTranslateExecuteSql(connection,
-                                                 sql,
-                                                 cohort_database_schema = cohortDatabaseSchema,
-                                                 cohort_table = cohortTableName)
-    
-    # Clean up created cohort table:
-    connection <-
-      DatabaseConnector::connect(connectionDetails = connectionDetails)
-    DatabaseConnector::renderTranslateExecuteSql(
-      connection = connection,
-      sql = "DROP TABLE IF EXISTS @cohort_database_schema.@cohort_table;
+withr::defer(
+  {
+    if (!skipCdmTests) {
+      connection <- DatabaseConnector::connect(connectionDetails)
+      DatabaseConnector::renderTranslateExecuteSql(connection,
+        sql,
+        cohort_database_schema = cohortDatabaseSchema,
+        cohort_table = cohortTableName
+      )
+
+      # Clean up created cohort table:
+      connection <-
+        DatabaseConnector::connect(connectionDetails = connectionDetails)
+      DatabaseConnector::renderTranslateExecuteSql(
+        connection = connection,
+        sql = "DROP TABLE IF EXISTS @cohort_database_schema.@cohort_table;
                 DROP TABLE IF EXISTS @cohort_database_schema.@cohort_table_1;
                 DROP TABLE IF EXISTS @cohort_database_schema.@cohort_table_2;
                 DROP TABLE IF EXISTS @cohort_database_schema.@cohort_table_3;
@@ -109,11 +115,12 @@ withr::defer({
                 DROP TABLE IF EXISTS @cohort_table_2;
                 DROP TABLE IF EXISTS @cohort_table_3;
         ",
-      cohort_database_schema = cohortDatabaseSchema,
-      cohort_table = cohortTableName
-    )
-    
-    DatabaseConnector::disconnect(connection)
-  }
-},
-testthat::teardown_env())
+        cohort_database_schema = cohortDatabaseSchema,
+        cohort_table = cohortTableName
+      )
+
+      DatabaseConnector::disconnect(connection)
+    }
+  },
+  testthat::teardown_env()
+)

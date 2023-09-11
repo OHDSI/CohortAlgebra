@@ -1,7 +1,6 @@
 testthat::test_that("Testing cohort union", {
-  
   testthat::skip_if(condition = skipCdmTests)
-  
+
   # generate unique name for a cohort table
   cohortTableName1 <- paste0(cohortTableName, 1)
   cohortTableName2 <- paste0(cohortTableName, 2)

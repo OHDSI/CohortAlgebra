@@ -1,5 +1,4 @@
 testthat::test_that("Testing cohort era fy", {
-  
   testthat::skip_if(condition = skipCdmTests)
   # generate unique name for a cohort table
   tempCohortTableName <- paste0("#", cohortTableName, "_1")
