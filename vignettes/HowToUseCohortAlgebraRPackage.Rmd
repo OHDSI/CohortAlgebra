@@ -42,7 +42,9 @@ This package allows the creation of new cohorts from previously instantiated coh
 ## Installation
 - This  is an installable R-package that may be installed as follows: 
 ```{r tidy=FALSE,eval=FALSE}
-remotes::install_github("OHDSI/CohortAlgebra")
+if !('CohortAlgebra' %in% rownames(installed.packages())) {
+  remotes::install_github("OHDSI/CohortAlgebra")
+}
 ```
 
 ```{r tidy=FALSE,eval=TRUE, echo=FALSE}
@@ -145,7 +147,7 @@ CohortAlgebra::unionCohorts(
 )
 ```
 
-Now we will have a new cohortId '3' which is the union of cohortId's 1 and 2.
+Now we will have a new cohortId '3' which is the union of cohortIds 1 and 2.
 
 ```{r tidy=FALSE,eval=TRUE, echo=FALSE}
 data <-
