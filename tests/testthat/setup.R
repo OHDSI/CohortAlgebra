@@ -117,4 +117,3 @@ withr::defer({
   }
 },
 testthat::teardown_env())
-}
