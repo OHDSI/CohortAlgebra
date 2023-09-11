@@ -11,7 +11,7 @@ if (dir.exists(Sys.getenv("DATABASECONNECTOR_JAR_FOLDER"))) {
   jdbcDriverFolder <- tempfile("jdbcDrivers")
   dir.create(jdbcDriverFolder, showWarnings = FALSE)
   DatabaseConnector::downloadJdbcDrivers(dbms, pathToDriver = jdbcDriverFolder)
-  
+
   withr::defer(
     {
       unlink(jdbcDriverFolder, recursive = TRUE, force = TRUE)
@@ -88,7 +88,7 @@ withr::defer(
                 DROP TABLE IF EXISTS @cohort_database_schema.@cohort_table_1;
                 DROP TABLE IF EXISTS @cohort_database_schema.@cohort_table_2;
                 DROP TABLE IF EXISTS @cohort_database_schema.@cohort_table_3;
-                
+
                 DROP TABLE IF EXISTS @cohort_table;
                 DROP TABLE IF EXISTS @cohort_table_1;
                 DROP TABLE IF EXISTS @cohort_table_2;

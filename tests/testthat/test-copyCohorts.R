@@ -244,12 +244,12 @@ testthat::test_that("Testing cohort union", {
       tempEmulationSchema = tempEmulationSchema
     )
   )
-  
+
   sqlCleanUp <- "
   DROP TABLE IF EXISTS @cohort_database_schema.@table_name1;
   DROP TABLE IF EXISTS @cohort_database_schema.@table_name2;
   DROP TABLE IF EXISTS @temp_table_1;"
-  
+
   DatabaseConnector::renderTranslateExecuteSql(
     connection = DatabaseConnector::connect(connectionDetails = connectionDetails),
     sql = sqlCleanUp,
@@ -262,5 +262,4 @@ testthat::test_that("Testing cohort union", {
     temp_table_1 = tempCohortTableName1,
     cohort_database_schema = cohortDatabaseSchema,
   )
-  
 })
