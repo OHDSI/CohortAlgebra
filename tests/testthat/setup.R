@@ -84,9 +84,18 @@ withr::defer(
       connection <- DatabaseConnector::connect(connectionDetails = connectionDetails)
       DatabaseConnector::renderTranslateExecuteSql(
         connection = connection,
-        sql = "DROP TABLE IF EXISTS @cohort_database_schema.@cohort_table;",
+        sql = "DROP TABLE IF EXISTS @cohort_database_schema.@cohort_table;
+                DROP TABLE IF EXISTS @cohort_database_schema.@cohort_table_1;
+                DROP TABLE IF EXISTS @cohort_database_schema.@cohort_table_2;
+                DROP TABLE IF EXISTS @cohort_database_schema.@cohort_table_3;
+                
+                DROP TABLE IF EXISTS @cohort_table;
+                DROP TABLE IF EXISTS @cohort_table_1;
+                DROP TABLE IF EXISTS @cohort_table_2;
+                DROP TABLE IF EXISTS @cohort_table_3;
+        ",
         cohort_database_schema = cohortDatabaseSchema,
-        cohort_table = cohortTable
+        cohort_table = cohortTableName
       )
       DatabaseConnector::disconnect(connection)
     }

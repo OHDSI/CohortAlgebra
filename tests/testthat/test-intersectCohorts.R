@@ -1,6 +1,6 @@
 testthat::test_that("Testing cohort intersect", {
   # generate unique name for a cohort table
-  tempCohortTableName <- paste0("#", cohortTable, "_1")
+  tempCohortTableName <- paste0("#", cohortTableName, "_1")
 
   # make up date for a cohort table
   # this cohort table will have two subjects * three cohorts, with subject 2 not present in cohort id 3
@@ -34,7 +34,7 @@ testthat::test_that("Testing cohort intersect", {
   DatabaseConnector::insertTable(
     connection = connection,
     databaseSchema = cohortDatabaseSchema,
-    tableName = cohortTable,
+    tableName = cohortTableName,
     data = cohort,
     dropTableIfExists = TRUE,
     createTable = TRUE,
@@ -49,10 +49,10 @@ testthat::test_that("Testing cohort intersect", {
   CohortAlgebra::intersectCohorts(
     connectionDetails = connectionDetails,
     sourceCohortDatabaseSchema = cohortDatabaseSchema,
-    sourceCohortTable = cohortTable,
+    sourceCohortTable = cohortTableName,
     cohortIds = c(1, 2, 3),
     targetCohortDatabaseSchema = cohortDatabaseSchema,
-    targetCohortTable = cohortTable,
+    targetCohortTable = cohortTableName,
     newCohortId = 9,
     purgeConflicts = TRUE
   )
@@ -69,7 +69,7 @@ testthat::test_that("Testing cohort intersect", {
         order by cohort_definition_id, subject_id, cohort_start_date;"
       ),
       cohort_database_schema = cohortDatabaseSchema,
-      table_name = cohortTable,
+      table_name = cohortTableName,
       snakeCaseToCamelCase = TRUE
     ) |>
     dplyr::tibble()
@@ -94,7 +94,7 @@ testthat::test_that("Testing cohort intersect", {
     CohortAlgebra::intersectCohorts(
       connectionDetails = connectionDetails,
       sourceCohortDatabaseSchema = cohortDatabaseSchema,
-      sourceCohortTable = cohortTable,
+      sourceCohortTable = cohortTableName,
       cohortIds = c(1, 2, 3),
       newCohortId = 9,
       purgeConflicts = FALSE
@@ -108,9 +108,9 @@ testthat::test_that("Testing cohort intersect", {
       CohortAlgebra::intersectCohorts(
         connectionDetails = connectionDetails,
         sourceCohortDatabaseSchema = cohortDatabaseSchema,
-        sourceCohortTable = cohortTable,
+        sourceCohortTable = cohortTableName,
         targetCohortDatabaseSchema = cohortDatabaseSchema,
-        targetCohortTable = cohortTable,
+        targetCohortTable = cohortTableName,
         cohortIds = c(1, 2, 3),
         newCohortId = 9,
         purgeConflicts = TRUE
@@ -129,7 +129,7 @@ testthat::test_that("Testing cohort intersect", {
       WHERE cohort_definition_id IN (1,2, 3);"
     ),
     cohort_database_schema = cohortDatabaseSchema,
-    table_name = cohortTable,
+    table_name = cohortTableName,
     profile = FALSE,
     progressBar = FALSE,
     reportOverallTime = FALSE,
@@ -187,7 +187,7 @@ testthat::test_that("Testing cohort intersect", {
       DROP TABLE IF EXISTS @cohort_database_schema.@table_name;"
     ),
     cohort_database_schema = cohortDatabaseSchema,
-    table_name = cohortTable,
+    table_name = cohortTableName,
     profile = FALSE,
     progressBar = FALSE,
     reportOverallTime = FALSE,
@@ -201,7 +201,7 @@ testthat::test_that("Testing cohort intersect", {
     connection = DatabaseConnector::connect(connectionDetails = connectionDetails),
     sql = "DROP TABLE IF EXISTS @cohort_database_schema.@table_temp;
            DROP TABLE IF EXISTS @cdm_database_schema.observation_period;",
-    table_temp = cohortTable,
+    table_temp = cohortTableName,
     cohort_database_schema = cohortDatabaseSchema,
     cdm_database_schema = cohortDatabaseSchema,
     progressBar = FALSE,

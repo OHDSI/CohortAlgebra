@@ -6,3 +6,7 @@
 .Rprofile
 errorReportSql.txt
 *.log
+sql/CopyCohorts.sql
+sql/EraFyCohorts.sql
+sql/IntersectCohorts.sql
+sql/MinusCohorts.sql
