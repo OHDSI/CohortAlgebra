@@ -1,5 +1,8 @@
 testthat::test_that("Testing cohort union", {
-  tempCohortTableName <- paste0("#", cohortTableName, "_1")
+  # generate unique name for a cohort table
+  sysTime <- as.numeric(Sys.time()) * 100000
+  tableName <- paste0("cr", sysTime)
+  tempTableName <- paste0("#", tableName, "_1")
 
   # make up date for a cohort table
   cohort <- dplyr::tibble(
@@ -23,7 +26,7 @@ testthat::test_that("Testing cohort union", {
   DatabaseConnector::insertTable(
     connection = connection,
     databaseSchema = cohortDatabaseSchema,
-    tableName = cohortTableName,
+    tableName = tableName,
     data = cohort,
     dropTableIfExists = TRUE,
     createTable = TRUE,
@@ -38,13 +41,13 @@ testthat::test_that("Testing cohort union", {
   unionCohorts(
     connectionDetails = connectionDetails,
     sourceCohortDatabaseSchema = cohortDatabaseSchema,
-    sourceCohortTable = cohortTableName,
+    sourceCohortTable = tableName,
     oldToNewCohortId = dplyr::tibble(
       oldCohortId = c(1, 2, 2),
       newCohortId = c(3, 3, 3)
     ),
     targetCohortDatabaseSchema = cohortDatabaseSchema,
-    targetCohortTable = cohortTableName,
+    targetCohortTable = tableName,
     tempEmulationSchema = tempEmulationSchema,
     purgeConflicts = FALSE
   )
@@ -61,7 +64,7 @@ testthat::test_that("Testing cohort union", {
         order by cohort_definition_id, subject_id, cohort_start_date;"
       ),
       cohort_database_schema = cohortDatabaseSchema,
-      table_name = cohortTableName,
+      table_name = tableName,
       snakeCaseToCamelCase = TRUE
     ) |>
     dplyr::tibble()
@@ -85,13 +88,13 @@ testthat::test_that("Testing cohort union", {
     unionCohorts(
       connectionDetails = connectionDetails,
       sourceCohortDatabaseSchema = cohortDatabaseSchema,
-      sourceCohortTable = cohortTableName,
+      sourceCohortTable = tableName,
       oldToNewCohortId = dplyr::tibble(
         oldCohortId = c(1, 2, 2),
         newCohortId = c(3, 3, 3)
       ),
       targetCohortDatabaseSchema = cohortDatabaseSchema,
-      targetCohortTable = cohortTableName,
+      targetCohortTable = tableName,
       tempEmulationSchema = tempEmulationSchema,
       isTempTable = TRUE
     )
@@ -100,14 +103,14 @@ testthat::test_that("Testing cohort union", {
   unionCohorts(
     connection = connection,
     sourceCohortDatabaseSchema = cohortDatabaseSchema,
-    sourceCohortTable = cohortTableName,
+    sourceCohortTable = tableName,
     oldToNewCohortId = dplyr::tibble(
       oldCohortId = c(1, 2, 2),
       newCohortId = c(3, 3, 3)
     ),
     tempEmulationSchema = tempEmulationSchema,
     targetCohortDatabaseSchema = NULL,
-    targetCohortTable = tempCohortTableName,
+    targetCohortTable = paste0("#", tableName, "2"),
     isTempTable = TRUE
   )
 
@@ -116,7 +119,7 @@ testthat::test_that("Testing cohort union", {
     sql = "DROP TABLE IF EXISTS @cohort_database_schema.@table_temp;
     DROP TABLE IF EXISTS @cohort_database_schema.@table_temp2;
            DROP TABLE IF EXISTS @cdm_database_schema.observation_period;",
-    table_temp = cohortTableName,
+    table_temp = tableName,
     cohort_database_schema = cohortDatabaseSchema,
     cdm_database_schema = cohortDatabaseSchema,
     progressBar = FALSE,
