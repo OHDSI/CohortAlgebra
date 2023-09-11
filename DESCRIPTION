@@ -18,6 +18,7 @@ Depends:
 Imports:
     checkmate,
     dplyr,
+    knitr,
     lifecycle,
     rlang,
     SqlRender
