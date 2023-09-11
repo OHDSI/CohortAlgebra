@@ -1,8 +1,6 @@
 testthat::test_that("Testing cohort era fy", {
   # generate unique name for a cohort table
-  sysTime <- as.numeric(Sys.time()) * 100000
-  tableName <- paste0("cr", sysTime)
-  tempTableName <- paste0("#", tableName, "_1")
+  tempCohortTableName <- paste0("#", cohortTable, "_1")
 
   # make up date for a cohort table
   # this cohort table will have two subjects * two cohorts, within the same cohort
@@ -54,7 +52,7 @@ testthat::test_that("Testing cohort era fy", {
   DatabaseConnector::insertTable(
     connection = connection,
     databaseSchema = cohortDatabaseSchema,
-    tableName = tableName,
+    tableName = cohortTable,
     data = cohort,
     dropTableIfExists = TRUE,
     createTable = TRUE,
@@ -70,8 +68,8 @@ testthat::test_that("Testing cohort era fy", {
     connectionDetails = connectionDetails,
     sourceCohortDatabaseSchema = cohortDatabaseSchema,
     targetCohortDatabaseSchema = cohortDatabaseSchema,
-    sourceCohortTable = tableName,
-    targetCohortTable = tableName,
+    sourceCohortTable = cohortTable,
+    targetCohortTable = cohortTable,
     oldCohortIds = 1,
     newCohortId = 9,
     eraconstructorpad = 0,
@@ -91,7 +89,7 @@ testthat::test_that("Testing cohort era fy", {
         order by cohort_definition_id, subject_id, cohort_start_date;"
       ),
       cohort_database_schema = cohortDatabaseSchema,
-      table_name = tableName,
+      table_name = cohortTable,
       snakeCaseToCamelCase = TRUE
     ) |>
     dplyr::tibble()
@@ -127,9 +125,9 @@ testthat::test_that("Testing cohort era fy", {
     CohortAlgebra:::eraFyCohorts(
       connectionDetails = connectionDetails,
       sourceCohortDatabaseSchema = cohortDatabaseSchema,
-      sourceCohortTable = tableName,
+      sourceCohortTable = cohortTable,
       targetCohortDatabaseSchema = cohortDatabaseSchema,
-      targetCohortTable = tableName,
+      targetCohortTable = cohortTable,
       oldCohortIds = 1,
       newCohortId = 9,
       eraconstructorpad = 0,
@@ -140,9 +138,9 @@ testthat::test_that("Testing cohort era fy", {
   CohortAlgebra:::eraFyCohorts(
     connectionDetails = connectionDetails,
     sourceCohortDatabaseSchema = cohortDatabaseSchema,
-    sourceCohortTable = tableName,
+    sourceCohortTable = cohortTable,
     targetCohortDatabaseSchema = cohortDatabaseSchema,
-    targetCohortTable = tableName,
+    targetCohortTable = cohortTable,
     oldCohortIds = 1,
     newCohortId = 9,
     eraconstructorpad = 0,
@@ -162,19 +160,19 @@ testthat::test_that("Testing cohort era fy", {
       WHERE cohort_definition_id IN (1,2);"
     ),
     cohort_database_schema = cohortDatabaseSchema,
-    table_name = tableName,
+    table_name = cohortTable,
     profile = FALSE,
     progressBar = FALSE,
     reportOverallTime = FALSE,
-    temp_table_name = tempTableName
+    temp_table_name = tempCohortTableName
   )
 
   testthat::expect_error(
     object = # throw error because cdmDatabaseSchema is not provide
       CohortAlgebra:::eraFyCohorts(
         connection = connection,
-        sourceCohortTable = tempTableName,
-        targetCohortTable = tempTableName,
+        sourceCohortTable = tempCohortTableName,
+        targetCohortTable = tempCohortTableName,
         oldCohortId = 1,
         newCohortId = 10,
         eraconstructorpad = 30,
@@ -199,8 +197,8 @@ testthat::test_that("Testing cohort era fy", {
 
   CohortAlgebra:::eraFyCohorts(
     connection = connection,
-    sourceCohortTable = tempTableName,
-    targetCohortTable = tempTableName,
+    sourceCohortTable = tempCohortTableName,
+    targetCohortTable = tempCohortTableName,
     oldCohortIds = 1,
     newCohortId = 10,
     eraconstructorpad = 30,
@@ -217,7 +215,7 @@ testthat::test_that("Testing cohort era fy", {
         where cohort_definition_id = 10
         order by cohort_definition_id, subject_id, cohort_start_date;"
       ),
-      table_name = tempTableName,
+      table_name = tempCohortTableName,
       snakeCaseToCamelCase = TRUE
     ) |>
     dplyr::tibble()
@@ -238,7 +236,7 @@ testthat::test_that("Testing cohort era fy", {
   testthat::expect_error(
     eraFyCohorts(
       connectionDetails = connectionDetails,
-      sourceCohortTable = tempTableName,
+      sourceCohortTable = tempCohortTableName,
       targetCohortTable = targetCohortTable,
       oldCohortIds = 1,
       newCohortId = 10,
@@ -255,11 +253,11 @@ testthat::test_that("Testing cohort era fy", {
       DROP TABLE IF EXISTS @cohort_database_schema.@table_name;"
     ),
     cohort_database_schema = cohortDatabaseSchema,
-    table_name = tableName,
+    table_name = cohortTable,
     profile = FALSE,
     progressBar = FALSE,
     reportOverallTime = FALSE,
-    temp_table_name = tempTableName
+    temp_table_name = tempCohortTableName
   )
 
   DatabaseConnector::disconnect(connection)
@@ -269,7 +267,7 @@ testthat::test_that("Testing cohort era fy", {
     connection = DatabaseConnector::connect(connectionDetails = connectionDetails),
     sql = "DROP TABLE IF EXISTS @cohort_database_schema.@table_temp;
            DROP TABLE IF EXISTS @cdm_database_schema.observation_period;",
-    table_temp = tableName,
+    table_temp = cohortTable,
     cohort_database_schema = cohortDatabaseSchema,
     cdm_database_schema = cohortDatabaseSchema,
     progressBar = FALSE,
