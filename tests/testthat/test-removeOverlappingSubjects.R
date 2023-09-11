@@ -1,4 +1,8 @@
 testthat::test_that("Testing Remove Subjects from cohorts", {
+  # generate unique name for a cohort table
+  sysTime <- as.numeric(Sys.time()) * 100000
+  tableName <- paste0("cr", sysTime)
+  tempTableName <- paste0("#", tableName, "_1")
 
   # make up date for a cohort table
   cohort <- dplyr::tibble(
@@ -24,7 +28,7 @@ testthat::test_that("Testing Remove Subjects from cohorts", {
   DatabaseConnector::insertTable(
     connection = connection,
     databaseSchema = cohortDatabaseSchema,
-    tableName = cohortTableName,
+    tableName = tableName,
     data = cohort,
     dropTableIfExists = TRUE,
     createTable = TRUE,
@@ -43,7 +47,7 @@ testthat::test_that("Testing Remove Subjects from cohorts", {
     newCohortId = 6,
     cohortsWithSubjectsToRemove = c(3),
     purgeConflicts = FALSE,
-    cohortTable = cohortTableName
+    cohortTable = tableName
   )
 
   cohortExpected <- dplyr::tibble(
@@ -62,7 +66,7 @@ testthat::test_that("Testing Remove Subjects from cohorts", {
         order by cohort_definition_id, subject_id, cohort_start_date;"
       ),
       cohort_database_schema = cohortDatabaseSchema,
-      table_name = cohortTableName,
+      table_name = tableName,
       snakeCaseToCamelCase = TRUE
     ) |>
     dplyr::tibble()
@@ -85,7 +89,7 @@ testthat::test_that("Testing Remove Subjects from cohorts", {
     purgeConflicts = FALSE,
     offsetCohortStartDate = 0,
     offsetCohortEndDate = 0,
-    cohortTable = cohortTableName
+    cohortTable = tableName
   )
 
   cohortExpected <- cohort |>
@@ -100,7 +104,7 @@ testthat::test_that("Testing Remove Subjects from cohorts", {
         order by cohort_definition_id, subject_id, cohort_start_date;"
       ),
       cohort_database_schema = cohortDatabaseSchema,
-      table_name = cohortTableName,
+      table_name = tableName,
       snakeCaseToCamelCase = TRUE
     ) |>
     dplyr::tibble()
@@ -128,7 +132,7 @@ testthat::test_that("Testing Remove Subjects from cohorts", {
       newCohortId = 1,
       cohortsWithSubjectsToRemove = c(3),
       purgeConflicts = FALSE,
-      cohortTable = cohortTableName
+      cohortTable = tableName
     )
   )
 
@@ -139,7 +143,7 @@ testthat::test_that("Testing Remove Subjects from cohorts", {
     newCohortId = 1,
     cohortsWithSubjectsToRemove = c(3),
     purgeConflicts = TRUE,
-    cohortTable = cohortTableName
+    cohortTable = tableName
   )
 
   cohortExpected <- dplyr::tibble(
@@ -158,7 +162,7 @@ testthat::test_that("Testing Remove Subjects from cohorts", {
         order by cohort_definition_id, subject_id, cohort_start_date;"
       ),
       cohort_database_schema = cohortDatabaseSchema,
-      table_name = cohortTableName,
+      table_name = tableName,
       snakeCaseToCamelCase = TRUE
     ) |>
     dplyr::tibble()
@@ -181,7 +185,7 @@ testthat::test_that("Testing Remove Subjects from cohorts", {
     newCohortId = 7,
     cohortsWithSubjectsToRemove = c(3),
     purgeConflicts = TRUE,
-    cohortTable = cohortTableName
+    cohortTable = tableName
   )
 
   cohortExpected <- cohort |>
@@ -194,7 +198,7 @@ testthat::test_that("Testing Remove Subjects from cohorts", {
              WHERE cohort_definition_id = 7
              order by cohort_definition_id, subject_id, cohort_start_date;",
       cohort_database_schema = cohortDatabaseSchema,
-      table_name = cohortTableName,
+      table_name = tableName,
       snakeCaseToCamelCase = TRUE
     ) |>
     dplyr::tibble()
@@ -209,7 +213,7 @@ testthat::test_that("Testing Remove Subjects from cohorts", {
   DatabaseConnector::renderTranslateExecuteSql(
     connection = DatabaseConnector::connect(connectionDetails = connectionDetails),
     sql = "DROP TABLE IF EXISTS @cohort_database_schema.@table_temp;",
-    table_temp = cohortTableName,
+    table_temp = tableName,
     cohort_database_schema = cohortDatabaseSchema
   )
 })
