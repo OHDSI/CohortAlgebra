@@ -44,8 +44,7 @@
 #'
 #' @template TempEmulationSchema
 #'
-#' @return
-#' NULL
+#' @return   Nothing is returned
 #'
 #' @examples
 #' \dontrun{

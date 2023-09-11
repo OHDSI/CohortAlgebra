@@ -56,6 +56,9 @@ with transformed. By default - it will not be replaced, and an error message is 
 temp tables. To emulate temp tables, provide a schema with write
 privileges where temp tables can be created.}
 }
+\value{
+Nothing is returned
+}
 \description{
 Given two cohorts, substract (minus) the dates from the first cohort, the
 dates the subject also had on the second cohort.

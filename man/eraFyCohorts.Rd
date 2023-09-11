@@ -66,6 +66,9 @@ an active connection. Any old temp table is dropped and replaced.}
 temp tables. To emulate temp tables, provide a schema with write
 privileges where temp tables can be created.}
 }
+\value{
+Nothing is returned
+}
 \description{
 Given a table with cohort_definition_id, subject_id, cohort_start_date,
 cohort_end_date execute era logic. This will delete and replace the

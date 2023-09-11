@@ -62,6 +62,9 @@ with transformed. By default - it will not be replaced, and an error message is 
 temp tables. To emulate temp tables, provide a schema with write
 privileges where temp tables can be created.}
 }
+\value{
+Nothing is returned
+}
 \description{
 Remove subjects in cohort that overlap with another cohort. Given a Cohort A, check if the records of
 subjects in cohort A overlaps with records for the same subject in cohort B. If there is overlap

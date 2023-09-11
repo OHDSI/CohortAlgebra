@@ -34,8 +34,7 @@
 #'
 #' @template TempEmulationSchema
 #'
-#' @return
-#' NULL
+#' @returns   Nothing is returned
 #'
 deleteCohort <- function(connectionDetails = NULL,
                          connection = NULL,

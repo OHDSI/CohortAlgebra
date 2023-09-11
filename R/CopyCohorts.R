@@ -43,8 +43,7 @@
 #'
 #' @param targetCohortTable         The name of the target cohort table.
 #'
-#' @return
-#' NULL
+#' @returns   Nothing is returned
 #'
 #' @examples
 #' \dontrun{

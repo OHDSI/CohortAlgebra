@@ -37,6 +37,9 @@ privileges where temp tables can be created.}
 
 \item{cohortIds}{A vector of one or more Cohort Ids.}
 }
+\value{
+Nothing is returned
+}
 \description{
 Delete all records for a given set of cohorts from the cohort table. Edit privileges
 to the cohort table is required.
