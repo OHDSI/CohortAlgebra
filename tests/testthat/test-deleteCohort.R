@@ -1,9 +1,4 @@
 testthat::test_that("Testing cohort delete", {
-  # generate unique name for a cohort table
-  sysTime <- as.numeric(Sys.time()) * 100000
-  tableName <- paste0("cr", sysTime)
-  tempTableName <- paste0("#", tableName, "_1")
-
   # make up date for a cohort table
   # this cohort table will have two subjects * two cohorts, within the same cohort
   cohort <- dplyr::tibble(
@@ -36,7 +31,7 @@ testthat::test_that("Testing cohort delete", {
   DatabaseConnector::insertTable(
     connection = connection,
     databaseSchema = cohortDatabaseSchema,
-    tableName = tableName,
+    tableName = cohortTableName,
     data = cohort,
     dropTableIfExists = TRUE,
     createTable = TRUE,
@@ -53,7 +48,7 @@ testthat::test_that("Testing cohort delete", {
         order by cohort_definition_id, subject_id, cohort_start_date;"
       ),
       cohort_database_schema = cohortDatabaseSchema,
-      table_name = tableName,
+      table_name = cohortTableName,
       snakeCaseToCamelCase = TRUE
     ) |>
     dplyr::tibble()
@@ -65,7 +60,7 @@ testthat::test_that("Testing cohort delete", {
   CohortAlgebra:::deleteCohort(
     connection = connection,
     cohortDatabaseSchema = cohortDatabaseSchema,
-    cohortTable = tableName,
+    cohortTable = cohortTableName,
     cohortIds = 2
   )
   dataInsertedDeleteCohortId2 <-
@@ -77,7 +72,7 @@ testthat::test_that("Testing cohort delete", {
         order by cohort_definition_id, subject_id, cohort_start_date;"
       ),
       cohort_database_schema = cohortDatabaseSchema,
-      table_name = tableName,
+      table_name = cohortTableName,
       snakeCaseToCamelCase = TRUE
     ) |>
     dplyr::tibble()
@@ -93,7 +88,7 @@ testthat::test_that("Testing cohort delete", {
   CohortAlgebra:::deleteCohort(
     connectionDetails = connectionDetails,
     cohortDatabaseSchema = cohortDatabaseSchema,
-    cohortTable = tableName,
+    cohortTable = cohortTableName,
     cohortIds = 1
   )
 
@@ -106,7 +101,7 @@ testthat::test_that("Testing cohort delete", {
         order by cohort_definition_id, subject_id, cohort_start_date;"
       ),
       cohort_database_schema = cohortDatabaseSchema,
-      table_name = tableName,
+      table_name = cohortTableName,
       snakeCaseToCamelCase = TRUE
     ) |>
     dplyr::tibble()
@@ -120,7 +115,7 @@ testthat::test_that("Testing cohort delete", {
     connection = DatabaseConnector::connect(connectionDetails = connectionDetails),
     sql = "DROP TABLE IF EXISTS @cohort_database_schema.@table_temp;
            DROP TABLE IF EXISTS @cdm_database_schema.observation_period;",
-    table_temp = tableName,
+    table_temp = cohortTableName,
     cohort_database_schema = cohortDatabaseSchema,
     cdm_database_schema = cohortDatabaseSchema
   )
@@ -129,7 +124,7 @@ testthat::test_that("Testing cohort delete", {
     connection = DatabaseConnector::connect(connectionDetails = connectionDetails),
     sql = "DROP TABLE IF EXISTS @cohort_database_schema.@table_temp;
            DROP TABLE IF EXISTS @cdm_database_schema.observation_period;",
-    table_temp = tableName,
+    table_temp = cohortTableName,
     cohort_database_schema = cohortDatabaseSchema,
     cdm_database_schema = cohortDatabaseSchema
   )
