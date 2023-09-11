@@ -19,6 +19,10 @@ styler::style_pkg()
 OhdsiRTools::checkUsagePackage("CohortAlgebra")
 OhdsiRTools::updateCopyrightYearFolder()
 
+# Devtools check -----------------------------------------------------------
+devtools::spell_check()
+devtools::check()
+
 # Create manual -----------------------------------------------------------
 unlink("extras/CohortAlgebra.pdf")
 shell("R CMD Rd2pdf ./ --output=extras/CohortAlgebra.pdf")
@@ -33,4 +37,13 @@ rmarkdown::render("vignettes/HowToUseCohortAlgebraRPackage.Rmd",
 # Build site---------------------------------------------------------
 pkgdown::build_site()
 OhdsiRTools::fixHadesLogo()
+
+
+
+# Release package to CRAN ------------------------------------------------------
+devtools::check_win_devel()
+devtools::check_rhub()
+devtools::release()
+devtools::check(cran=TRUE)
+
 

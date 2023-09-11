@@ -1,17 +1,20 @@
 Package: CohortAlgebra
 Type: Package
-Title: Cohort Algebra to create new cohort(s) from existing cohorts
-Version: 0.0.2
-Date: 2023-06-01
+Title: Use of Interval Algebra to Create New Cohort(s) from Existing Cohorts
+Version: 0.0.3
+Date: 2023-09-10
 Authors@R: c(
     person("Gowtham", "Rao", email = "rao@ohdsi.org", role = c("aut", "cre")),
     person("Observational Health Data Science and Informatics", role = c("cph"))
   )
 Maintainer: Gowtham Rao <rao@ohdsi.org>
-Description: An R package that creates new cohort(s) from previously instantiated cohorts.
+Description: This software tool is designed to generate new cohorts utilizing data from 
+    previously instantiated cohorts. It employs interval algebra operators such as UNION, 
+    INTERSECT, and MINUS to manipulate the data within the instantiated cohorts and 
+    create new cohorts.
 Depends:
 	DatabaseConnector (>= 5.0.0),
-	R (>= 4.1.0)
+	R (>= 4.0.0)
 Imports:
     checkmate,
     dplyr,
@@ -27,8 +30,7 @@ Suggests:
 	testthat,
 	withr
 Remotes:
-  ohdsi/Eunomia,
-  ohdsi/ParallelLogger
+  ohdsi/Eunomia
 License: Apache License
 RoxygenNote: 7.2.3
 VignetteBuilder: knitr

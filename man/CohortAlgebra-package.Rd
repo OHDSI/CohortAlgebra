@@ -4,11 +4,11 @@
 \name{CohortAlgebra-package}
 \alias{CohortAlgebra}
 \alias{CohortAlgebra-package}
-\title{CohortAlgebra: Cohort Algebra to create new cohort(s) from existing cohorts}
+\title{CohortAlgebra: Use of Interval Algebra to Create New Cohort(s) from Existing Cohorts}
 \description{
-An R package that creates new cohort(s) from previously instantiated cohorts.
+This software tool is designed to generate new cohorts utilizing data from previously instantiated cohorts. It employs interval algebra operators such as UNION, INTERSECT, and MINUS to manipulate the data within the instantiated cohorts and create new cohorts.
 
-An R package that creates new cohort(s) from previously instantiated cohorts.
+This software tool is designed to generate new cohorts utilizing data from previously instantiated cohorts. It employs interval algebra operators such as UNION, INTERSECT, and MINUS to manipulate the data within the instantiated cohorts and create new cohorts.
 }
 \seealso{
 Useful links:
