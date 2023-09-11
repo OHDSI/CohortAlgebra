@@ -157,7 +157,7 @@ with transformed. By default - it will not be replaced, and an error message is 
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span><span class="fu">unionCohorts</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  connectionDetails <span class="op">=</span> <span class="fu">Eunomia</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Eunomia/man/getEunomiaConnectionDetails.html" class="external-link">getEunomiaConnectionDetails</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>,</span></span>
 <span class="r-in"><span>  sourceDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,</span></span>
 <span class="r-in"><span>  sourceCohortTable <span class="op">=</span> <span class="st">"cohort"</span>,</span></span>
 <span class="r-in"><span>  oldToNewCohortId <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span>oldCohortId <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>, newCohortId <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>,</span></span>
