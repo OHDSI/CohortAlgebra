@@ -23,6 +23,7 @@ Imports:
   SqlRender
 Suggests:
   knitr,
+  rmarkdown,
 	testthat,
 	withr
 License: Apache License
