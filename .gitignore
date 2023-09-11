@@ -10,3 +10,8 @@ sql/CopyCohorts.sql
 sql/EraFyCohorts.sql
 sql/IntersectCohorts.sql
 sql/MinusCohorts.sql
+7576testEunomia.sqlite
+sql/sql_server/CopyCohorts.sql
+sql/sql_server/IntersectCohorts.sql
+sql/sql_server/MinusCohorts.sql
+sql/sql_server/EraFyCohorts.sql
