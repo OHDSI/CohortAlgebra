@@ -66,7 +66,7 @@ be in the final cohort.
 \examples{
 \dontrun{
 intersectCohorts(
-  connectionDetails = Eunomia::getEunomiaConnectionDetails(),
+  connectionDetails = connectionDetails,
   sourceCohortDatabaseSchema = "main",
   sourceCohortTable = "cohort",
   cohortIds = c(1, 2, 3),

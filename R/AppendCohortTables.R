@@ -45,7 +45,7 @@
 #' )
 #'
 #' appendCohortTables(
-#'   connectionDetails = Eunomia::getEunomiaConnectionDetails(),
+#'   connectionDetails = connectionDetails,
 #'   sourceTables = sourceTables,
 #'   targetCohortDatabaseSchema = "main",
 #'   targetCohortTable = "target"

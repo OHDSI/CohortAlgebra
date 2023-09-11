@@ -19,18 +19,11 @@ Imports:
     checkmate,
     dplyr,
     lifecycle,
-    ParallelLogger,
     rlang,
     SqlRender
 Suggests:
-  Eunomia,
-  remotes,
-  rmarkdown,
-  knitr,
 	testthat,
 	withr
-Remotes:
-  ohdsi/Eunomia
 License: Apache License
 RoxygenNote: 7.2.3
 VignetteBuilder: knitr

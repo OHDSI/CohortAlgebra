@@ -68,7 +68,7 @@ dates the subject also had on the second cohort.
 \examples{
 \dontrun{
 minusCohorts(
-  connectionDetails = Eunomia::getEunomiaConnectionDetails(),
+  connectionDetails = connectionDetails,
   sourceCohortDatabaseSchema = "main",
   sourceCohortTable = "cohort",
   firstCohortId = 1,

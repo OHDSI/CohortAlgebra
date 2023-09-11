@@ -50,7 +50,7 @@
 #' @examples
 #' \dontrun{
 #' minusCohorts(
-#'   connectionDetails = Eunomia::getEunomiaConnectionDetails(),
+#'   connectionDetails = connectionDetails,
 #'   sourceCohortDatabaseSchema = "main",
 #'   sourceCohortTable = "cohort",
 #'   firstCohortId = 1,
@@ -187,7 +187,7 @@ minusCohorts <- function(connectionDetails = NULL,
     target_cohort_table = tempTable2
   )
 
-  ParallelLogger::logInfo("Performing minus operation.")
+  message("Performing minus operation.")
   intersectCohorts(
     connection = connection,
     sourceCohortDatabaseSchema = sourceCohortDatabaseSchema,

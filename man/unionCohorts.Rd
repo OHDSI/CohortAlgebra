@@ -70,7 +70,7 @@ cohort union operator to create new cohorts.
 \examples{
 \dontrun{
 unionCohorts(
-  connectionDetails = Eunomia::getEunomiaConnectionDetails(),
+  connectionDetails = connectionDetails,
   sourceDatabaseSchema = "main",
   sourceCohortTable = "cohort",
   oldToNewCohortId = dplyr::tibble(oldCohortId = c(1, 2), newCohortId = 4),
