@@ -1,7 +1,6 @@
 testthat::test_that("Testing cohort intersect", {
-  
   testthat::skip_if(condition = skipCdmTests)
-  
+
   tempCohortTableName <- paste0("#", cohortTableName, "_1")
 
   # make up date for a cohort table
