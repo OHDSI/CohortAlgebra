@@ -1,6 +1,6 @@
 Package: CohortAlgebra
 Type: Package
-Title: Use of interval Algebra to create new cohort(s) from existing cohorts
+Title: Use of Interval Algebra to Create New Cohort(s) from Existing Cohorts
 Version: 0.0.3
 Date: 2023-09-10
 Authors@R: c(
@@ -29,6 +29,8 @@ Suggests:
   knitr,
 	testthat,
 	withr
+Remotes:
+  ohdsi/Eunomia
 License: Apache License
 RoxygenNote: 7.2.3
 VignetteBuilder: knitr
