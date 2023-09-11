@@ -1,9 +1,8 @@
 testthat::test_that("Testing cohort union", {
   # generate unique name for a cohort table
-  sysTime <- as.numeric(Sys.time()) * 100000
-  tableName <- paste0("cr", sysTime)
-  tableName1 <- paste0(tableName, 1)
-  tableName2 <- paste0(tableName, 2)
+  cohortTableName1 <- paste0(cohortTableName, 1)
+  cohortTableName2 <- paste0(cohortTableName, 2)
+  tempCohortTableName1 <- paste0("#", cohortTableName, "_1")
 
   # make up date for a cohort table
   cohort <- dplyr::tibble(
@@ -34,7 +33,7 @@ testthat::test_that("Testing cohort union", {
   DatabaseConnector::insertTable(
     connection = connection,
     databaseSchema = cohortDatabaseSchema,
-    tableName = tableName1,
+    tableName = cohortTableName1,
     data = cohort,
     dropTableIfExists = TRUE,
     createTable = TRUE,
@@ -46,7 +45,7 @@ testthat::test_that("Testing cohort union", {
   DatabaseConnector::insertTable(
     connection = connection,
     databaseSchema = cohortDatabaseSchema,
-    tableName = tableName2,
+    tableName = cohortTableName2,
     data = cohort,
     dropTableIfExists = TRUE,
     createTable = TRUE,
@@ -63,8 +62,8 @@ testthat::test_that("Testing cohort union", {
     ),
     sourceCohortDatabaseSchema = cohortDatabaseSchema,
     targetCohortDatabaseSchema = cohortDatabaseSchema,
-    sourceCohortTable = tableName1,
-    targetCohortTable = tableName2,
+    sourceCohortTable = cohortTableName1,
+    targetCohortTable = cohortTableName2,
     purgeConflicts = TRUE,
     tempEmulationSchema = tempEmulationSchema
   )
@@ -74,7 +73,7 @@ testthat::test_that("Testing cohort union", {
     sql = "SELECT * FROM @cohort_database_schema.@cohort
             ORDER BY cohort_definition_id, subject_id, cohort_start_date, cohort_end_date;",
     cohort_database_schema = cohortDatabaseSchema,
-    cohort = tableName2,
+    cohort = cohortTableName2,
     snakeCaseToCamelCase = TRUE,
     tempEmulationSchema = tempEmulationSchema
   ) |>
@@ -99,8 +98,8 @@ testthat::test_that("Testing cohort union", {
       ),
       sourceCohortDatabaseSchema = cohortDatabaseSchema,
       targetCohortDatabaseSchema = cohortDatabaseSchema,
-      sourceCohortTable = tableName1,
-      targetCohortTable = tableName2,
+      sourceCohortTable = cohortTableName1,
+      targetCohortTable = cohortTableName2,
       purgeConflicts = FALSE,
       tempEmulationSchema = tempEmulationSchema
     )
@@ -114,8 +113,8 @@ testthat::test_that("Testing cohort union", {
     ),
     sourceCohortDatabaseSchema = cohortDatabaseSchema,
     targetCohortDatabaseSchema = cohortDatabaseSchema,
-    sourceCohortTable = tableName1,
-    targetCohortTable = tableName2,
+    sourceCohortTable = cohortTableName1,
+    targetCohortTable = cohortTableName2,
     purgeConflicts = FALSE,
     tempEmulationSchema = tempEmulationSchema
   )
@@ -128,8 +127,8 @@ testthat::test_that("Testing cohort union", {
     ),
     sourceCohortDatabaseSchema = cohortDatabaseSchema,
     targetCohortDatabaseSchema = cohortDatabaseSchema,
-    sourceCohortTable = tableName1,
-    targetCohortTable = tableName2,
+    sourceCohortTable = cohortTableName1,
+    targetCohortTable = cohortTableName2,
     purgeConflicts = TRUE,
     tempEmulationSchema = tempEmulationSchema
   )
@@ -143,8 +142,8 @@ testthat::test_that("Testing cohort union", {
       ),
       sourceCohortDatabaseSchema = cohortDatabaseSchema,
       targetCohortDatabaseSchema = NULL,
-      sourceCohortTable = tableName1,
-      targetCohortTable = tableName1,
+      sourceCohortTable = cohortTableName1,
+      targetCohortTable = cohortTableName1,
       isTempTable = TRUE,
       purgeConflicts = FALSE,
       tempEmulationSchema = tempEmulationSchema
@@ -159,8 +158,8 @@ testthat::test_that("Testing cohort union", {
     ),
     sourceCohortDatabaseSchema = cohortDatabaseSchema,
     targetCohortDatabaseSchema = NULL,
-    sourceCohortTable = tableName1,
-    targetCohortTable = paste0("#", tableName1),
+    sourceCohortTable = cohortTableName1,
+    targetCohortTable = tempCohortTableName1,
     isTempTable = TRUE,
     purgeConflicts = FALSE,
     tempEmulationSchema = tempEmulationSchema
@@ -176,8 +175,8 @@ testthat::test_that("Testing cohort union", {
     ),
     sourceCohortDatabaseSchema = cohortDatabaseSchema,
     targetCohortDatabaseSchema = cohortDatabaseSchema,
-    sourceCohortTable = tableName1,
-    targetCohortTable = tableName2,
+    sourceCohortTable = cohortTableName1,
+    targetCohortTable = cohortTableName2,
     purgeConflicts = FALSE,
     tempEmulationSchema = tempEmulationSchema
   )
@@ -191,8 +190,8 @@ testthat::test_that("Testing cohort union", {
       ),
       sourceCohortDatabaseSchema = cohortDatabaseSchema,
       targetCohortDatabaseSchema = cohortDatabaseSchema,
-      sourceCohortTable = tableName1,
-      targetCohortTable = tableName2,
+      sourceCohortTable = cohortTableName1,
+      targetCohortTable = cohortTableName2,
       purgeConflicts = FALSE,
       tempEmulationSchema = tempEmulationSchema
     )
@@ -207,8 +206,8 @@ testthat::test_that("Testing cohort union", {
       ),
       sourceCohortDatabaseSchema = cohortDatabaseSchema,
       targetCohortDatabaseSchema = cohortDatabaseSchema,
-      sourceCohortTable = tableName1,
-      targetCohortTable = tableName2,
+      sourceCohortTable = cohortTableName1,
+      targetCohortTable = cohortTableName2,
       purgeConflicts = FALSE,
       tempEmulationSchema = tempEmulationSchema
     )
@@ -223,8 +222,8 @@ testthat::test_that("Testing cohort union", {
       ),
       sourceCohortDatabaseSchema = cohortDatabaseSchema,
       targetCohortDatabaseSchema = cohortDatabaseSchema,
-      sourceCohortTable = tableName1,
-      targetCohortTable = tableName2,
+      sourceCohortTable = cohortTableName1,
+      targetCohortTable = cohortTableName2,
       purgeConflicts = FALSE,
       tempEmulationSchema = tempEmulationSchema
     )
@@ -239,10 +238,29 @@ testthat::test_that("Testing cohort union", {
       ),
       sourceCohortDatabaseSchema = cohortDatabaseSchema,
       targetCohortDatabaseSchema = cohortDatabaseSchema,
-      sourceCohortTable = tableName1,
-      targetCohortTable = tableName1,
+      sourceCohortTable = cohortTableName1,
+      targetCohortTable = cohortTableName1,
       purgeConflicts = FALSE,
       tempEmulationSchema = tempEmulationSchema
     )
   )
+  
+  sqlCleanUp <- "
+  DROP TABLE IF EXISTS @cohort_database_schema.@table_name1;
+  DROP TABLE IF EXISTS @cohort_database_schema.@table_name2;
+  DROP TABLE IF EXISTS @temp_table_1;"
+  
+  DatabaseConnector::renderTranslateExecuteSql(
+    connection = DatabaseConnector::connect(connectionDetails = connectionDetails),
+    sql = sqlCleanUp,
+    profile = FALSE,
+    progressBar = FALSE,
+    reportOverallTime = FALSE,
+    tempEmulationSchema = tempEmulationSchema,
+    table_name1 = cohortTableName1,
+    table_name2 = cohortTableName2,
+    temp_table_1 = tempCohortTableName1,
+    cohort_database_schema = cohortDatabaseSchema,
+  )
+  
 })
