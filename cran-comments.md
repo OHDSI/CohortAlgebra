@@ -1,3 +1,4 @@
+Replaced \dontrun with \donttest in function examples. 
 This is new release.
 
 ---

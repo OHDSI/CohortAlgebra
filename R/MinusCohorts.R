@@ -48,7 +48,7 @@
 #'
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' minusCohorts(
 #'   connectionDetails = connectionDetails,
 #'   sourceCohortDatabaseSchema = "main",

@@ -60,7 +60,7 @@
 #'
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' removeOverlappingSubjects(
 #'   connection = connection,
 #'   cohortDatabaseSchema = cohortDatabaseSchema,

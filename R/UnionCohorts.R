@@ -45,7 +45,7 @@
 #' @return   Nothing is returned
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' unionCohorts(
 #'   connectionDetails = connectionDetails,
 #'   sourceDatabaseSchema = "main",

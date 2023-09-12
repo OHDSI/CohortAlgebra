@@ -68,7 +68,7 @@ cohort union operator to create new cohorts.
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}
 }
 \examples{
-\dontrun{
+\donttest{
 unionCohorts(
   connectionDetails = connectionDetails,
   sourceDatabaseSchema = "main",

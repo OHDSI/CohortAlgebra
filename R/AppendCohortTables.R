@@ -38,7 +38,7 @@
 #' @return   Nothing is returned
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' sourceTables <- dplyr::tibble(
 #'   sourceCohortDatabaseSchema = "main",
 #'   sourceCohortTableName = "cohort"

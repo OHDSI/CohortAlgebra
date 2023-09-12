@@ -46,7 +46,7 @@
 #' @returns   Nothing is returned
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' CohortAlgebra::copyCohorts(
 #'   connection = connection,
 #'   sourceCohortDatabaseSchema = cohortDatabaseSchema,

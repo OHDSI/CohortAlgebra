@@ -47,7 +47,7 @@
 #' @return   Nothing is returned
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' intersectCohorts(
 #'   connectionDetails = connectionDetails,
 #'   sourceCohortDatabaseSchema = "main",

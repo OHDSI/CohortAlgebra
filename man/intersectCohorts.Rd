@@ -64,7 +64,7 @@ be in the final cohort.
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}
 }
 \examples{
-\dontrun{
+\donttest{
 intersectCohorts(
   connectionDetails = connectionDetails,
   sourceCohortDatabaseSchema = "main",

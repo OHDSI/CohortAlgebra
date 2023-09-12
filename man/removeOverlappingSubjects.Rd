@@ -78,7 +78,7 @@ and thus deleted.
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 }
 \examples{
-\dontrun{
+\donttest{
 removeOverlappingSubjects(
   connection = connection,
   cohortDatabaseSchema = cohortDatabaseSchema,
