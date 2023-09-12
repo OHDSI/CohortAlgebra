@@ -45,18 +45,6 @@
 #'
 #' @returns   Nothing is returned
 #'
-#' @examples
-#' \donttest{
-#' CohortAlgebra::copyCohorts(
-#'   connection = connection,
-#'   sourceCohortDatabaseSchema = cohortDatabaseSchema,
-#'   targetCohortDatabaseSchema = cohortDatabaseSchema,
-#'   sourceCohortTable = tableName,
-#'   targetCohortTable = tableName,
-#'   purgeConflicts = TRUE
-#' )
-#' }
-#'
 #' @export
 #'
 #'

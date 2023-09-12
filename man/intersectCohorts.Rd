@@ -63,15 +63,3 @@ be in the final cohort.
 
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}
 }
-\examples{
-\donttest{
-intersectCohorts(
-  connectionDetails = connectionDetails,
-  sourceCohortDatabaseSchema = "main",
-  sourceCohortTable = "cohort",
-  cohortIds = c(1, 2, 3),
-  newCohortId = 9,
-  purgeConflicts = TRUE
-)
-}
-}

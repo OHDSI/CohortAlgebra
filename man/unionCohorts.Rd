@@ -67,15 +67,3 @@ cohort union operator to create new cohorts.
 
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}
 }
-\examples{
-\donttest{
-unionCohorts(
-  connectionDetails = connectionDetails,
-  sourceDatabaseSchema = "main",
-  sourceCohortTable = "cohort",
-  oldToNewCohortId = dplyr::tibble(oldCohortId = c(1, 2), newCohortId = 4),
-  purgeConflicts = TRUE
-)
-}
-
-}

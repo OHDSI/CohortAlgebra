@@ -58,20 +58,6 @@
 #'
 #' @return   Nothing is returned
 #'
-#'
-#' @examples
-#' \donttest{
-#' removeOverlappingSubjects(
-#'   connection = connection,
-#'   cohortDatabaseSchema = cohortDatabaseSchema,
-#'   cohortId = 1,
-#'   newCohortId = 9,
-#'   cohortsWithSubjectsToRemove = c(3),
-#'   purgeConflicts = FALSE,
-#'   cohortTable = tableName
-#' )
-#' }
-#'
 #' @export
 removeOverlappingSubjects <- function(connectionDetails = NULL,
                                       connection = NULL,
