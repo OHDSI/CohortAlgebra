@@ -12,3 +12,8 @@ readme.md
 ^deploy.sh
 ^docs
 ^CRAN-SUBMISSION$
+src/.gitignore
+man-roxygen
+^cran-comments\.md$
+^CRAN-RELEASE$
+^\.github$
