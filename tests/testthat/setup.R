@@ -13,7 +13,7 @@ message("************* Testing on ", dbms, " *************")
 if (dir.exists(Sys.getenv("DATABASECONNECTOR_JAR_FOLDER"))) {
   jdbcDriverFolder <- Sys.getenv("DATABASECONNECTOR_JAR_FOLDER")
 } else {
-  jdbcDriverFolder <- "~/.jdbcDrivers"
+  jdbcDriverFolder <- file.path(tempfile(), "jdbcDrivers")
   dir.create(jdbcDriverFolder, showWarnings = FALSE)
   DatabaseConnector::downloadJdbcDrivers("postgresql", pathToDriver = jdbcDriverFolder)
 
