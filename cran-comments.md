@@ -1,4 +1,6 @@
-Replaced \dontrun with \donttest in function examples. 
+Replaced \dontrun with \donttest in function examples.
+Removed reference user's home filespace and replace to tempdir(). in tests/testthat/setup.R
+
 This is new release.
 
 ---
