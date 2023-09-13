@@ -37,20 +37,6 @@
 #'
 #' @return   Nothing is returned
 #'
-#' @examples
-#' \dontrun{
-#' sourceTables <- dplyr::tibble(
-#'   sourceCohortDatabaseSchema = "main",
-#'   sourceCohortTableName = "cohort"
-#' )
-#'
-#' appendCohortTables(
-#'   connectionDetails = connectionDetails,
-#'   sourceTables = sourceTables,
-#'   targetCohortDatabaseSchema = "main",
-#'   targetCohortTable = "target"
-#' )
-#' }
 #'
 #' @export
 appendCohortTables <- function(connectionDetails = NULL,

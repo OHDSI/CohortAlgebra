@@ -1,15 +1,13 @@
 CohortAlgebra
 ================
 
-
 [![Build Status](https://github.com/OHDSI/CohortAlgebra/workflows/R-CMD-check/badge.svg)](https://github.com/OHDSI/CohortAlgebra/actions?query=workflow%3AR-CMD-check)
-[![codecov.io](https://codecov.io/github/OHDSI/CohortAlgebra/coverage.svg?branch=main)](https://codecov.io/github/OHDSI/CohortAlgebra?branch=main)
+[![codecov.io](https://codecov.io/github/OHDSI/CohortAlgebra/coverage.svg?branch=main)](https://app.codecov.io/github/OHDSI/CohortAlgebra?branch=main)
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/CohortAlgebra)](https://cran.r-project.org/package=CohortAlgebra)
+[![CRAN_Status_Badge](http://cranlogs.r-pkg.org/badges/CohortAlgebra)](https://cran.r-project.org/package=CohortAlgebra)
 
 Introduction
 ============
-
-THIS PACKAGE IS UNDER ACTIVE DEVELOPMENT. IT IS NOT PART OF HADES.
-
 
 CohortAlgebra is a R package that allows you to create new cohorts from previously instantiated cohorts in a cohort table. New cohorts may be created by performing the union, intersect or minus of one or more cohorts. 
 

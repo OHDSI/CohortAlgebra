@@ -44,17 +44,6 @@
 #'
 #' @return   Nothing is returned
 #'
-#' @examples
-#' \dontrun{
-#' unionCohorts(
-#'   connectionDetails = connectionDetails,
-#'   sourceDatabaseSchema = "main",
-#'   sourceCohortTable = "cohort",
-#'   oldToNewCohortId = dplyr::tibble(oldCohortId = c(1, 2), newCohortId = 4),
-#'   purgeConflicts = TRUE
-#' )
-#' }
-#'
 #' @export
 unionCohorts <- function(connectionDetails = NULL,
                          connection = NULL,

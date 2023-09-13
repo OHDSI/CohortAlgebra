@@ -46,17 +46,6 @@
 #'
 #' @return   Nothing is returned
 #'
-#' @examples
-#' \dontrun{
-#' intersectCohorts(
-#'   connectionDetails = connectionDetails,
-#'   sourceCohortDatabaseSchema = "main",
-#'   sourceCohortTable = "cohort",
-#'   cohortIds = c(1, 2, 3),
-#'   newCohortId = 9,
-#'   purgeConflicts = TRUE
-#' )
-#' }
 #' @export
 intersectCohorts <- function(connectionDetails = NULL,
                              connection = NULL,

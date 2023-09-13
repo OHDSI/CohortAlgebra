@@ -65,17 +65,3 @@ dates the subject also had on the second cohort.
 
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}
 }
-\examples{
-\dontrun{
-minusCohorts(
-  connectionDetails = connectionDetails,
-  sourceCohortDatabaseSchema = "main",
-  sourceCohortTable = "cohort",
-  firstCohortId = 1,
-  secondCohortId = 2,
-  newCohortId = 9,
-  purgeConflicts = TRUE
-)
-}
-
-}

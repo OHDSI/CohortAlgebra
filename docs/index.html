@@ -92,7 +92,6 @@
 <div class="section level1">
 <h1 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h1>
-<p>THIS PACKAGE IS UNDER ACTIVE DEVELOPMENT. IT IS NOT PART OF HADES.</p>
 <p>CohortAlgebra is a R package that allows you to create new cohorts from previously instantiated cohorts in a cohort table. New cohorts may be created by performing the union, intersect or minus of one or more cohorts.</p>
 <p>Cohort Union: Takes two or more cohorts and creates a new cohort that has all the dates a subject was present in any of the given cohorts. Cohort Intersect: Takes two or more cohorts and creates a new cohort that only has the dates a subject was present in all the given cohorts. If a person was not present in any of the given cohort, then that subject is not in the final cohort. Cohort Minus: Take only two cohorts (different from Cohort union and intersect). Creates a new cohort that has the dates a subject was present in the first cohort and not the second cohort. Note: the sequence of cohorts is important for Cohort Minus. If person is not in the second cohort, then all the dates the person was present in the first cohort is part of the final cohort.</p>
 <p>Other capabilities include modify cohorts which allows to censor or filter an instantiated cohort, or pad an instantiated cohort additional dates. You can also remove persons from one set of cohorts, any subject present in another set of cohorts.</p>
