@@ -107,18 +107,18 @@ testthat::test_that("Testing reindex cohorts", {
   )
   testthat::expect_true(object = all(dataPostReindex == cohortExpected))
 
-  # CohortAlgebra:::reindexCohortsByDays(
-  #   connectionDetails = connectionDetails,
-  #   sourceCohortDatabaseSchema = cohortDatabaseSchema,
-  #   targetCohortDatabaseSchema = cohortDatabaseSchema,
-  #   sourceCohortTable = cohortTableName,
-  #   targetCohortTable = cohortTableName,
-  #   cdmDatabaseSchema = cohortDatabaseSchema,
-  #   reindexRules = reindexRules,
-  #   sourceCohortIds = c(1),
-  #   purgeConflicts = TRUE,
-  #   tempEmulationSchema = tempEmulationSchema
-  # )
+  CohortAlgebra:::reindexCohortsByDays(
+    connectionDetails = connectionDetails,
+    sourceCohortDatabaseSchema = cohortDatabaseSchema,
+    targetCohortDatabaseSchema = cohortDatabaseSchema,
+    sourceCohortTable = cohortTableName,
+    targetCohortTable = cohortTableName,
+    cdmDatabaseSchema = cohortDatabaseSchema,
+    reindexRules = reindexRules,
+    sourceCohortIds = c(1),
+    purgeConflicts = TRUE,
+    tempEmulationSchema = tempEmulationSchema
+  )
   testthat::expect_error(
     CohortAlgebra:::reindexCohortsByDays(
       connectionDetails = connectionDetails,
