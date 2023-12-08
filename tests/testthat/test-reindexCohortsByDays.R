@@ -160,7 +160,6 @@ testthat::test_that("Testing reindex cohorts", {
     connection = connection,
     sql = paste0(
       "
-      DROP TABLE IF EXISTS @temp_table_name;
       DROP TABLE IF EXISTS @cohort_database_schema.@table_name;"
     ),
     cohort_database_schema = cohortDatabaseSchema,
