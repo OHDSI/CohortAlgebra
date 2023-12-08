@@ -23,7 +23,7 @@ uploadTempTable <- function(connection,
                             dropTableIfExists = TRUE) {
   tempTableName <-
     paste0("#", getUniqueString())
-  
+
   invisible(utils::capture.output(
     DatabaseConnector::insertTable(
       connection = connection,
@@ -39,23 +39,23 @@ uploadTempTable <- function(connection,
     ),
     file = nullfile()
   ))
-  
+
   return(tempTableName)
 }
 
 getUniqueString <- function(n = 7) {
   # create a vector of all alphanumeric characters
   alphanumericChars <- c(letters, 0:9)
-  
+
   # generate the first character from the set of letters only
   firstChar <- sample(c(letters), 1)
-  
+
   # generate the remaining characters from the set of all alphanumeric characters
   remainingChars <- sample(alphanumericChars, n, replace = TRUE)
-  
+
   # combine the first character with the remaining characters
   uniqueString <-
     paste0(firstChar, paste0(remainingChars, collapse = ""))
-  
+
   return(tolower(uniqueString))
 }

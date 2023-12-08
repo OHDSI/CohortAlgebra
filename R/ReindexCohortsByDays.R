@@ -147,25 +147,29 @@ reindexCohortsByDays <- function(connectionDetails = NULL,
     .var.name = "reindexRules",
     add = errorMessages
   )
-  
+
   # Check for the presence of required columns
   requiredColumns <-
-    c("offsetId",
+    c(
+      "offsetId",
       "offsetStartValue",
-      "offsetEndValue")
+      "offsetEndValue"
+    )
   checkmate::assertNames(
     x = colnames(reindexRules),
     subset.of = requiredColumns,
     .var.name = "reindexRules",
     add = errorMessages
   )
-  
+
   # Check that offsetId is unique
   checkmate::assertTRUE(
-    length(reindexRules$offsetId) == reindexRules$offsetId |> unique() |> length(),
-    add = errorMessageslen
+    length(reindexRules$offsetId) == reindexRules$offsetId |>
+      unique() |>
+      length(),
+    add = errorMessages
   )
-  
+
   # Check that offsetStartAnchor and offsetEndAnchor are either 'cohort_start_date' or 'cohort_end_date'
   validAnchors <- c("cohort_start_date", "cohort_end_date")
   checkmate::assertChoice(
@@ -180,30 +184,32 @@ reindexCohortsByDays <- function(connectionDetails = NULL,
     .var.name = "offsetEndAnchor",
     add = errorMessages
   )
-  
+
   # Check that offsetStartValue and offsetEndValue are integers
   checkmate::assertIntegerish(reindexRules$offsetStartValue,
-                              .var.name = "offsetStartValue",
-                              add = errorMessages)
+    .var.name = "offsetStartValue",
+    add = errorMessages
+  )
   checkmate::assertIntegerish(reindexRules$offsetEndValue,
-                              .var.name = "offsetEndValue",
-                              add = errorMessages)
+    .var.name = "offsetEndValue",
+    add = errorMessages
+  )
   checkmate::reportAssertions(collection = errorMessages)
-  
+
   if (isTempTable) {
     if (!all(
       is.null(targetCohortDatabaseSchema),
-      tableNameIsCompatibleWithTempTableName(tableName = targetCohortTable),!is.null(connection)
+      tableNameIsCompatibleWithTempTableName(tableName = targetCohortTable), !is.null(connection)
     )) {
       stop("Cannot output temp table - check input specifications")
     }
   }
-  
+
   if (is.null(connection)) {
     connection <- DatabaseConnector::connect(connectionDetails)
     on.exit(DatabaseConnector::disconnect(connection))
   }
-  
+
   if (!isTempTable) {
     if (!purgeConflicts) {
       cohortIdsInCohortTable <-
@@ -213,12 +219,14 @@ reindexCohortsByDays <- function(connectionDetails = NULL,
           cohortTable = targetCohortTable,
           tempEmulationSchema = tempEmulationSchema
         )
-      
+
       conflicitingCohortIdsInTargetCohortTable <-
-        intersect(x = (((
-          sourceCohortIds
-        ) * 1000) + reindexRules$offsetId),
-        y = cohortIdsInCohortTable |> unique())
+        intersect(
+          x = (((
+            sourceCohortIds
+          ) * 1000) + reindexRules$offsetId),
+          y = cohortIdsInCohortTable |> unique()
+        )
       if (length(conflicitingCohortIdsInTargetCohortTable) > 0) {
         stop("Target cohort id already in use in target cohort table")
       }
@@ -228,7 +236,7 @@ reindexCohortsByDays <- function(connectionDetails = NULL,
         databaseSchema = targetCohortDatabaseSchema,
         tableName = targetCohortTable
       )
-      
+
       if (!targetCohortTableExists) {
         stop(
           paste0(
@@ -241,7 +249,7 @@ reindexCohortsByDays <- function(connectionDetails = NULL,
       }
     }
   }
-  
+
   reindexTableName <- uploadTempTable(
     connection = connection,
     data = reindexRules,
@@ -249,9 +257,9 @@ reindexCohortsByDays <- function(connectionDetails = NULL,
     bulkLoad = bulkLoad,
     camelCaseToSnakeCase = TRUE
   )
-  
+
   tempTableName <- paste0("#", getUniqueString())
-  
+
   sql <- SqlRender::loadRenderTranslateSql(
     sqlFilename = "ReindexCohorts.sql",
     packageName = utils::packageName(),
@@ -273,7 +281,7 @@ reindexCohortsByDays <- function(connectionDetails = NULL,
     progressBar = FALSE,
     reportOverallTime = FALSE
   )
-  
+
   cohortIdsInCohortTable <-
     getCohortIdsInCohortTable(
       connection = connection,
@@ -282,11 +290,13 @@ reindexCohortsByDays <- function(connectionDetails = NULL,
     ) |>
     unique() |>
     sort()
-  
+
   oldToNewCohortId <-
-    dplyr::tibble(oldCohortId = cohortIdsInCohortTable,
-                  newCohortId = cohortIdsInCohortTable)
-  
+    dplyr::tibble(
+      oldCohortId = cohortIdsInCohortTable,
+      newCohortId = cohortIdsInCohortTable
+    )
+
   CohortAlgebra::unionCohorts(
     connection = connection,
     sourceCohortTable = tempTableName,
@@ -301,7 +311,7 @@ reindexCohortsByDays <- function(connectionDetails = NULL,
     purgeConflicts = purgeConflicts,
     oldToNewCohortId = oldToNewCohortId
   )
-  
+
   if (isTempTable) {
     return(tempTableName)
   }

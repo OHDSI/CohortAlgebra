@@ -108,7 +108,7 @@ testthat::test_that("Testing cohort intersect", {
       purgeConflicts = FALSE
     )
   )
-  
+
   testthat::expect_error(
     CohortAlgebra::minusCohorts(
       connectionDetails = connectionDetails,

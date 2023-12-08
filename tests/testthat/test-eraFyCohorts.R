@@ -207,7 +207,7 @@ testthat::test_that("Testing cohort era fy", {
     cdmDatabaseSchema = cohortDatabaseSchema,
     tempEmulationSchema = tempEmulationSchema
   )
-  
+
   testthat::expect_error(
     CohortAlgebra:::eraFyCohorts(
       connection = connection,
@@ -219,7 +219,7 @@ testthat::test_that("Testing cohort era fy", {
       eraconstructorpad = 30,
       purgeConflicts = FALSE,
       isTempTable = TRUE,
-      #cant say temp table when it is a permanent table
+      # cant say temp table when it is a permanent table
       cdmDatabaseSchema = cohortDatabaseSchema,
       tempEmulationSchema = tempEmulationSchema
     )
