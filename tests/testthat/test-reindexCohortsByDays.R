@@ -167,8 +167,7 @@ testthat::test_that("Testing reindex cohorts", {
     table_name = cohortTableName,
     profile = FALSE,
     progressBar = FALSE,
-    reportOverallTime = FALSE,
-    temp_table_name = tempCohortTableName
+    reportOverallTime = FALSE
   )
   
   DatabaseConnector::disconnect(connection)

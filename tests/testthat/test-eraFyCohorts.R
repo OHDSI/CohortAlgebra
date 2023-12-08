@@ -213,11 +213,13 @@ testthat::test_that("Testing cohort era fy", {
       connection = connection,
       sourceCohortTable = tempCohortTableName,
       targetCohortTable = tempCohortTableName,
+      targetCohortDatabaseSchema = cohortDatabaseSchema,
       oldCohortIds = 1,
       newCohortId = 10,
       eraconstructorpad = 30,
       purgeConflicts = FALSE,
-      isTempTable = TRUE, #cant say temp table when it is a permanent table
+      isTempTable = TRUE,
+      #cant say temp table when it is a permanent table
       cdmDatabaseSchema = cohortDatabaseSchema,
       tempEmulationSchema = tempEmulationSchema
     )

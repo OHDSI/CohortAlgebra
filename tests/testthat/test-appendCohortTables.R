@@ -23,6 +23,18 @@ testthat::test_that("Testing append Cohort Tables ", {
   DatabaseConnector::insertTable(
     connection = connection,
     databaseSchema = cohortDatabaseSchema,
+    tableName = cohortTableName,
+    data = cohort1 |>
+      dplyr::mutate(cohortDefinition = 5),
+    dropTableIfExists = TRUE,
+    createTable = TRUE,
+    tempTable = FALSE,
+    camelCaseToSnakeCase = TRUE,
+    progressBar = FALSE
+  )
+  DatabaseConnector::insertTable(
+    connection = connection,
+    databaseSchema = cohortDatabaseSchema,
     tableName = cohortTableName1,
     data = cohort1,
     dropTableIfExists = TRUE,
@@ -54,8 +66,6 @@ testthat::test_that("Testing append Cohort Tables ", {
       ),
       targetCohortDatabaseSchema = cohortDatabaseSchema,
       targetCohortTable = cohortTableName,
-      cdmDatabaseSchema = cohortDatabaseSchema,
-      purgeConflicts = TRUE,
       isTempTable  = TRUE
     )
   )
@@ -68,12 +78,10 @@ testthat::test_that("Testing append Cohort Tables ", {
     ),
     targetCohortDatabaseSchema = cohortDatabaseSchema,
     targetCohortTable = cohortTableName,
-    cdmDatabaseSchema = cohortDatabaseSchema,
-    purgeConflicts = TRUE,
     isTempTable  = FALSE
   )
   
-  
+  connection <- DatabaseConnector::connect(connectionDetails = connectionDetails)
   DatabaseConnector::renderTranslateExecuteSql(
     connection = connection,
     sql = paste0(
@@ -81,20 +89,19 @@ testthat::test_that("Testing append Cohort Tables ", {
       DROP TABLE IF EXISTS @temp_table_name;
       DROP TABLE IF EXISTS @temp_table_name1;
       DROP TABLE IF EXISTS @temp_table_name2;
-      DROP TABLE IF EXISTS @cohort_database_schema.@table_name;"
+      DROP TABLE IF EXISTS @cohort_database_schema.@temp_table_name;
+      DROP TABLE IF EXISTS @cohort_database_schema.@temp_table_name1;
+      DROP TABLE IF EXISTS @cohort_database_schema.@temp_table_name2;"
     ),
+    temp_table_name = cohortTableName,
     cohort_database_schema = cohortDatabaseSchema,
-    table_name = cohortTableName,
     profile = FALSE,
     progressBar = FALSE,
-    reportOverallTime = FALSE,
-    temp_table_name = tempCohortTableName
+    reportOverallTime = FALSE
   )
   
-  DatabaseConnector::disconnect(connection)
-  
   DatabaseConnector::renderTranslateExecuteSql(
-    connection = DatabaseConnector::connect(connectionDetails = connectionDetails),
+    connection = connection,
     sql = "DROP TABLE IF EXISTS @cohort_database_schema.@table_temp;
            DROP TABLE IF EXISTS @cdm_database_schema.observation_period;",
     table_temp = cohortTableName,
@@ -103,4 +110,5 @@ testthat::test_that("Testing append Cohort Tables ", {
     progressBar = FALSE,
     reportOverallTime = FALSE
   )
+  DatabaseConnector::disconnect(connection)
 })
