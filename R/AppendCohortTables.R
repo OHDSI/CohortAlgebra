@@ -88,8 +88,10 @@ appendCohortTables <- function(connectionDetails = NULL,
 
   sqlNest <- c()
   for (i in (1:nrow(sourceTables))) {
-    if (all(!is.na(sourceTables[i, ]$sourceCohortDatabaseSchema),
-            nchar(sourceTables[i, ]$sourceCohortDatabaseSchema) > 1)) {
+    if (all(
+      !is.na(sourceTables[i, ]$sourceCohortDatabaseSchema),
+      nchar(sourceTables[i, ]$sourceCohortDatabaseSchema) > 1
+    )) {
       tableName <- paste0(
         sourceTables[i, ]$sourceCohortDatabaseSchema,
         ".",
