@@ -1,8 +1,8 @@
 testthat::test_that("Testing cohort union", {
   testthat::skip_if(condition = skipCdmTests)
-
+  
   tempCohortTableName1 <- paste0("#", cohortTableName, "_1")
-
+  
   # make up date for a cohort table
   cohort <- dplyr::tibble(
     cohortDefinitionId = c(1, 2, 2),
@@ -18,7 +18,7 @@ testthat::test_that("Testing cohort union", {
       as.Date("2022-12-30")
     )
   )
-
+  
   # upload table
   connection <-
     DatabaseConnector::connect(connectionDetails = connectionDetails)
@@ -35,7 +35,7 @@ testthat::test_that("Testing cohort union", {
   )
   # disconnecting - as this is a test for a non temp cohort table
   DatabaseConnector::disconnect(connection)
-
+  
   # should not throw error
   unionCohorts(
     connectionDetails = connectionDetails,
@@ -50,7 +50,7 @@ testthat::test_that("Testing cohort union", {
     tempEmulationSchema = tempEmulationSchema,
     purgeConflicts = FALSE
   )
-
+  
   # extract the generated output and compare to expected
   connection <-
     DatabaseConnector::connect(connectionDetails = connectionDetails)
@@ -67,12 +67,10 @@ testthat::test_that("Testing cohort union", {
       snakeCaseToCamelCase = TRUE
     ) |>
     dplyr::tibble()
-
-  testthat::expect_equal(
-    object = nrow(dataPostUnion),
-    expected = 2
-  ) # union logic should collapse to 2 rows
-
+  
+  testthat::expect_equal(object = nrow(dataPostUnion),
+                         expected = 2) # union logic should collapse to 2 rows
+  
   # create the expected output data frame object to compare
   cohortExpected <- dplyr::tibble(
     cohortDefinitionId = c(3, 3),
@@ -80,9 +78,9 @@ testthat::test_that("Testing cohort union", {
     cohortStartDate = c(as.Date("2022-01-01"), as.Date("2022-08-15")),
     cohortEndDate = c(as.Date("2022-05-10"), as.Date("2022-12-30"))
   )
-
+  
   testthat::expect_true(object = all(dataPostUnion == cohortExpected))
-
+  
   testthat::expect_error(
     unionCohorts(
       connectionDetails = connectionDetails,
@@ -98,7 +96,24 @@ testthat::test_that("Testing cohort union", {
       isTempTable = TRUE
     )
   )
-
+  
+  testthat::expect_error(
+    unionCohorts(
+      connectionDetails = connectionDetails,
+      sourceCohortDatabaseSchema = cohortDatabaseSchema,
+      sourceCohortTable = cohortTableName,
+      oldToNewCohortId = dplyr::tibble(
+        oldCohortId = c(1, 2, 2),
+        newCohortId = c(1, 2, 2)
+      ),
+      targetCohortDatabaseSchema = cohortDatabaseSchema,
+      targetCohortTable = cohortTableName,
+      tempEmulationSchema = tempEmulationSchema,
+      isTempTable = TRUE,
+      purgeConflicts = FALSE
+    )
+  )
+  
   unionCohorts(
     connection = connection,
     sourceCohortDatabaseSchema = cohortDatabaseSchema,
@@ -112,7 +127,7 @@ testthat::test_that("Testing cohort union", {
     targetCohortTable = tempCohortTableName1,
     isTempTable = TRUE
   )
-
+  
   DatabaseConnector::renderTranslateExecuteSql(
     connection = connection,
     sql = "DROP TABLE IF EXISTS @cohort_database_schema.@table_temp;
@@ -126,6 +141,6 @@ testthat::test_that("Testing cohort union", {
     progressBar = FALSE,
     reportOverallTime = FALSE
   )
-
+  
   DatabaseConnector::disconnect(connection = connection)
 })

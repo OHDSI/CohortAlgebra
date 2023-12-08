@@ -207,6 +207,21 @@ testthat::test_that("Testing cohort era fy", {
     cdmDatabaseSchema = cohortDatabaseSchema,
     tempEmulationSchema = tempEmulationSchema
   )
+  
+  testthat::expect_error(
+    CohortAlgebra:::eraFyCohorts(
+      connection = connection,
+      sourceCohortTable = tempCohortTableName,
+      targetCohortTable = tempCohortTableName,
+      oldCohortIds = 1,
+      newCohortId = 10,
+      eraconstructorpad = 30,
+      purgeConflicts = FALSE,
+      isTempTable = TRUE, #cant say temp table when it is a permanent table
+      cdmDatabaseSchema = cohortDatabaseSchema,
+      tempEmulationSchema = tempEmulationSchema
+    )
+  )
 
   dataPostEraFyWithEraPad <-
     DatabaseConnector::renderTranslateQuerySql(
