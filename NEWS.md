@@ -1,7 +1,7 @@
 CohortAlgebra 0.1.0
 ======================
 Added new function called reindexCohortsByDays()  
-Improved test coverage
+Improved test coverage.
 
 CohortAlgebra 0.0.4
 ======================
