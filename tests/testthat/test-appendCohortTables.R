@@ -1,6 +1,6 @@
 testthat::test_that("Testing append Cohort Tables ", {
   testthat::skip_if(condition = skipCdmTests)
-
+  
   # make up date for a cohort table
   # this cohort table will have two subjects * two cohorts, within the same cohort
   cohort1 <- dplyr::tibble(
@@ -15,8 +15,8 @@ testthat::test_that("Testing append Cohort Tables ", {
     cohortStartDate = c(as.Date("1999-01-01")),
     cohortEndDate = c(as.Date("1999-01-31"))
   )
-  cohortTableName1 <- paste0(cohortTableName, 1)
-  cohortTableName2 <- paste0(cohortTableName, 2)
+  cohortTableName1 <- paste0(cohortTableName, "_", 1)
+  cohortTableName2 <- paste0(cohortTableName, "_", 2)
   # upload table
   connection <-
     DatabaseConnector::connect(connectionDetails = connectionDetails)
@@ -56,32 +56,32 @@ testthat::test_that("Testing append Cohort Tables ", {
   )
   # disconnecting - as this is a test for a non temp cohort table
   DatabaseConnector::disconnect(connection)
-
+  
+  sourceTables <- dplyr::tibble(
+    sourceCohortDatabaseSchema = c(cohortDatabaseSchema, cohortDatabaseSchema),
+    sourceCohortTableName = c(cohortTableName1, cohortTableName2)
+  )
+  
   testthat::expect_error(
     CohortAlgebra:::appendCohortTables(
       connectionDetails = connectionDetails,
-      sourceTables = dplyr::tibble(
-        sourceCohortDatabaseSchema = c(cohortDatabaseSchema, cohortDatabaseSchema),
-        sourceCohortTableName = c(cohortTableName1, cohortTableName2)
-      ),
+      sourceTables = sourceTables,
       targetCohortDatabaseSchema = cohortDatabaseSchema,
       targetCohortTable = cohortTableName,
       isTempTable = TRUE
     )
   )
-
+  
   CohortAlgebra:::appendCohortTables(
     connectionDetails = connectionDetails,
-    sourceTables = dplyr::tibble(
-      sourceCohortDatabaseSchema = c(cohortDatabaseSchema, cohortDatabaseSchema),
-      sourceCohortTableName = c(cohortTableName1, cohortTableName2)
-    ),
+    sourceTables = sourceTables,
     targetCohortDatabaseSchema = cohortDatabaseSchema,
     targetCohortTable = cohortTableName,
     isTempTable = FALSE
   )
-
-  connection <- DatabaseConnector::connect(connectionDetails = connectionDetails)
+  
+  connection <-
+    DatabaseConnector::connect(connectionDetails = connectionDetails)
   DatabaseConnector::renderTranslateExecuteSql(
     connection = connection,
     sql = paste0(
@@ -99,7 +99,7 @@ testthat::test_that("Testing append Cohort Tables ", {
     progressBar = FALSE,
     reportOverallTime = FALSE
   )
-
+  
   DatabaseConnector::renderTranslateExecuteSql(
     connection = connection,
     sql = "DROP TABLE IF EXISTS @cohort_database_schema.@table_temp;
