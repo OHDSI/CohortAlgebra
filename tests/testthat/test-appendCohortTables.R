@@ -11,7 +11,7 @@ testthat::test_that("Testing append Cohort Tables ", {
   )
   cohort2 <- dplyr::tibble(
     cohortDefinitionId = c(1),
-    subjectId = c(1),
+    subjectId = c(2),
     cohortStartDate = c(as.Date("1999-01-01")),
     cohortEndDate = c(as.Date("1999-01-31"))
   )
