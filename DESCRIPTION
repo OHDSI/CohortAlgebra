@@ -22,6 +22,7 @@ Imports:
   rlang,
   SqlRender
 Suggests:
+  Andromeda,
   knitr,
   rmarkdown,
 	testthat,
