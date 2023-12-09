@@ -1,6 +1,8 @@
+Added new function reindexRules(). Tests added. Tests pass. Improved test coverage.
+---
 Removed non functioning examples to avoid use of \dontrun.
 Removed reference user's home filespace and replace to tempdir(). in tests/testthat/setup.R
-
+---
 This is new release.
 
 ---

@@ -1,8 +1,8 @@
 Package: CohortAlgebra
 Type: Package
 Title: Use of Interval Algebra to Create New Cohort(s) from Existing Cohorts
-Version: 0.0.4
-Date: 2023-09-10
+Version: 0.1.0
+Date: 2023-12-08
 Authors@R: c(
     person("Gowtham", "Rao", email = "rao@ohdsi.org", role = c("aut", "cre")),
     person("Observational Health Data Science and Informatics", role = c("cph"))
@@ -22,6 +22,7 @@ Imports:
   rlang,
   SqlRender
 Suggests:
+  Andromeda,
   knitr,
   rmarkdown,
 	testthat,
