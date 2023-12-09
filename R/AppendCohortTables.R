@@ -88,7 +88,10 @@ appendCohortTables <- function(connectionDetails = NULL,
 
   sqlNest <- c()
   for (i in (1:nrow(sourceTables))) {
-    if (length(sourceTables[i, ]$sourceCohortDatabaseSchema) > 1) {
+    if (all(
+      !is.na(sourceTables[i, ]$sourceCohortDatabaseSchema),
+      nchar(sourceTables[i, ]$sourceCohortDatabaseSchema) > 1
+    )) {
       tableName <- paste0(
         sourceTables[i, ]$sourceCohortDatabaseSchema,
         ".",
@@ -142,13 +145,16 @@ appendCohortTables <- function(connectionDetails = NULL,
         @target_cohort_database_schema.@target_cohort_table
       }:{
         @target_cohort_table
-      }
+      } (cohort_definition_id,
+          subject_id,
+          cohort_start_date,
+          cohort_end_date)
       SELECT cohort_definition_id,
           subject_id,
           cohort_start_date,
           cohort_end_date
       FROM (",
-      paste0(paste0(sqlNest, collapse = " union all ")),
+      paste0(paste0(sqlNest, collapse = " UNION ALL ")),
       ") f
       "
     )
