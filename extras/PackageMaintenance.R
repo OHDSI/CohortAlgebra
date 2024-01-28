@@ -41,9 +41,10 @@ OhdsiRTools::fixHadesLogo()
 
 
 # Release package to CRAN ------------------------------------------------------
-devtools::check_win_devel()
-devtools::check_rhub()
-devtools::release()
-devtools::check(cran=TRUE)
+# devtools::check_win_devel()
+# devtools::check_rhub()
+# devtools::release(check = FALSE)
+devtools::submit_cran()
+# devtools::check(cran=TRUE)
 
 
