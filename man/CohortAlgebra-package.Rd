@@ -2,7 +2,6 @@
 % Please edit documentation in R/CohortAlgebra-package.R, R/CohortAlgebra.R
 \docType{package}
 \name{CohortAlgebra-package}
-\alias{CohortAlgebra}
 \alias{CohortAlgebra-package}
 \title{CohortAlgebra: Use of Interval Algebra to Create New Cohort(s) from Existing Cohorts}
 \description{

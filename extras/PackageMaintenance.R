@@ -1,4 +1,4 @@
-# Copyright 2023 Observational Health Data Sciences and Informatics
+# Copyright 2024 Observational Health Data Sciences and Informatics
 #
 # This file is part of CohortAlgebra
 #
@@ -41,9 +41,6 @@ OhdsiRTools::fixHadesLogo()
 
 
 # Release package to CRAN ------------------------------------------------------
-devtools::check_win_devel()
-devtools::check_rhub()
-devtools::release()
-devtools::check(cran=TRUE)
+devtools::submit_cran()
 
 
