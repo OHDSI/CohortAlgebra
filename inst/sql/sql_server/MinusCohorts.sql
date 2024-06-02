@@ -71,18 +71,18 @@ WHERE cohort_definition_id = @new_cohort_id;
             
 
 INSERT INTO {@target_cohort_database_schema != ''} ? {@target_cohort_database_schema.@target_cohort_table} : {@target_cohort_table}
-SELECT @new_cohort_id cohort_definition_id,
-	mc.subject_id,
-	CASE
+SELECT CAST(@new_cohort_id AS BIGINT) cohort_definition_id,
+	CAST(mc.subject_id AS BIGINT) subject_id,
+	CAST(CASE
 		WHEN cs.cohort_end_date IS NULL
 			THEN mc.candidate_start_date
 		ELSE DATEADD(DAY, 1, mc.candidate_start_date)
-		END AS cohort_start_date,
-	CASE
+		END AS DATE) AS cohort_start_date,
+	CAST(CASE
 		WHEN ce.cohort_end_date IS NULL
 			THEN mc.candidate_end_date
 		ELSE DATEADD(DAY, - 1, mc.candidate_end_date)
-		END AS cohort_end_date
+		END AS DATE) AS cohort_end_date
 FROM @temp_table_2 mc
 LEFT JOIN @temp_table_1 cs ON mc.subject_id = cs.subject_id
 	AND mc.candidate_start_date = cs.cohort_end_date

@@ -70,10 +70,10 @@ DROP TABLE IF EXISTS #cohort_rows;
 {@is_temp_table} ? {
   DROP TABLE IF EXISTS @target_cohort_table;
   
-  SELECT @new_cohort_id cohort_definition_id,
-        subject_id,
-        cohort_start_date, 
-        cohort_end_date
+  SELECT  CAST(@new_cohort_id AS BIGINT) cohort_definition_id,
+          CAST(subject_id AS BIGINT) subject_id,
+          CAST(cohort_start_date AS DATE) cohort_start_date, 
+          CAST(cohort_end_date AS DATE) cohort_end_date
   INTO @target_cohort_table
 } : {
   DELETE FROM 
@@ -86,10 +86,10 @@ DROP TABLE IF EXISTS #cohort_rows;
   {@target_cohort_database_schema != ''} ? {
     @target_cohort_database_schema.@target_cohort_table
   } : {@target_cohort_table} 
-  SELECT @new_cohort_id cohort_definition_id,
-        subject_id,
-        cohort_start_date, 
-        cohort_end_date
+  SELECT  CAST(@new_cohort_id AS BIGINT) cohort_definition_id,
+          CAST(subject_id AS BIGINT) subject_id,
+          CAST(cohort_start_date AS DATE) cohort_start_date, 
+          CAST(cohort_end_date AS DATE) cohort_end_date
 }
 
   FROM    

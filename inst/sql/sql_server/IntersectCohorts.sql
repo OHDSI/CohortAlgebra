@@ -52,10 +52,10 @@ DELETE FROM {@target_cohort_database_schema != ''} ? {@target_cohort_database_sc
 WHERE cohort_definition_id = @new_cohort_id;
 
 INSERT INTO {@target_cohort_database_schema != ''} ? {@target_cohort_database_schema.@target_cohort_table} : {@target_cohort_table}
-SELECT @new_cohort_id cohort_definition_id,
-      subject_id,
-      candidate_start_date cohort_start_date, 
-      candidate_end_date cohort_end_date
+SELECT CAST(@new_cohort_id AS BIGINT) cohort_definition_id,
+       CAST(subject_id AS BIGINT) subject_id,
+       CAST(candidate_start_date AS DATE) cohort_start_date, 
+       CAST(candidate_end_date AS DATE) cohort_end_date
 FROM #can_chrt_dte
 GROUP BY subject_id,
 	candidate_start_date,
