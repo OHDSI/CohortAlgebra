@@ -1,5 +1,4 @@
 Explicit type cast.
-More optimize era sql.
 ---
 Added new function reindexRules(). Tests added. Tests pass. Improved test coverage.
 ---
