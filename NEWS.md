@@ -1,6 +1,7 @@
 CohortAlgebra 0.3.0
 ======================
 Optimized sql for Cohort Era.
+Thank you @chrisknoll who wrote the SQL
 
 CohortAlgebra 0.2.1
 ======================

@@ -1,5 +1,6 @@
 DROP TABLE IF EXISTS #cohort_era;
 
+-- cohort era logic originally written by @chrisknoll
 SELECT subject_id,
 	min(cohort_start_date) AS cohort_start_date,
 	DATEADD(day, - 1 * @era_constructor_pad, max(cohort_end_date)) AS cohort_end_date
