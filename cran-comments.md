@@ -1,3 +1,5 @@
+optimize core sql that create cohort eras.
+---
 Explicit type cast.
 ---
 Added new function reindexRules(). Tests added. Tests pass. Improved test coverage.
