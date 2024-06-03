@@ -1,3 +1,8 @@
+CohortAlgebra 0.3.0
+======================
+Optimized sql for Cohort Era.
+Thank you @chrisknoll who wrote the SQL
+
 CohortAlgebra 0.2.1
 ======================
 Explicitly cast cohort_definition_id, subject_id as BIGINT and cohort_start_date, cohort_end_date as DATE.

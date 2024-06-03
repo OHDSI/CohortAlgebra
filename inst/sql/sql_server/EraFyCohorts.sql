@@ -1,71 +1,42 @@
-DROP TABLE IF EXISTS #cohort_rows;
 DROP TABLE IF EXISTS #cohort_era;
-DROP TABLE IF EXISTS #cte_ends;
-DROP TABLE IF EXISTS #cte_end_dates;
-DROP TABLE IF EXISTS #raw_data;
 
-SELECT DISTINCT subject_id,
-        cohort_start_date,
-        cohort_end_date
-INTO #cohort_rows
-FROM {@source_cohort_database_schema != ''} ? {@source_cohort_database_schema.@source_cohort_table} : {@source_cohort_table}
-WHERE cohort_definition_id IN (@old_cohort_ids);
-
---HINT DISTRIBUTE ON KEY (subject_id)
+-- cohort era logic originally written by @chrisknoll
 SELECT subject_id,
-	DATEADD(day, - 1 * @era_constructor_pad, event_date) AS cohort_end_date
-INTO #cte_end_dates
+	min(cohort_start_date) AS cohort_start_date,
+	DATEADD(day, - 1 * @era_constructor_pad, max(cohort_end_date)) AS cohort_end_date
+INTO #cohort_era
 FROM (
 	SELECT subject_id,
-		event_date,
-		SUM(event_type) OVER (
-			PARTITION BY subject_id ORDER BY event_date,
-				event_type ROWS UNBOUNDED PRECEDING
-			) AS interval_status
+		cohort_start_date,
+		cohort_end_date,
+		sum(is_start) OVER (
+			PARTITION BY subject_id ORDER BY cohort_start_date,
+				is_start DESC rows unbounded preceding
+			) group_idx
 	FROM (
 		SELECT subject_id,
-			cohort_start_date AS event_date,
-			- 1 AS event_type
-		FROM #cohort_rows
-		
-		UNION ALL
-		
-		SELECT subject_id,
-			DATEADD(day, @era_constructor_pad, Cohort_end_date) AS end_date,
-			1 AS event_type
-		FROM #cohort_rows
-		) RAWDATA
-	) e
-WHERE interval_status = 0;
-
-DROP TABLE IF EXISTS #raw_data;
-
---HINT DISTRIBUTE ON KEY (subject_id)
-SELECT 
-	source.subject_id,
-	source.cohort_start_date,
-	MIN(e.cohort_end_date) AS cohort_end_date
-INTO #cte_ends
-FROM #cohort_rows source
-INNER JOIN #cte_end_dates e 
-  ON source.subject_id = e.subject_id
-	AND e.cohort_end_date >= source.cohort_start_date
-GROUP BY source.subject_id,
-	source.cohort_start_date;
-
---HINT DISTRIBUTE ON KEY (subject_id)
-SELECT 
-	subject_id,
-	min(cohort_start_date) AS cohort_start_date,
-	cohort_end_date
-INTO #cohort_era
-FROM #cte_ends
-GROUP BY 
-	subject_id,
-	cohort_end_date;
+			cohort_start_date,
+			cohort_end_date,
+			CASE 
+				WHEN max(cohort_end_date) OVER (
+						PARTITION BY subject_id ORDER BY cohort_start_date rows BETWEEN unbounded preceding
+								AND 1 preceding
+						) >= cohort_start_date
+					THEN 0
+				ELSE 1
+				END is_start
+		FROM (
+			SELECT subject_id,
+				cohort_start_date,
+				DATEADD(day, @era_constructor_pad, cohort_end_date) AS cohort_end_date
+			FROM {@source_cohort_database_schema != ''} ? {@source_cohort_database_schema.@source_cohort_table} : {@source_cohort_table}
+			WHERE cohort_definition_id IN (@old_cohort_ids)
+			) CR
+		) ST
+	) GR
+GROUP BY subject_id,
+	group_idx;
 	
-DROP TABLE IF EXISTS #cte_ends;
-DROP TABLE IF EXISTS #cohort_rows;
 
 {@is_temp_table} ? {
   DROP TABLE IF EXISTS @target_cohort_table;
@@ -91,7 +62,6 @@ DROP TABLE IF EXISTS #cohort_rows;
           CAST(cohort_start_date AS DATE) cohort_start_date, 
           CAST(cohort_end_date AS DATE) cohort_end_date
 }
-
   FROM    
   --HINT DISTRIBUTE ON KEY (subject_id)	
 {@cdm_database_schema != ''} ?
@@ -99,8 +69,7 @@ DROP TABLE IF EXISTS #cohort_rows;
     (
       SELECT 
           ce.subject_id,
-          CASE WHEN op.observation_period_start_date < ce.cohort_start_date THEN ce.cohort_start_date
-              ELSE op.observation_period_start_date END AS cohort_start_date,
+          ce.cohort_start_date,
           CASE WHEN op.observation_period_end_date > ce.cohort_end_date then ce.cohort_end_date
               ELSE op.observation_period_end_date END AS cohort_end_date
       FROM #cohort_era ce
@@ -108,12 +77,9 @@ DROP TABLE IF EXISTS #cohort_rows;
       ON ce.subject_id = op.person_id
       WHERE op.observation_period_start_date <= ce.cohort_start_date
             AND op.observation_period_end_date >= ce.cohort_start_date
-            -- only returns overlapping periods
       ) f
 } :
 { #cohort_era f}
-WHERE cohort_start_date <= cohort_end_date
 ;
  
 DROP TABLE IF EXISTS #cohort_era;
-DROP TABLE IF EXISTS #cte_end_dates;
