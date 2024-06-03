@@ -1,3 +1,5 @@
+Explicit type cast.
+---
 Added new function reindexRules(). Tests added. Tests pass. Improved test coverage.
 ---
 Removed non functioning examples to avoid use of \dontrun.

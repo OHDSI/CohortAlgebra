@@ -1,3 +1,13 @@
+CohortAlgebra 0.2.1
+======================
+Explicitly cast cohort_definition_id, subject_id as BIGINT and cohort_start_date, cohort_end_date as DATE.
+This reduces the chances of cohort table having INT or date-time.
+
+CohortAlgebra 0.2.0
+======================
+Added new function reindexRules(). 
+Tests added. Tests pass. Improved test coverage.
+
 CohortAlgebra 0.1.0
 ======================
 Added new function called reindexCohortsByDays()  

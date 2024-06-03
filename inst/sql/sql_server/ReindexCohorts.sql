@@ -1,15 +1,15 @@
 DROP TABLE IF EXISTS @temp_output_table;
 
-SELECT (c.cohort_definition_id * 1000) + ri.offset_id cohort_definition_id,
-        c.subject_id,
-        CASE
+SELECT CAST((c.cohort_definition_id * 1000) + ri.offset_id AS BIGINT) cohort_definition_id,
+        CAST(c.subject_id AS BIGINT) AS subject_id,
+        CAST(CASE
             WHEN op.observation_period_start_date >= DATEADD(DAY, ri.offset_start_value, c.@offset_start_anchor) THEN op.observation_period_start_date
                   ELSE DATEADD(DAY, ri.offset_start_value, c.@offset_start_anchor) 
-        END cohort_start_date,
-        CASE
+        END AS DATE) cohort_start_date,
+        CAST(CASE
             WHEN op.observation_period_end_date <= DATEADD(DAY, ri.offset_end_value, c.@offset_end_anchor) THEN op.observation_period_end_date
                   ELSE DATEADD(DAY, ri.offset_end_value, c.@offset_end_anchor) 
-        END cohort_end_date
+        END AS DATE) cohort_end_date
 INTO @temp_output_table
 FROM {@source_cohort_database_schema != ''} ? {@source_cohort_database_schema.@source_cohort_table} : {@source_cohort_table} c
 CROSS JOIN @reindex_rules_table ri

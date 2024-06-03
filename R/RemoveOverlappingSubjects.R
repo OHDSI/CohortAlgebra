@@ -200,10 +200,10 @@ removeOverlappingSubjects <- function(connectionDetails = NULL,
   DatabaseConnector::renderTranslateExecuteSql(
     connection = connection,
     sql = " DROP TABLE IF EXISTS @temp_table_2;
-            SELECT @new_cohort_id cohort_definition_id,
-                    c.subject_id,
-                    c.cohort_start_date,
-                    c.cohort_end_date
+            SELECT CAST(@new_cohort_id AS BIGINT) cohort_definition_id,
+               CAST(c.subject_id AS BIGINT) subject_id,
+               CAST(c.cohort_start_date AS DATE) cohort_start_date,
+               CAST(c.cohort_end_date AS DATE) cohort_end_date
             INTO @temp_table_2
             FROM (
                     SELECT *

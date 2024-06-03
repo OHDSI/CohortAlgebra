@@ -102,10 +102,10 @@ appendCohortTables <- function(connectionDetails = NULL,
     }
 
     sqlNest[[i]] <- paste0(
-      "SELECT cohort_definition_id,
-               subject_id,
-               cohort_start_date,
-               cohort_end_date
+      "SELECT CAST(cohort_definition_id AS BIGINT) cohort_definition_id,
+               CAST(subject_id AS BIGINT) subject_id,
+               CAST(cohort_start_date AS DATE) cohort_start_date,
+               CAST(cohort_end_date AS DATE) cohort_end_date
        FROM ",
       tableName,
       " d",
@@ -116,10 +116,10 @@ appendCohortTables <- function(connectionDetails = NULL,
 
   if (isTempTable) {
     sql <- paste0(
-      "SELECT cohort_definition_id,
-          subject_id,
-          cohort_start_date,
-          cohort_end_date
+      "SELECT CAST(cohort_definition_id AS BIGINT) cohort_definition_id,
+               CAST(subject_id AS BIGINT) subject_id,
+               CAST(cohort_start_date AS DATE) cohort_start_date,
+               CAST(cohort_end_date AS DATE) cohort_end_date
           INTO @temp_table_name
       FROM (",
       paste0(paste0(sqlNest, collapse = " union all "), "
@@ -149,10 +149,10 @@ appendCohortTables <- function(connectionDetails = NULL,
           subject_id,
           cohort_start_date,
           cohort_end_date)
-      SELECT cohort_definition_id,
-          subject_id,
-          cohort_start_date,
-          cohort_end_date
+      SELECT  CAST(cohort_definition_id AS BIGINT) cohort_definition_id,
+              CAST(subject_id AS BIGINT) subject_id,
+              CAST(cohort_start_date AS DATE) cohort_start_date,
+              CAST(cohort_end_date AS DATE) cohort_end_date
       FROM (",
       paste0(paste0(sqlNest, collapse = " UNION ALL ")),
       ") f
