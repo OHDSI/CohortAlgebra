@@ -11,13 +11,14 @@ Maintainer: Gowtham Rao <rao@ohdsi.org>
 Description: This software tool is designed to generate new cohorts utilizing data from 
     previously instantiated cohorts. It employs interval algebra operators such as UNION, 
     INTERSECT, and MINUS to manipulate the data within the instantiated cohorts and 
-    create new cohorts.
+    create new cohorts. It also performs basic calculations on cohorts.
 Depends:
 	DatabaseConnector (>= 5.0.0),
 	R (>= 4.0.0)
 Imports:
   checkmate,
   dplyr,
+  FeatureExtraction,
   lifecycle,
   rlang,
   SqlRender
