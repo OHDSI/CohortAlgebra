@@ -2,6 +2,7 @@
 
 export(appendCohortTables)
 export(copyCohorts)
+export(filterCohort)
 export(getDistributionOfCohortDays)
 export(intersectCohorts)
 export(minusCohorts)
