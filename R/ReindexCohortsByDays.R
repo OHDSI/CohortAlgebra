@@ -199,7 +199,8 @@ reindexCohortsByDays <- function(connectionDetails = NULL,
   if (isTempTable) {
     if (!all(
       is.null(targetCohortDatabaseSchema),
-      tableNameIsCompatibleWithTempTableName(tableName = targetCohortTable), !is.null(connection)
+      tableNameIsCompatibleWithTempTableName(tableName = targetCohortTable),
+      !is.null(connection)
     )) {
       stop("Cannot output temp table - check input specifications")
     }
@@ -297,7 +298,7 @@ reindexCohortsByDays <- function(connectionDetails = NULL,
       newCohortId = cohortIdsInCohortTable
     )
 
-  CohortAlgebra::unionCohorts(
+  unionCohorts(
     connection = connection,
     sourceCohortTable = tempTableName,
     targetCohortDatabaseSchema = targetCohortDatabaseSchema,

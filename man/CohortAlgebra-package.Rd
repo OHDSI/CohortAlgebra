@@ -5,9 +5,9 @@
 \alias{CohortAlgebra-package}
 \title{CohortAlgebra: Use of Interval Algebra to Create New Cohort(s) from Existing Cohorts}
 \description{
-This software tool is designed to generate new cohorts utilizing data from previously instantiated cohorts. It employs interval algebra operators such as UNION, INTERSECT, and MINUS to manipulate the data within the instantiated cohorts and create new cohorts.
+This software tool is designed to generate new cohorts utilizing data from previously instantiated cohorts. It employs interval algebra operators such as UNION, INTERSECT, and MINUS to manipulate the data within the instantiated cohorts and create new cohorts. It also performs basic calculations on cohorts.
 
-This software tool is designed to generate new cohorts utilizing data from previously instantiated cohorts. It employs interval algebra operators such as UNION, INTERSECT, and MINUS to manipulate the data within the instantiated cohorts and create new cohorts.
+This software tool is designed to generate new cohorts utilizing data from previously instantiated cohorts. It employs interval algebra operators such as UNION, INTERSECT, and MINUS to manipulate the data within the instantiated cohorts and create new cohorts. It also performs basic calculations on cohorts.
 }
 \seealso{
 Useful links:

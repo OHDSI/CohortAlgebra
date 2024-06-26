@@ -88,8 +88,7 @@ if (cdmDatabaseSchema == "" || dbServer == "") {
 
 # Cleanup
 sql <-
-  "IF OBJECT_ID('@cohort_database_schema.@cohort_table', 'U') IS NOT NULL
-              DROP TABLE @cohort_database_schema.@cohort_table;"
+  "DROP TABLE IF EXISTS @cohort_database_schema.@cohort_table;"
 
 withr::defer(
   {
@@ -110,10 +109,14 @@ withr::defer(
                 DROP TABLE IF EXISTS @cohort_database_schema.@cohort_table_1;
                 DROP TABLE IF EXISTS @cohort_database_schema.@cohort_table_2;
                 DROP TABLE IF EXISTS @cohort_database_schema.@cohort_table_3;
+                DROP TABLE IF EXISTS @cohort_database_schema.@cohort_table_4;
+                DROP TABLE IF EXISTS @cohort_database_schema.@cohort_table_5;
                 DROP TABLE IF EXISTS @cohort_table;
                 DROP TABLE IF EXISTS @cohort_table_1;
                 DROP TABLE IF EXISTS @cohort_table_2;
                 DROP TABLE IF EXISTS @cohort_table_3;
+                DROP TABLE IF EXISTS @cohort_table_4;
+                DROP TABLE IF EXISTS @cohort_table_5;
         ",
         cohort_database_schema = cohortDatabaseSchema,
         cohort_table = cohortTableName
