@@ -13,104 +13,61 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-#' Create cohort summary
+#
+#' Calculate cohort days summary statistics
 #'
-#' This function calculates the number of subjects, records, and total cohort days
-#' for each provided `cohortDefinitionId`. It connects to a specified database,
-#' and queries a cohort table to gather the necessary information.
+#' This function retrieves the full cohort tables into R and performs several summary statistics on the days duration of cohort memberships.
 #'
-#' @param connectionDetails (optional) Details for establishing a database connection if `connection` is NULL.
-#' @param connection (optional) An existing database connection object.
-#' @param tempEmulationSchema (optional) The schema used for emulating temporary tables;
-#'        defaults to the value set in global options with `getOption("sqlRenderTempEmulationSchema")`.
-#' @param cohortDatabaseSchema The name of the schema where the cohort table exists.
-#' @param cdmDatabaseSchema The name of the schema with OMOP CDM person level tables.
-#' @param cohortTable The name of the cohort table.
-#' @param cohortIds (optional) Vector of IDs corresponding to cohort definitions.
-#' @param cohortTableIsTemp is Cohort table temp.
-#'
-#' @return A tibble with columns for cohort_definition_id, number of distinct subjects, number of events, and total days.
+#' @param cohort A data frame that includes the columns cohortDefinitionId, subjectId, cohortStartDate, and cohortEndDate.
+#' @param cohortDefinitionId (optional) The cohort id to filter the data; if NULL, all rows will be used.
+#' @return A data frame of summary statistics for each cohort definition id.
 #' @export
-getDistributionOfCohortDays <- function(connectionDetails = NULL,
-                                        connection = NULL,
-                                        tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
-                                        cohortDatabaseSchema = NULL,
-                                        cdmDatabaseSchema,
-                                        cohortTable,
-                                        cohortIds = NULL,
-                                        cohortTableIsTemp = FALSE) {
-  
-  errorMessages <- checkmate::makeAssertCollection()
-  
-  checkmate::assertIntegerish(
-    x = cohortIds,
-    null.ok = TRUE,
-    min.len = 1,
-    add = errorMessages
-  )
-  checkmate::assertCharacter(
-    x = cohortDatabaseSchema,
-    min.chars = 1,
-    len = 1,
-    null.ok = TRUE,
-    add = errorMessages
-  )
-  checkmate::assertCharacter(
-    x = cohortTable,
-    min.chars = 1,
-    len = 1,
-    null.ok = FALSE,
-    add = errorMessages
-  )
-  checkmate::reportAssertions(collection = errorMessages)
-  
-  covariateSettings <-
-    FeatureExtraction::createCovariateSettings(
-      useDemographicsPriorObservationTime = TRUE,
-      useDemographicsPostObservationTime = TRUE,
-      useDemographicsTimeInCohort = TRUE
+getDistributionOfCohortDays <-
+  function(cohort, cohortDefinitionId = NULL) {
+    # Validate input data structure
+    stopifnot(
+      "cohortDefinitionId" %in% names(cohort),
+      "subjectId" %in% names(cohort),
+      "cohortStartDate" %in% names(cohort),
+      "cohortEndDate" %in% names(cohort),
+      all(cohort$cohortEndDate >= cohort$cohortStartDate)
     )
-  
-  if (is.null(connection)) {
-    connection <- DatabaseConnector::connect(connectionDetails)
-    on.exit(DatabaseConnector::disconnect(connection))
+
+    # Convert dates to Date class
+    cohort$cohortStartDate <-
+      lubridate::as_date(cohort$cohortStartDate)
+    cohort$cohortEndDate <- lubridate::as_date(cohort$cohortEndDate)
+
+    # Filter data if cohortDefinitionId is specified
+    if (!is.null(cohortDefinitionId)) {
+      cohort <-
+        dplyr::filter(cohort, cohortDefinitionId == !!cohortDefinitionId)
+    }
+
+    # Calculate the duration in days
+    cohort <-
+      dplyr::mutate(cohort,
+        days = as.numeric(cohort$cohortEndDate - cohort$cohortStartDate)
+      )
+
+    # Calculate summary statistics
+    stats <- dplyr::group_by(cohort, cohortDefinitionId) |>
+      dplyr::summarise(
+        mean_days = mean(.data$days, na.rm = TRUE),
+        percentile_1 = stats::quantile(.data$days, probs = 0.01, na.rm = TRUE),
+        percentile_5 = stats::quantile(.data$days, probs = 0.05, na.rm = TRUE),
+        percentile_10 = stats::quantile(.data$days, probs = 0.10, na.rm = TRUE),
+        percentile_15 = stats::quantile(.data$days, probs = 0.15, na.rm = TRUE),
+        percentile_20 = stats::quantile(.data$days, probs = 0.20, na.rm = TRUE),
+        percentile_25 = stats::quantile(.data$days, probs = 0.25, na.rm = TRUE),
+        percentile_50 = stats::quantile(.data$days, probs = 0.50, na.rm = TRUE),
+        percentile_75 = stats::quantile(.data$days, probs = 0.75, na.rm = TRUE),
+        percentile_80 = stats::quantile(.data$days, probs = 0.80, na.rm = TRUE),
+        percentile_90 = stats::quantile(.data$days, probs = 0.90, na.rm = TRUE),
+        percentile_95 = stats::quantile(.data$days, probs = 0.95, na.rm = TRUE),
+        percentile_99 = stats::quantile(.data$days, probs = 0.99, na.rm = TRUE),
+        .groups = "drop"
+      )
+
+    return(stats)
   }
-  
-  covariateData <- FeatureExtraction::getDbCovariateData(
-    connection = connection,
-    cdmDatabaseSchema = cdmDatabaseSchema,
-    cohortDatabaseSchema = cohortDatabaseSchema,
-    cohortTable = cohortTable,
-    oracleTempSchema = tempEmulationSchema,
-    cohortIds = cohortIds,
-    covariateSettings = covariateSettings,
-    aggregated = TRUE,
-    rowIdField = "subject_id",
-    cohortTableIsTemp = cohortTableIsTemp
-  )
-  
-  analysisRef <-
-    covariateData$analysisRef |> dplyr::collect()
-  covariateRef <-
-    covariateData$covariateRef |> dplyr::collect()
-  covariatesContinuous <-
-    covariateData$covariatesContinuous |> dplyr::collect()
-  
-  report <- covariatesContinuous |>
-    dplyr::inner_join(covariateRef,
-                      by = "covariateId") |>
-    dplyr::inner_join(analysisRef |>
-                        dplyr::select(-"startDay",-"endDay",-"domainId"),
-                      by = "analysisId") |>
-    dplyr::select(
-      -"covariateId",
-      -"analysisId",-"analysisName",
-      -"isBinary",-"missingMeansZero",
-      -"conceptId"
-    ) |>
-    dplyr::relocate("cohortDefinitionId",
-                    "covariateName")
-  
-  return(report)
-}

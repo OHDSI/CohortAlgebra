@@ -1,6 +1,6 @@
 testthat::test_that("Testing cohort distribution days", {
   testthat::skip_if(condition = skipCdmTests)
-  
+
   tempCohortTableName <- paste0("#", cohortTableName, "_4")
   cohort <- dplyr::tibble(
     cohortDefinitionId = c(1),
@@ -8,7 +8,7 @@ testthat::test_that("Testing cohort distribution days", {
     cohortStartDate = c(as.Date("1999-01-01")),
     cohortEndDate = c(as.Date("1999-01-31"))
   )
-  
+
   # upload table
   connection <-
     DatabaseConnector::connect(connectionDetails = connectionDetails)
@@ -23,8 +23,8 @@ testthat::test_that("Testing cohort distribution days", {
     camelCaseToSnakeCase = TRUE,
     progressBar = FALSE
   )
-  
-  output <- CohortAlgebra::getDistributionOfCohortDays(
+
+  output <- CohortAlgebra::getCohortTimes(
     connectionDetails = connectionDetails,
     cohortTable = tempCohortTableName,
     tempEmulationSchema = tempEmulationSchema,
@@ -34,9 +34,9 @@ testthat::test_that("Testing cohort distribution days", {
     cohortIds = 1,
     cohortTableIsTemp = TRUE
   )
-  
+
   testthat::expect_true(object = "data.frame" %in% class(output))
-  
+
   DatabaseConnector::renderTranslateExecuteSql(
     connection = connection,
     sql = "DROP TABLE IF EXISTS @cohort_table;",
@@ -44,5 +44,4 @@ testthat::test_that("Testing cohort distribution days", {
     progressBar = FALSE,
     reportOverallTime = FALSE
   )
-  
 })

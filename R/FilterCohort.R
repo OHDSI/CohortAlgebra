@@ -46,11 +46,11 @@ filterCohort <- function(connectionDetails = NULL,
     connection <- DatabaseConnector::connect(connectionDetails)
     on.exit(DatabaseConnector::disconnect(connection))
   }
-  
+
   if (oldCohortId == newCohortId) {
     stop("oldCohortId and newCohortId are the same.")
   }
-  
+
   sql <-
     "DELETE FROM {@use_cohort_database_schema} ? {@cohort_database_schema.@cohort_table_name} : {@cohort_table_name}
       WHERE cohort_definition_id = @new_cohort_id;
@@ -64,7 +64,7 @@ filterCohort <- function(connectionDetails = NULL,
     WHERE cohort_definition_id  = @old_cohort_id
       AND DATEDIFF(DAY, cohort_start_date, cohort_end_date) >= @min_cohort_days
       AND DATEDIFF(DAY, cohort_start_date, cohort_end_date) <= @max_cohort_days;"
-  
+
   DatabaseConnector::renderTranslateExecuteSql(
     connection = connection,
     sql = sql,

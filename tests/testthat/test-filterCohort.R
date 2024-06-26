@@ -1,6 +1,6 @@
 testthat::test_that("Testing cohort filter", {
   testthat::skip_if(condition = skipCdmTests)
-  
+
   tempCohortTableName <- paste0("#", cohortTableName, "_5")
   cohort <- dplyr::tibble(
     cohortDefinitionId = c(1, 2),
@@ -8,7 +8,7 @@ testthat::test_that("Testing cohort filter", {
     cohortStartDate = c(as.Date("1999-01-01"), as.Date("1999-01-01")),
     cohortEndDate = c(as.Date("1999-12-31"), as.Date("1999-01-31"))
   )
-  
+
   # upload table
   connection <-
     DatabaseConnector::connect(connectionDetails = connectionDetails)
@@ -23,7 +23,7 @@ testthat::test_that("Testing cohort filter", {
     camelCaseToSnakeCase = TRUE,
     progressBar = FALSE
   )
-  
+
   CohortAlgebra::filterCohort(
     connectionDetails = connectionDetails,
     cohortTable = tempCohortTableName,
@@ -33,16 +33,16 @@ testthat::test_that("Testing cohort filter", {
     newCohortId = 2,
     oldCohortId = 1
   )
-  
+
   output <- DatabaseConnector::renderTranslateQuerySql(
-    connection = connection,sql = "SELECT * FROM @cohort_table WHERE cohort_definition_id = 2;",
+    connection = connection, sql = "SELECT * FROM @cohort_table WHERE cohort_definition_id = 2;",
     snakeCaseToCamelCase = TRUE,
     cohort_table = tempCohortTableName
   )
-  
+
   testthat::expect_true(object = "data.frame" %in% class(output))
   testthat::expect_true(object = nrow(output) == 1)
-  
+
   DatabaseConnector::renderTranslateExecuteSql(
     connection = connection,
     sql = "DROP TABLE IF EXISTS @cohort_table;",
@@ -50,5 +50,4 @@ testthat::test_that("Testing cohort filter", {
     progressBar = FALSE,
     reportOverallTime = FALSE
   )
-  
 })

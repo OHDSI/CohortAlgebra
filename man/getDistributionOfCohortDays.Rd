@@ -2,42 +2,18 @@
 % Please edit documentation in R/GetDistributionOfCohortDays.R
 \name{getDistributionOfCohortDays}
 \alias{getDistributionOfCohortDays}
-\title{Create cohort summary}
+\title{Calculate cohort days summary statistics}
 \usage{
-getDistributionOfCohortDays(
-  connectionDetails = NULL,
-  connection = NULL,
-  tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
-  cohortDatabaseSchema = NULL,
-  cdmDatabaseSchema,
-  cohortTable,
-  cohortIds = NULL,
-  cohortTableIsTemp = FALSE
-)
+getDistributionOfCohortDays(cohort, cohortDefinitionId = NULL)
 }
 \arguments{
-\item{connectionDetails}{(optional) Details for establishing a database connection if \code{connection} is NULL.}
+\item{cohort}{A data frame that includes the columns cohortDefinitionId, subjectId, cohortStartDate, and cohortEndDate.}
 
-\item{connection}{(optional) An existing database connection object.}
-
-\item{tempEmulationSchema}{(optional) The schema used for emulating temporary tables;
-defaults to the value set in global options with \code{getOption("sqlRenderTempEmulationSchema")}.}
-
-\item{cohortDatabaseSchema}{The name of the schema where the cohort table exists.}
-
-\item{cdmDatabaseSchema}{The name of the schema with OMOP CDM person level tables.}
-
-\item{cohortTable}{The name of the cohort table.}
-
-\item{cohortIds}{(optional) Vector of IDs corresponding to cohort definitions.}
-
-\item{cohortTableIsTemp}{is Cohort table temp.}
+\item{cohortDefinitionId}{(optional) The cohort id to filter the data; if NULL, all rows will be used.}
 }
 \value{
-A tibble with columns for cohort_definition_id, number of distinct subjects, number of events, and total days.
+A data frame of summary statistics for each cohort definition id.
 }
 \description{
-This function calculates the number of subjects, records, and total cohort days
-for each provided \code{cohortDefinitionId}. It connects to a specified database,
-and queries a cohort table to gather the necessary information.
+This function retrieves the full cohort tables into R and performs several summary statistics on the days duration of cohort memberships.
 }
