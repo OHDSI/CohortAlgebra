@@ -1,4 +1,5 @@
 removed dependency on Andromeda R Package
+copyright updated to 2025
 ---
 optimize core sql that create cohort eras.
 ---
