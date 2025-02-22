@@ -1,3 +1,5 @@
+removed dependency on Andromeda R Package
+---
 optimize core sql that create cohort eras.
 ---
 Explicit type cast.
