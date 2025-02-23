@@ -1,108 +1,38 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>/404.html</loc>
-  </url>
-  <url>
-    <loc>/articles/HowToUseCohortAlgebraRPackage.html</loc>
-  </url>
-  <url>
-    <loc>/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>/authors.html</loc>
-  </url>
-  <url>
-    <loc>/index.html</loc>
-  </url>
-  <url>
-    <loc>/news/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/appendCohortTables.html</loc>
-  </url>
-  <url>
-    <loc>/reference/applyCohortPeriodCriteria.html</loc>
-  </url>
-  <url>
-    <loc>/reference/applyCohortPersistenceCriteria.html</loc>
-  </url>
-  <url>
-    <loc>/reference/applyDemographicCriteria.html</loc>
-  </url>
-  <url>
-    <loc>/reference/censorCohortDates.html</loc>
-  </url>
-  <url>
-    <loc>/reference/CohortAlgebra-package.html</loc>
-  </url>
-  <url>
-    <loc>/reference/copyCohorts.html</loc>
-  </url>
-  <url>
-    <loc>/reference/copyCohortsToTempTable.html</loc>
-  </url>
-  <url>
-    <loc>/reference/deleteCohort.html</loc>
-  </url>
-  <url>
-    <loc>/reference/deleteCohortRecords.html</loc>
-  </url>
-  <url>
-    <loc>/reference/eraFyCohort.html</loc>
-  </url>
-  <url>
-    <loc>/reference/eraFyCohorts.html</loc>
-  </url>
-  <url>
-    <loc>/reference/filterCohortByCalendarDate.html</loc>
-  </url>
-  <url>
-    <loc>/reference/generateBaseCohorts.html</loc>
-  </url>
-  <url>
-    <loc>/reference/getBaseCohortDefinitionSet.html</loc>
-  </url>
-  <url>
-    <loc>/reference/getCohortIdsInCohortTable.html</loc>
-  </url>
-  <url>
-    <loc>/reference/getPlCohortDefinitionSet.html</loc>
-  </url>
-  <url>
-    <loc>/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/intersectCohorts.html</loc>
-  </url>
-  <url>
-    <loc>/reference/keepCohortOverlaps.html</loc>
-  </url>
-  <url>
-    <loc>/reference/limitCohortOccurrence.html</loc>
-  </url>
-  <url>
-    <loc>/reference/listPhenotypes.html</loc>
-  </url>
-  <url>
-    <loc>/reference/minusCohorts.html</loc>
-  </url>
-  <url>
-    <loc>/reference/modifyCohort.html</loc>
-  </url>
-  <url>
-    <loc>/reference/reindexCohortsByDays.html</loc>
-  </url>
-  <url>
-    <loc>/reference/removeOverlappingSubjects.html</loc>
-  </url>
-  <url>
-    <loc>/reference/removeSubjectsFromCohorts.html</loc>
-  </url>
-  <url>
-    <loc>/reference/substractCohorts.html</loc>
-  </url>
-  <url>
-    <loc>/reference/unionCohorts.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://ohdsi.github.io/CohortAlgebra/404.html</loc></url>
+<url><loc>https://ohdsi.github.io/CohortAlgebra/articles/HowToUseCohortAlgebraRPackage.html</loc></url>
+<url><loc>https://ohdsi.github.io/CohortAlgebra/articles/index.html</loc></url>
+<url><loc>https://ohdsi.github.io/CohortAlgebra/authors.html</loc></url>
+<url><loc>https://ohdsi.github.io/CohortAlgebra/index.html</loc></url>
+<url><loc>https://ohdsi.github.io/CohortAlgebra/news/index.html</loc></url>
+<url><loc>https://ohdsi.github.io/CohortAlgebra/reference/appendCohortTables.html</loc></url>
+<url><loc>https://ohdsi.github.io/CohortAlgebra/reference/applyCohortPeriodCriteria.html</loc></url>
+<url><loc>https://ohdsi.github.io/CohortAlgebra/reference/applyCohortPersistenceCriteria.html</loc></url>
+<url><loc>https://ohdsi.github.io/CohortAlgebra/reference/applyDemographicCriteria.html</loc></url>
+<url><loc>https://ohdsi.github.io/CohortAlgebra/reference/censorCohortDates.html</loc></url>
+<url><loc>https://ohdsi.github.io/CohortAlgebra/reference/CohortAlgebra-package.html</loc></url>
+<url><loc>https://ohdsi.github.io/CohortAlgebra/reference/copyCohorts.html</loc></url>
+<url><loc>https://ohdsi.github.io/CohortAlgebra/reference/copyCohortsToTempTable.html</loc></url>
+<url><loc>https://ohdsi.github.io/CohortAlgebra/reference/deleteCohort.html</loc></url>
+<url><loc>https://ohdsi.github.io/CohortAlgebra/reference/deleteCohortRecords.html</loc></url>
+<url><loc>https://ohdsi.github.io/CohortAlgebra/reference/eraFyCohort.html</loc></url>
+<url><loc>https://ohdsi.github.io/CohortAlgebra/reference/eraFyCohorts.html</loc></url>
+<url><loc>https://ohdsi.github.io/CohortAlgebra/reference/filterCohortByCalendarDate.html</loc></url>
+<url><loc>https://ohdsi.github.io/CohortAlgebra/reference/generateBaseCohorts.html</loc></url>
+<url><loc>https://ohdsi.github.io/CohortAlgebra/reference/getBaseCohortDefinitionSet.html</loc></url>
+<url><loc>https://ohdsi.github.io/CohortAlgebra/reference/getCohortIdsInCohortTable.html</loc></url>
+<url><loc>https://ohdsi.github.io/CohortAlgebra/reference/getPlCohortDefinitionSet.html</loc></url>
+<url><loc>https://ohdsi.github.io/CohortAlgebra/reference/index.html</loc></url>
+<url><loc>https://ohdsi.github.io/CohortAlgebra/reference/intersectCohorts.html</loc></url>
+<url><loc>https://ohdsi.github.io/CohortAlgebra/reference/keepCohortOverlaps.html</loc></url>
+<url><loc>https://ohdsi.github.io/CohortAlgebra/reference/limitCohortOccurrence.html</loc></url>
+<url><loc>https://ohdsi.github.io/CohortAlgebra/reference/listPhenotypes.html</loc></url>
+<url><loc>https://ohdsi.github.io/CohortAlgebra/reference/minusCohorts.html</loc></url>
+<url><loc>https://ohdsi.github.io/CohortAlgebra/reference/modifyCohort.html</loc></url>
+<url><loc>https://ohdsi.github.io/CohortAlgebra/reference/reindexCohortsByDays.html</loc></url>
+<url><loc>https://ohdsi.github.io/CohortAlgebra/reference/removeOverlappingSubjects.html</loc></url>
+<url><loc>https://ohdsi.github.io/CohortAlgebra/reference/removeSubjectsFromCohorts.html</loc></url>
+<url><loc>https://ohdsi.github.io/CohortAlgebra/reference/substractCohorts.html</loc></url>
+<url><loc>https://ohdsi.github.io/CohortAlgebra/reference/unionCohorts.html</loc></url>
 </urlset>
+

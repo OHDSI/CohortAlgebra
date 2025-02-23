@@ -1,4 +1,5 @@
 template:
+  bootstrap: 5
   params:
     bootswatch: cosmo
 
@@ -15,3 +16,4 @@ navbar:
       text: hadesLogo
       href: https://ohdsi.github.io/Hades
 
+url: https://ohdsi.github.io/CohortAlgebra/

@@ -1,15 +1,7 @@
-optimize core sql that create cohort eras.
----
-Explicit type cast.
----
-Added new function reindexRules(). Tests added. Tests pass. Improved test coverage.
----
-Removed non functioning examples to avoid use of \dontrun.
-Removed reference user's home filespace and replace to tempdir(). in tests/testthat/setup.R
----
-This is new release.
-
----
+removed dependency on Andromeda R Package
+copyright updated to 2025
+changed package url to CRAN canonical form
+Because of use of native pipe, clarified dependency to R 4.1.0
 
 ## Test environments
 * Ubuntu 20.04, R 4.3.1

@@ -1,3 +1,7 @@
+CohortAlgebra 0.3.1
+======================
+Removed dependency on Andromeda
+
 CohortAlgebra 0.3.0
 ======================
 Optimized sql for Cohort Era.
