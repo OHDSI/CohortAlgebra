@@ -1,6 +1,7 @@
 removed dependency on Andromeda R Package
 copyright updated to 2025
 changed package url to CRAN canonical form
+Because of use of native pipe, clarified dependency to R 4.1.0
 
 ## Test environments
 * Ubuntu 20.04, R 4.3.1

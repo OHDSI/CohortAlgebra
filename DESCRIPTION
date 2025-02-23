@@ -14,7 +14,7 @@ Description: This software tool is designed to generate new cohorts utilizing da
     create new cohorts.
 Depends:
 	DatabaseConnector (>= 5.0.0),
-	R (>= 4.0.0)
+	R (>= 4.1.0)
 Imports:
   checkmate,
   dplyr,
