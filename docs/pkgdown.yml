@@ -3,7 +3,7 @@ pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
   HowToUseCohortAlgebraRPackage: HowToUseCohortAlgebraRPackage.html
-last_built: 2025-02-22T11:22Z
+last_built: 2025-02-23T10:02Z
 urls:
   reference: https://ohdsi.github.io/CohortAlgebra/reference
   article: https://ohdsi.github.io/CohortAlgebra/articles

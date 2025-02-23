@@ -32,5 +32,5 @@ VignetteBuilder: knitr
 Roxygen: list(markdown = TRUE)
 Encoding: UTF-8
 Language: en-US
-URL: https://ohdsi.github.io/CohortAlgebra, https://cloud.r-project.org/web/packages/CohortAlgebra/index.html
+URL: https://ohdsi.github.io/CohortAlgebra/, https://CRAN.R-project.org/package=CohortAlgebra
 BugReports: https://github.com/OHDSI/CohortAlgebra/issues
